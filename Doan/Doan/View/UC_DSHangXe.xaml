@@ -1,0 +1,163 @@
+﻿<UserControl x:Class="Doan.View.UC_DSHangXe"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Doan.View"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+                      mc:Ignorable="d" 
+         d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <vm:HangXe_VM/>
+    </UserControl.DataContext>
+
+    <Grid Margin="0,40,0,40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Tiêu đề -->
+        <Grid Margin="30,20,30,0">
+
+            <TextBlock 
+        Text="CHỌN HÃNG XE"
+        FontSize="24"
+        FontWeight="Bold"
+        Foreground="#2c3e50" Margin="0,0,402,0"/>
+
+            <Button
+        Content="➕ Thêm"
+        Padding="15,8"
+        Width="90"
+        Background="#27ae60"
+        Foreground="White"
+        BorderThickness="0"
+        Cursor="Hand"
+        Command="{Binding LenhMoThemHangXe}"
+        FontSize="12"
+        FontWeight="Bold" Margin="460,0,190,0"/>
+            <Button
+        Content="🗑 Xóa"
+        Padding="15,8"
+        Width="90"
+        Background="#e74c3c"
+        Foreground="White"
+        BorderThickness="0"
+        Cursor="Hand"
+        Command="{Binding LenhXoaHangXe}"
+        FontSize="12"
+        FontWeight="Bold" Margin="555,0,95,0"/>
+            <Button
+        Content="✏️  Sửa"
+        Padding="15,8"
+        Width="90"
+        Background="#f1c40f"
+        Foreground="White"
+        BorderThickness="0"
+        Cursor="Hand"
+        Command="{Binding LenhMoSuaHangXe}"
+        FontSize="12"
+        FontWeight="Bold" Margin="650,0,0,0"/>
+        </Grid>
+        <!-- Danh sách hãng xe -->
+
+        <ListBox 
+    Grid.Row="1"
+    ItemsSource="{Binding DanhSachHangXe}"
+    SelectedItem="{Binding HangXeDangChon, Mode=TwoWay}"
+    d:ItemsSource="{d:SampleData ItemCount=4}"
+    Margin="30,0,30,0"
+    BorderThickness="0"
+    Background="Transparent"
+    ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+            <!-- Bỏ style mặc định -->
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <!-- Layout dạng grid ngang -->
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <!-- UI từng item -->
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border 
+        Width="200" 
+        Height="200"
+        Margin="20"
+        Background="White"
+        CornerRadius="10"
+        Cursor="Hand">
+
+                        <Border.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick"
+                                  Command="{Binding DataContext.LenhMoDanhSachXeTheoHang, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                  CommandParameter="{Binding}"/>
+                        </Border.InputBindings>
+
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.15"/>
+                                    </Setter.Value>
+                                </Setter>
+
+                                <!-- Hover -->
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.25"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+
+                            <!-- Logo -->
+                            <Image 
+                Source="{Binding LogoDisplay}"
+                Width="80" 
+                Height="80"
+                Margin="0,0,0,20"
+                Stretch="Uniform"/>
+
+                            <!-- Tên hãng -->
+                            <TextBlock 
+                Text="{Binding TenHang}"
+                FontSize="18"
+                FontWeight="Bold"
+                Foreground="#2c3e50"
+                TextAlignment="Center"
+                Margin="0,0,0,8"/>
+
+                            <!-- Quốc gia -->
+                            <TextBlock 
+                Text="{Binding QuocGia}"
+                FontSize="12"
+                Foreground="#95a5a6"
+                TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+    </Grid>
+</UserControl>

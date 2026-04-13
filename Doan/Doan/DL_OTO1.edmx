@@ -1,0 +1,842 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="DL_OTOModel2.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Car">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenHang" Type="nvarchar" MaxLength="100" />
+          <Property Name="TenDongXe" Type="nvarchar" MaxLength="200" />
+          <Property Name="LoaiXe" Type="nvarchar" MaxLength="100" />
+          <Property Name="MauSac" Type="nvarchar" MaxLength="50" />
+          <Property Name="NamSX" Type="int" />
+          <Property Name="GiaXe" Type="bigint" />
+          <Property Name="HinhAnhFullPath" Type="nvarchar(max)" />
+          <Property Name="MoTa" Type="nvarchar(max)" />
+          <Property Name="SoLuongTon" Type="int" />
+        </EntityType>
+        <EntityType Name="ChiTietDH">
+          <Key>
+            <PropertyRef Name="MaDH" />
+            <PropertyRef Name="MaXe" />
+          </Key>
+          <Property Name="MaDH" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="MaXe" Type="int" Nullable="false" />
+          <Property Name="NgayLap" Type="date" />
+          <Property Name="SoLuong" Type="int" />
+        </EntityType>
+        <EntityType Name="DonHang">
+          <Key>
+            <PropertyRef Name="MaDH" />
+          </Key>
+          <Property Name="MaDH" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TenDH" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="MaKhachHang" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="MaNV" Type="int" />
+          <Property Name="NgayLap" Type="date" />
+          <Property Name="TongTien" Type="bigint" />
+        </EntityType>
+        <EntityType Name="HangXe">
+          <Key>
+            <PropertyRef Name="TenHang" />
+          </Key>
+          <Property Name="TenHang" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="QuocGia" Type="nvarchar" MaxLength="100" />
+          <Property Name="LogoFullPath" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="KHACHHANG">
+          <Key>
+            <PropertyRef Name="MaKH" />
+          </Key>
+          <Property Name="MaKH" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="HoTen" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="GioiTinh" Type="nvarchar" MaxLength="5" />
+          <Property Name="SoDienThoai" Type="varchar" MaxLength="15" />
+          <Property Name="NgaySinh" Type="date" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="KhoXe">
+          <Key>
+            <PropertyRef Name="MaGiaoDich" />
+          </Key>
+          <Property Name="MaGiaoDich" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaXe" Type="int" Nullable="false" />
+          <Property Name="LoaiGiaoDich" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SoLuong" Type="int" Nullable="false" />
+          <Property Name="NgayGiaoDich" Type="date" />
+          <Property Name="GhiChu" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="NhanVien">
+          <Key>
+            <PropertyRef Name="MaNV" />
+          </Key>
+          <Property Name="MaNV" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="HoTen" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="NgaySinh" Type="date" />
+          <Property Name="GioiTinh" Type="nvarchar" MaxLength="10" />
+          <Property Name="ChucVu" Type="nvarchar" MaxLength="50" />
+          <Property Name="Luong" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="TaiKhoan">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Role" Type="nvarchar" MaxLength="20" />
+          <Property Name="MaNV_MaKH" Type="nvarchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="ThanhToan">
+          <Key>
+            <PropertyRef Name="MaTT" />
+          </Key>
+          <Property Name="MaTT" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="MaDH" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="NgayThanhToan" Type="date" />
+          <Property Name="SoTien" Type="bigint" Nullable="false" />
+          <Property Name="PhuongThuc" Type="nvarchar" MaxLength="50" />
+          <Property Name="TrangThai" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'DL_OTO.dbo.vw_DanhSachNhanVien' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_DanhSachNhanVien">
+          <Key>
+            <PropertyRef Name="MaNV" />
+            <PropertyRef Name="HoTen" />
+          </Key>
+          <Property Name="MaNV" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="HoTen" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="NgaySinh" Type="varchar" MaxLength="30" />
+          <Property Name="GioiTinh" Type="nvarchar" MaxLength="10" />
+          <Property Name="ChucVu" Type="nvarchar" MaxLength="50" />
+          <Property Name="Luong" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'DL_OTO.dbo.vw_DoanhThuThang' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="vw_DoanhThuThang">
+          <Property Name="Thang" Type="int" />
+          <Property Name="Nam" Type="int" />
+          <Property Name="SoLuongDonDaThanhToan" Type="int" />
+          <Property Name="TongDoanhThu" Type="bigint" />
+        </EntityType>-->
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'DL_OTO.dbo.vw_TonKho' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_TonKho">
+          <Key>
+            <PropertyRef Name="MaXe" />
+          </Key>
+          <Property Name="MaXe" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenHang" Type="nvarchar" MaxLength="100" />
+          <Property Name="TenDongXe" Type="nvarchar" MaxLength="200" />
+          <Property Name="LoaiXe" Type="nvarchar" MaxLength="100" />
+          <Property Name="SoLuongTon" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'DL_OTO.dbo.vw_XeBanChay' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="vw_XeBanChay">
+          <Key>
+            <PropertyRef Name="MaXe" />
+          </Key>
+          <Property Name="MaXe" Type="int" Nullable="false" />
+          <Property Name="TenHang" Type="nvarchar" MaxLength="100" />
+          <Property Name="TenDongXe" Type="nvarchar" MaxLength="200" />
+          <Property Name="TongSoLuongDaBan" Type="int" />
+        </EntityType>
+        <Association Name="FK_Car_HangXe">
+          <End Role="HangXe" Type="Self.HangXe" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Car" Type="Self.Car" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HangXe">
+              <PropertyRef Name="TenHang" />
+            </Principal>
+            <Dependent Role="Car">
+              <PropertyRef Name="TenHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CTDH_DH">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
+          <End Role="ChiTietDH" Type="Self.ChiTietDH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDH" />
+            </Principal>
+            <Dependent Role="ChiTietDH">
+              <PropertyRef Name="MaDH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CTDH_XE">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="ChiTietDH" Type="Self.ChiTietDH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ChiTietDH">
+              <PropertyRef Name="MaXe" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DonHang_KH">
+          <End Role="KHACHHANG" Type="Self.KHACHHANG" Multiplicity="1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KHACHHANG">
+              <PropertyRef Name="MaKH" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaKhachHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DonHang_NV">
+          <End Role="NhanVien" Type="Self.NhanVien" Multiplicity="0..1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NhanVien">
+              <PropertyRef Name="MaNV" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaNV" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KhoXe_Car">
+          <End Role="Car" Type="Self.Car" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="KhoXe" Type="Self.KhoXe" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="KhoXe">
+              <PropertyRef Name="MaXe" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ThanhToan_DonHang">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ThanhToan" Type="Self.ThanhToan" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDH" />
+            </Principal>
+            <Dependent Role="ThanhToan">
+              <PropertyRef Name="MaDH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="fn_TinhTongTien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="bigint">
+          <Parameter Name="MaDH" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="sp_SuaKhachHang" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SoDienThoai" Type="varchar" Mode="In" />
+          <Parameter Name="HoTen" Type="nvarchar" Mode="In" />
+          <Parameter Name="GioiTinh" Type="nvarchar" Mode="In" />
+          <Parameter Name="NgaySinh" Type="date" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_ThanhToan" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MaDH" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="PhuongThuc" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_ThemKhachHang" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="HoTen" Type="nvarchar" Mode="In" />
+          <Parameter Name="GioiTinh" Type="nvarchar" Mode="In" />
+          <Parameter Name="SoDienThoai" Type="varchar" Mode="In" />
+          <Parameter Name="NgaySinh" Type="date" Mode="In" />
+          <Parameter Name="Email" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_ThemNhanVien" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="HoTen" Type="nvarchar" Mode="In" />
+          <Parameter Name="NgaySinh" Type="date" Mode="In" />
+          <Parameter Name="GioiTinh" Type="nvarchar" Mode="In" />
+          <Parameter Name="ChucVu" Type="nvarchar" Mode="In" />
+          <Parameter Name="Luong" Type="decimal" Mode="In" />
+        </Function>
+        <Function Name="sp_ThongKeDoanhThu_Cursor" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_XoaKhachHangMKH" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MaKhachHang" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="sp_XoaKhachHangSDT" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SoDienThoai" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="TaoDonHang" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="TenDH" Type="nvarchar" Mode="In" />
+          <Parameter Name="MaKhachHang" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="MaNV" Type="int" Mode="In" />
+          <Parameter Name="NgayLap" Type="date" Mode="In" />
+        </Function>
+        <EntityContainer Name="DL_OTOModel2StoreContainer">
+          <EntitySet Name="Car" EntityType="Self.Car" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ChiTietDH" EntityType="Self.ChiTietDH" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DonHang" EntityType="Self.DonHang" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HangXe" EntityType="Self.HangXe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="KHACHHANG" EntityType="Self.KHACHHANG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="KhoXe" EntityType="Self.KhoXe" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="NhanVien" EntityType="Self.NhanVien" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TaiKhoan" EntityType="Self.TaiKhoan" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ThanhToan" EntityType="Self.ThanhToan" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="vw_DanhSachNhanVien" EntityType="Self.vw_DanhSachNhanVien" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_DanhSachNhanVien].[MaNV] AS [MaNV], 
+    [vw_DanhSachNhanVien].[HoTen] AS [HoTen], 
+    [vw_DanhSachNhanVien].[NgaySinh] AS [NgaySinh], 
+    [vw_DanhSachNhanVien].[GioiTinh] AS [GioiTinh], 
+    [vw_DanhSachNhanVien].[ChucVu] AS [ChucVu], 
+    [vw_DanhSachNhanVien].[Luong] AS [Luong]
+    FROM [dbo].[vw_DanhSachNhanVien] AS [vw_DanhSachNhanVien]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_TonKho" EntityType="Self.vw_TonKho" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_TonKho].[MaXe] AS [MaXe], 
+    [vw_TonKho].[TenHang] AS [TenHang], 
+    [vw_TonKho].[TenDongXe] AS [TenDongXe], 
+    [vw_TonKho].[LoaiXe] AS [LoaiXe], 
+    [vw_TonKho].[SoLuongTon] AS [SoLuongTon]
+    FROM [dbo].[vw_TonKho] AS [vw_TonKho]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="vw_XeBanChay" EntityType="Self.vw_XeBanChay" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [vw_XeBanChay].[MaXe] AS [MaXe], 
+    [vw_XeBanChay].[TenHang] AS [TenHang], 
+    [vw_XeBanChay].[TenDongXe] AS [TenDongXe], 
+    [vw_XeBanChay].[TongSoLuongDaBan] AS [TongSoLuongDaBan]
+    FROM [dbo].[vw_XeBanChay] AS [vw_XeBanChay]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_Car_HangXe" Association="Self.FK_Car_HangXe">
+            <End Role="HangXe" EntitySet="HangXe" />
+            <End Role="Car" EntitySet="Car" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDH_DH" Association="Self.FK_CTDH_DH">
+            <End Role="DonHang" EntitySet="DonHang" />
+            <End Role="ChiTietDH" EntitySet="ChiTietDH" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDH_XE" Association="Self.FK_CTDH_XE">
+            <End Role="Car" EntitySet="Car" />
+            <End Role="ChiTietDH" EntitySet="ChiTietDH" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_KH" Association="Self.FK_DonHang_KH">
+            <End Role="KHACHHANG" EntitySet="KHACHHANG" />
+            <End Role="DonHang" EntitySet="DonHang" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_NV" Association="Self.FK_DonHang_NV">
+            <End Role="NhanVien" EntitySet="NhanVien" />
+            <End Role="DonHang" EntitySet="DonHang" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KhoXe_Car" Association="Self.FK_KhoXe_Car">
+            <End Role="Car" EntitySet="Car" />
+            <End Role="KhoXe" EntitySet="KhoXe" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ThanhToan_DonHang" Association="Self.FK_ThanhToan_DonHang">
+            <End Role="DonHang" EntitySet="DonHang" />
+            <End Role="ThanhToan" EntitySet="ThanhToan" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DL_OTOModel2" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Car">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenHang" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TenDongXe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="LoaiXe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="MauSac" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="NamSX" Type="Int32" />
+          <Property Name="GiaXe" Type="Int64" />
+          <Property Name="HinhAnhFullPath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SoLuongTon" Type="Int32" />
+          <NavigationProperty Name="HangXe" Relationship="Self.FK_Car_HangXe" FromRole="Car" ToRole="HangXe" />
+          <NavigationProperty Name="ChiTietDHs" Relationship="Self.FK_CTDH_XE" FromRole="Car" ToRole="ChiTietDH" />
+          <NavigationProperty Name="KhoXes" Relationship="Self.FK_KhoXe_Car" FromRole="Car" ToRole="KhoXe" />
+        </EntityType>
+        <EntityType Name="ChiTietDH">
+          <Key>
+            <PropertyRef Name="MaDH" />
+            <PropertyRef Name="MaXe" />
+          </Key>
+          <Property Name="MaDH" Type="Guid" Nullable="false" />
+          <Property Name="MaXe" Type="Int32" Nullable="false" />
+          <Property Name="NgayLap" Type="DateTime" Precision="0" />
+          <Property Name="SoLuong" Type="Int32" />
+          <NavigationProperty Name="Car" Relationship="Self.FK_CTDH_XE" FromRole="ChiTietDH" ToRole="Car" />
+          <NavigationProperty Name="DonHang" Relationship="Self.FK_CTDH_DH" FromRole="ChiTietDH" ToRole="DonHang" />
+        </EntityType>
+        <EntityType Name="DonHang">
+          <Key>
+            <PropertyRef Name="MaDH" />
+          </Key>
+          <Property Name="MaDH" Type="Guid" Nullable="false" />
+          <Property Name="TenDH" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MaKhachHang" Type="Guid" Nullable="false" />
+          <Property Name="MaNV" Type="Int32" />
+          <Property Name="NgayLap" Type="DateTime" Precision="0" />
+          <Property Name="TongTien" Type="Int64" />
+          <NavigationProperty Name="ChiTietDHs" Relationship="Self.FK_CTDH_DH" FromRole="DonHang" ToRole="ChiTietDH" />
+          <NavigationProperty Name="KHACHHANG" Relationship="Self.FK_DonHang_KH" FromRole="DonHang" ToRole="KHACHHANG" />
+          <NavigationProperty Name="NhanVien" Relationship="Self.FK_DonHang_NV" FromRole="DonHang" ToRole="NhanVien" />
+          <NavigationProperty Name="ThanhToans" Relationship="Self.FK_ThanhToan_DonHang" FromRole="DonHang" ToRole="ThanhToan" />
+        </EntityType>
+        <EntityType Name="HangXe">
+          <Key>
+            <PropertyRef Name="TenHang" />
+          </Key>
+          <Property Name="TenHang" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="QuocGia" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="LogoFullPath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Cars" Relationship="Self.FK_Car_HangXe" FromRole="HangXe" ToRole="Car" />
+        </EntityType>
+        <EntityType Name="KHACHHANG">
+          <Key>
+            <PropertyRef Name="MaKH" />
+          </Key>
+          <Property Name="MaKH" Type="Guid" Nullable="false" />
+          <Property Name="HoTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="GioiTinh" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="SoDienThoai" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="NgaySinh" Type="DateTime" Precision="0" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DonHangs" Relationship="Self.FK_DonHang_KH" FromRole="KHACHHANG" ToRole="DonHang" />
+        </EntityType>
+        <EntityType Name="KhoXe">
+          <Key>
+            <PropertyRef Name="MaGiaoDich" />
+          </Key>
+          <Property Name="MaGiaoDich" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaXe" Type="Int32" Nullable="false" />
+          <Property Name="LoaiGiaoDich" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SoLuong" Type="Int32" Nullable="false" />
+          <Property Name="NgayGiaoDich" Type="DateTime" Precision="0" />
+          <Property Name="GhiChu" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Car" Relationship="Self.FK_KhoXe_Car" FromRole="KhoXe" ToRole="Car" />
+        </EntityType>
+        <EntityType Name="NhanVien">
+          <Key>
+            <PropertyRef Name="MaNV" />
+          </Key>
+          <Property Name="MaNV" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="HoTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NgaySinh" Type="DateTime" Precision="0" />
+          <Property Name="GioiTinh" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ChucVu" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Luong" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="DonHangs" Relationship="Self.FK_DonHang_NV" FromRole="NhanVien" ToRole="DonHang" />
+        </EntityType>
+        <EntityType Name="TaiKhoan">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Role" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="MaNV_MaKH" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ThanhToan">
+          <Key>
+            <PropertyRef Name="MaTT" />
+          </Key>
+          <Property Name="MaTT" Type="Guid" Nullable="false" />
+          <Property Name="MaDH" Type="Guid" Nullable="false" />
+          <Property Name="NgayThanhToan" Type="DateTime" Precision="0" />
+          <Property Name="SoTien" Type="Int64" Nullable="false" />
+          <Property Name="PhuongThuc" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DonHang" Relationship="Self.FK_ThanhToan_DonHang" FromRole="ThanhToan" ToRole="DonHang" />
+        </EntityType>
+        <EntityType Name="vw_DanhSachNhanVien">
+          <Key>
+            <PropertyRef Name="MaNV" />
+            <PropertyRef Name="HoTen" />
+          </Key>
+          <Property Name="MaNV" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="HoTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="NgaySinh" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="GioiTinh" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ChucVu" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Luong" Type="Decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="vw_TonKho">
+          <Key>
+            <PropertyRef Name="MaXe" />
+          </Key>
+          <Property Name="MaXe" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenHang" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TenDongXe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="LoaiXe" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="SoLuongTon" Type="Int32" />
+        </EntityType>
+        <EntityType Name="vw_XeBanChay">
+          <Key>
+            <PropertyRef Name="MaXe" />
+          </Key>
+          <Property Name="MaXe" Type="Int32" Nullable="false" />
+          <Property Name="TenHang" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TenDongXe" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="TongSoLuongDaBan" Type="Int32" />
+        </EntityType>
+        <Association Name="FK_Car_HangXe">
+          <End Role="HangXe" Type="Self.HangXe" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Car" Type="Self.Car" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="HangXe">
+              <PropertyRef Name="TenHang" />
+            </Principal>
+            <Dependent Role="Car">
+              <PropertyRef Name="TenHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CTDH_XE">
+          <End Role="Car" Type="Self.Car" Multiplicity="1" />
+          <End Role="ChiTietDH" Type="Self.ChiTietDH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ChiTietDH">
+              <PropertyRef Name="MaXe" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_KhoXe_Car">
+          <End Role="Car" Type="Self.Car" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="KhoXe" Type="Self.KhoXe" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Car">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="KhoXe">
+              <PropertyRef Name="MaXe" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CTDH_DH">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1" />
+          <End Role="ChiTietDH" Type="Self.ChiTietDH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDH" />
+            </Principal>
+            <Dependent Role="ChiTietDH">
+              <PropertyRef Name="MaDH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DonHang_KH">
+          <End Role="KHACHHANG" Type="Self.KHACHHANG" Multiplicity="1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KHACHHANG">
+              <PropertyRef Name="MaKH" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaKhachHang" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DonHang_NV">
+          <End Role="NhanVien" Type="Self.NhanVien" Multiplicity="0..1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NhanVien">
+              <PropertyRef Name="MaNV" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaNV" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ThanhToan_DonHang">
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ThanhToan" Type="Self.ThanhToan" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DonHang">
+              <PropertyRef Name="MaDH" />
+            </Principal>
+            <Dependent Role="ThanhToan">
+              <PropertyRef Name="MaDH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="DL_OTOEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Cars" EntityType="Self.Car" />
+          <EntitySet Name="ChiTietDHs" EntityType="Self.ChiTietDH" />
+          <EntitySet Name="DonHangs" EntityType="Self.DonHang" />
+          <EntitySet Name="HangXes" EntityType="Self.HangXe" />
+          <EntitySet Name="KHACHHANGs" EntityType="Self.KHACHHANG" />
+          <EntitySet Name="KhoXes" EntityType="Self.KhoXe" />
+          <EntitySet Name="NhanViens" EntityType="Self.NhanVien" />
+          <EntitySet Name="TaiKhoans" EntityType="Self.TaiKhoan" />
+          <EntitySet Name="ThanhToans" EntityType="Self.ThanhToan" />
+          <EntitySet Name="vw_DanhSachNhanVien" EntityType="Self.vw_DanhSachNhanVien" />
+          <EntitySet Name="vw_TonKho" EntityType="Self.vw_TonKho" />
+          <EntitySet Name="vw_XeBanChay" EntityType="Self.vw_XeBanChay" />
+          <AssociationSet Name="FK_Car_HangXe" Association="Self.FK_Car_HangXe">
+            <End Role="HangXe" EntitySet="HangXes" />
+            <End Role="Car" EntitySet="Cars" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDH_XE" Association="Self.FK_CTDH_XE">
+            <End Role="Car" EntitySet="Cars" />
+            <End Role="ChiTietDH" EntitySet="ChiTietDHs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KhoXe_Car" Association="Self.FK_KhoXe_Car">
+            <End Role="Car" EntitySet="Cars" />
+            <End Role="KhoXe" EntitySet="KhoXes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CTDH_DH" Association="Self.FK_CTDH_DH">
+            <End Role="DonHang" EntitySet="DonHangs" />
+            <End Role="ChiTietDH" EntitySet="ChiTietDHs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_KH" Association="Self.FK_DonHang_KH">
+            <End Role="KHACHHANG" EntitySet="KHACHHANGs" />
+            <End Role="DonHang" EntitySet="DonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DonHang_NV" Association="Self.FK_DonHang_NV">
+            <End Role="NhanVien" EntitySet="NhanViens" />
+            <End Role="DonHang" EntitySet="DonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ThanhToan_DonHang" Association="Self.FK_ThanhToan_DonHang">
+            <End Role="DonHang" EntitySet="DonHangs" />
+            <End Role="ThanhToan" EntitySet="ThanhToans" />
+          </AssociationSet>
+          <FunctionImport Name="sp_SuaKhachHang">
+            <Parameter Name="SoDienThoai" Mode="In" Type="String" />
+            <Parameter Name="HoTen" Mode="In" Type="String" />
+            <Parameter Name="GioiTinh" Mode="In" Type="String" />
+            <Parameter Name="NgaySinh" Mode="In" Type="DateTime" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_ThanhToan">
+            <Parameter Name="MaDH" Mode="In" Type="Guid" />
+            <Parameter Name="PhuongThuc" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_ThemKhachHang">
+            <Parameter Name="HoTen" Mode="In" Type="String" />
+            <Parameter Name="GioiTinh" Mode="In" Type="String" />
+            <Parameter Name="SoDienThoai" Mode="In" Type="String" />
+            <Parameter Name="NgaySinh" Mode="In" Type="DateTime" />
+            <Parameter Name="Email" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_ThemNhanVien">
+            <Parameter Name="HoTen" Mode="In" Type="String" />
+            <Parameter Name="NgaySinh" Mode="In" Type="DateTime" />
+            <Parameter Name="GioiTinh" Mode="In" Type="String" />
+            <Parameter Name="ChucVu" Mode="In" Type="String" />
+            <Parameter Name="Luong" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <FunctionImport Name="sp_ThongKeDoanhThu_Cursor" />
+          <FunctionImport Name="sp_XoaKhachHangMKH">
+            <Parameter Name="MaKhachHang" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="sp_XoaKhachHangSDT">
+            <Parameter Name="SoDienThoai" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="TaoDonHang">
+            <Parameter Name="TenDH" Mode="In" Type="String" />
+            <Parameter Name="MaKhachHang" Mode="In" Type="Guid" />
+            <Parameter Name="MaNV" Mode="In" Type="Int32" />
+            <Parameter Name="NgayLap" Mode="In" Type="DateTime" />
+          </FunctionImport>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DL_OTOModel2StoreContainer" CdmEntityContainer="DL_OTOEntities2">
+          <EntitySetMapping Name="Cars">
+            <EntityTypeMapping TypeName="DL_OTOModel2.Car">
+              <MappingFragment StoreEntitySet="Car">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="TenHang" ColumnName="TenHang" />
+                <ScalarProperty Name="TenDongXe" ColumnName="TenDongXe" />
+                <ScalarProperty Name="LoaiXe" ColumnName="LoaiXe" />
+                <ScalarProperty Name="MauSac" ColumnName="MauSac" />
+                <ScalarProperty Name="NamSX" ColumnName="NamSX" />
+                <ScalarProperty Name="GiaXe" ColumnName="GiaXe" />
+                <ScalarProperty Name="HinhAnhFullPath" ColumnName="HinhAnhFullPath" />
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="SoLuongTon" ColumnName="SoLuongTon" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ChiTietDHs">
+            <EntityTypeMapping TypeName="DL_OTOModel2.ChiTietDH">
+              <MappingFragment StoreEntitySet="ChiTietDH">
+                <ScalarProperty Name="MaDH" ColumnName="MaDH" />
+                <ScalarProperty Name="MaXe" ColumnName="MaXe" />
+                <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
+                <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DonHangs">
+            <EntityTypeMapping TypeName="DL_OTOModel2.DonHang">
+              <MappingFragment StoreEntitySet="DonHang">
+                <ScalarProperty Name="MaDH" ColumnName="MaDH" />
+                <ScalarProperty Name="TenDH" ColumnName="TenDH" />
+                <ScalarProperty Name="MaKhachHang" ColumnName="MaKhachHang" />
+                <ScalarProperty Name="MaNV" ColumnName="MaNV" />
+                <ScalarProperty Name="NgayLap" ColumnName="NgayLap" />
+                <ScalarProperty Name="TongTien" ColumnName="TongTien" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HangXes">
+            <EntityTypeMapping TypeName="DL_OTOModel2.HangXe">
+              <MappingFragment StoreEntitySet="HangXe">
+                <ScalarProperty Name="TenHang" ColumnName="TenHang" />
+                <ScalarProperty Name="QuocGia" ColumnName="QuocGia" />
+                <ScalarProperty Name="LogoFullPath" ColumnName="LogoFullPath" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="KHACHHANGs">
+            <EntityTypeMapping TypeName="DL_OTOModel2.KHACHHANG">
+              <MappingFragment StoreEntitySet="KHACHHANG">
+                <ScalarProperty Name="MaKH" ColumnName="MaKH" />
+                <ScalarProperty Name="HoTen" ColumnName="HoTen" />
+                <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
+                <ScalarProperty Name="SoDienThoai" ColumnName="SoDienThoai" />
+                <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="KhoXes">
+            <EntityTypeMapping TypeName="DL_OTOModel2.KhoXe">
+              <MappingFragment StoreEntitySet="KhoXe">
+                <ScalarProperty Name="MaGiaoDich" ColumnName="MaGiaoDich" />
+                <ScalarProperty Name="MaXe" ColumnName="MaXe" />
+                <ScalarProperty Name="LoaiGiaoDich" ColumnName="LoaiGiaoDich" />
+                <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
+                <ScalarProperty Name="NgayGiaoDich" ColumnName="NgayGiaoDich" />
+                <ScalarProperty Name="GhiChu" ColumnName="GhiChu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NhanViens">
+            <EntityTypeMapping TypeName="DL_OTOModel2.NhanVien">
+              <MappingFragment StoreEntitySet="NhanVien">
+                <ScalarProperty Name="MaNV" ColumnName="MaNV" />
+                <ScalarProperty Name="HoTen" ColumnName="HoTen" />
+                <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
+                <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
+                <ScalarProperty Name="ChucVu" ColumnName="ChucVu" />
+                <ScalarProperty Name="Luong" ColumnName="Luong" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TaiKhoans">
+            <EntityTypeMapping TypeName="DL_OTOModel2.TaiKhoan">
+              <MappingFragment StoreEntitySet="TaiKhoan">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="MaNV_MaKH" ColumnName="MaNV_MaKH" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ThanhToans">
+            <EntityTypeMapping TypeName="DL_OTOModel2.ThanhToan">
+              <MappingFragment StoreEntitySet="ThanhToan">
+                <ScalarProperty Name="MaTT" ColumnName="MaTT" />
+                <ScalarProperty Name="MaDH" ColumnName="MaDH" />
+                <ScalarProperty Name="NgayThanhToan" ColumnName="NgayThanhToan" />
+                <ScalarProperty Name="SoTien" ColumnName="SoTien" />
+                <ScalarProperty Name="PhuongThuc" ColumnName="PhuongThuc" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_DanhSachNhanVien">
+            <EntityTypeMapping TypeName="DL_OTOModel2.vw_DanhSachNhanVien">
+              <MappingFragment StoreEntitySet="vw_DanhSachNhanVien">
+                <ScalarProperty Name="MaNV" ColumnName="MaNV" />
+                <ScalarProperty Name="HoTen" ColumnName="HoTen" />
+                <ScalarProperty Name="NgaySinh" ColumnName="NgaySinh" />
+                <ScalarProperty Name="GioiTinh" ColumnName="GioiTinh" />
+                <ScalarProperty Name="ChucVu" ColumnName="ChucVu" />
+                <ScalarProperty Name="Luong" ColumnName="Luong" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_TonKho">
+            <EntityTypeMapping TypeName="DL_OTOModel2.vw_TonKho">
+              <MappingFragment StoreEntitySet="vw_TonKho">
+                <ScalarProperty Name="MaXe" ColumnName="MaXe" />
+                <ScalarProperty Name="TenHang" ColumnName="TenHang" />
+                <ScalarProperty Name="TenDongXe" ColumnName="TenDongXe" />
+                <ScalarProperty Name="LoaiXe" ColumnName="LoaiXe" />
+                <ScalarProperty Name="SoLuongTon" ColumnName="SoLuongTon" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="vw_XeBanChay">
+            <EntityTypeMapping TypeName="DL_OTOModel2.vw_XeBanChay">
+              <MappingFragment StoreEntitySet="vw_XeBanChay">
+                <ScalarProperty Name="MaXe" ColumnName="MaXe" />
+                <ScalarProperty Name="TenHang" ColumnName="TenHang" />
+                <ScalarProperty Name="TenDongXe" ColumnName="TenDongXe" />
+                <ScalarProperty Name="TongSoLuongDaBan" ColumnName="TongSoLuongDaBan" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_SuaKhachHang" FunctionName="DL_OTOModel2.Store.sp_SuaKhachHang" />
+          <FunctionImportMapping FunctionImportName="sp_ThanhToan" FunctionName="DL_OTOModel2.Store.sp_ThanhToan" />
+          <FunctionImportMapping FunctionImportName="sp_ThemKhachHang" FunctionName="DL_OTOModel2.Store.sp_ThemKhachHang" />
+          <FunctionImportMapping FunctionImportName="sp_ThemNhanVien" FunctionName="DL_OTOModel2.Store.sp_ThemNhanVien" />
+          <FunctionImportMapping FunctionImportName="sp_ThongKeDoanhThu_Cursor" FunctionName="DL_OTOModel2.Store.sp_ThongKeDoanhThu_Cursor" />
+          <FunctionImportMapping FunctionImportName="sp_XoaKhachHangMKH" FunctionName="DL_OTOModel2.Store.sp_XoaKhachHangMKH" />
+          <FunctionImportMapping FunctionImportName="sp_XoaKhachHangSDT" FunctionName="DL_OTOModel2.Store.sp_XoaKhachHangSDT" />
+          <FunctionImportMapping FunctionImportName="TaoDonHang" FunctionName="DL_OTOModel2.Store.TaoDonHang" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

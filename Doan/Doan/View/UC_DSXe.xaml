@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="Doan.View.UC_DSXe"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Doan.View"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+                      mc:Ignorable="d" 
+         d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <vm:Xe_VM/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Opacity="0.15"/>
+    </UserControl.Resources>
+    <Grid Margin="0,0,-82,-195">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="400"/>
+            <ColumnDefinition Width="350" MinWidth="350"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Danh sách xe -->
+        <Grid Margin="30,10,0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                    <Button Content="← Quay lại" 
+            Background="#3498db" 
+            Foreground="White" 
+            Padding="12,5" 
+            Margin="0,0,15,0" 
+            BorderThickness="0" 
+            Cursor="Hand"
+            Command="{Binding LenhQuayLaiHangXe}"
+            VerticalAlignment="Center"/>
+
+                    <TextBlock x:Name="TitleTextBlock"
+               Text="{Binding TieuDeDanhSachXe}"
+               FontSize="22"
+               FontWeight="Bold"
+               Foreground="#2c3e50"
+               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <WrapPanel Orientation="Horizontal">
+                    <Button Content="➕ Thêm xe" Background="#27ae60" Foreground="White" Padding="12,8" Margin="0,0,10,5" BorderThickness="0" Cursor="Hand" Command="{Binding LenhMoThemXe}"/>
+                    <Button Content="✏️ Sửa xe" Background="#f39c12" Foreground="White" Padding="12,8" Margin="0,0,10,5" BorderThickness="0" Cursor="Hand" Command="{Binding LenhMoSuaXe}"/>
+                    <Button Content="🗑 Xóa xe" Background="#e74c3c" Foreground="White" Padding="12,8" Margin="0,0,20,5" BorderThickness="0" Cursor="Hand" Command="{Binding LenhXoaXe}"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <Button Content="🔍 Tìm kiếm" 
+                Background="#7f8c8d" 
+                Foreground="White" 
+                Padding="12,8" 
+                BorderThickness="0" 
+                Command="{Binding LenhTimKiemXe}"
+                Cursor="Hand"/>
+                        <TextBox x:Name="SearchTextBox" 
+                 Width="180" 
+                 Margin="5,0,0,0" 
+                 Text="{Binding TuKhoaTimKiem, UpdateSourceTrigger=PropertyChanged}"
+                 Padding="5" 
+                 VerticalContentAlignment="Center"
+                 BorderBrush="#bdc3c7"/>
+                    </StackPanel>
+                </WrapPanel>
+            </StackPanel>
+
+            <ListBox x:Name="CarListControl"
+     Grid.Row="1"
+     ItemsSource="{Binding DanhSachXe}"
+     SelectedItem="{Binding XeDangChon, Mode=TwoWay}"
+     d:ItemsSource="{d:SampleData ItemCount=10}"
+     Background="Transparent"
+     BorderThickness="0"
+     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="150" Height="220" Margin="0,0,20,20" Background="White" CornerRadius="8" Effect="{StaticResource ShadowEffect}" Cursor="Hand">
+                            <StackPanel Orientation="Vertical">
+                                <Image Source="{Binding HinhAnhDisplay}" Height="100" Margin="10" Stretch="Uniform"/>
+                                <StackPanel Margin="10,5">
+                                    <TextBlock Text="{Binding TenDongXe}" FontSize="14" FontWeight="Bold" Foreground="#2c3e50" />
+                                    <TextBlock Text="{Binding GiaXe}" FontSize="12" Foreground="#e74c3c" FontWeight="Bold" Margin="0,5,0,0"/>
+                                    <TextBlock Text="{Binding LoaiXe}" FontSize="11" Foreground="Gray" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+
+        <!-- Chi tiết xe bên phải -->
+        <Border  Background="White" Margin="10,10,10,10" CornerRadius="8" Effect="{StaticResource ShadowEffect}" Grid.Column="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Tiêu đề chi tiết -->
+                <TextBlock 
+        Grid.Row="0"
+        Text="CHI TIẾT XE"
+        FontSize="16"
+        FontWeight="Bold"
+        Foreground="#2c3e50"
+        Margin="20,20,20,15"
+        
+        Padding="0,0,0,15"/>
+
+                <!-- Nội dung chi tiết -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="20,0,20,20">
+                        <Image Source="{Binding XeDangChon.HinhAnhDisplay}" Height="180" Stretch="Uniform" Margin="0,0,0,20"/>
+
+                        <TextBlock Text="{Binding XeDangChon.TenDongXe}" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="{Binding XeDangChon.TenHang, StringFormat=Hãng xe: {0}}" FontSize="13" Foreground="DimGray" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding XeDangChon.LoaiXe, StringFormat=Loại xe: {0}}" FontSize="13" Foreground="DimGray" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding XeDangChon.MauSac, StringFormat=Màu sắc: {0}}" FontSize="13" Foreground="DimGray" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding XeDangChon.NamSX, StringFormat=Năm sản xuất: {0}}" FontSize="13" Foreground="DimGray" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding XeDangChon.SoLuongTon, StringFormat=Tồn kho: {0} chiếc}" FontSize="13" Foreground="Green" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="MÔ TẢ" FontSize="12" FontWeight="Bold" Foreground="Gray" Margin="0,5,0,5"/>
+                        <TextBlock Text="{Binding XeDangChon.MoTa}" FontSize="13" TextWrapping="Wrap" Foreground="#34495e" Margin="0,0,0,15"/>
+
+                        <TextBlock Text="{Binding XeDangChon.GiaXe, StringFormat=Giá: {0}}" FontSize="14" FontWeight="Bold" Foreground="Red" Margin="0,0,0,20"/>
+
+                        <Button Content="BÁN NGAY" Background="#e74c3c" Foreground="White" Padding="10" BorderThickness="0" Command="{Binding LenhMoThemXe}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

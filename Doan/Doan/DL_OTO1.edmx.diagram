@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="cc0527f8d8aa41e498f1ac99ad14cfbc" Name="Diagram1">
+        <EntityTypeShape EntityType="DL_OTOModel2.Car" Width="1.5" PointX="3" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.ChiTietDH" Width="1.5" PointX="5.25" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.DonHang" Width="1.5" PointX="3" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.HangXe" Width="1.5" PointX="0.75" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.KHACHHANG" Width="1.5" PointX="0.75" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.KhoXe" Width="1.5" PointX="5.25" PointY="11.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.NhanVien" Width="1.5" PointX="0.75" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.TaiKhoan" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.ThanhToan" Width="1.5" PointX="5.25" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.vw_DanhSachNhanVien" Width="1.5" PointX="7.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.vw_TonKho" Width="1.5" PointX="7.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DL_OTOModel2.vw_XeBanChay" Width="1.5" PointX="9.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="DL_OTOModel2.FK_Car_HangXe" ManuallyRouted="false" />
+        <AssociationConnector Association="DL_OTOModel2.FK_CTDH_XE" ManuallyRouted="false" />
+        <AssociationConnector Association="DL_OTOModel2.FK_KhoXe_Car" ManuallyRouted="false" />
+        <AssociationConnector Association="DL_OTOModel2.FK_CTDH_DH" ManuallyRouted="false" />
+        <AssociationConnector Association="DL_OTOModel2.FK_DonHang_KH" ManuallyRouted="false" />
+        <AssociationConnector Association="DL_OTOModel2.FK_DonHang_NV" ManuallyRouted="false" />
+        <AssociationConnector Association="DL_OTOModel2.FK_ThanhToan_DonHang" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
