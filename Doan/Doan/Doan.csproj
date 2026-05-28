@@ -9,15 +9,12 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Doan</RootNamespace>
     <AssemblyName>Doan</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,8 +44,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
@@ -73,92 +70,80 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Car.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ChiTietDH.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DL_OTO.Context.cs">
+    <Compile Include="Model\QLCuaHangXeModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DL_OTO.Context.tt</DependentUpon>
+      <DependentUpon>QLCuaHangXeModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="DL_OTO.cs">
+    <Compile Include="Model\QLCuaHangXeModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DL_OTO.tt</DependentUpon>
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="DL_OTO.Designer.cs">
+    <Compile Include="Model\QLCuaHangXeModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DL_OTO.edmx</DependentUpon>
+      <DependentUpon>QLCuaHangXeModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="DL_OTO1.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DL_OTO1.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DL_OTO1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DL_OTO1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DL_OTO1.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="DonHang.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="HangXe.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Helper\BaseViewModel.cs" />
-    <Compile Include="Helper\NavigationService.cs" />
-    <Compile Include="Helper\RelayCommand.cs" />
-    <Compile Include="KHACHHANG.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="KhoXe.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\HoaDon.cs" />
-    <Compile Include="Model\SQLEXPRESS.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SQLEXPRESS.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\SQLEXPRESS.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SQLEXPRESS.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\SQLEXPRESS.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SQLEXPRESS.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="NhanVien.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="TaiKhoan.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ThanhToan.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
+    <Compile Include="Model\Xe.cs">
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\DangKy_VM.cs" />
     <Compile Include="ViewModel\DangNhap_VM.cs" />
+    <Compile Include="ViewModel\DichVu_VM.cs" />
     <Compile Include="ViewModel\HangXe_VM.cs" />
+    <Compile Include="ViewModel\HoaDon_HienThi_VM.cs" />
     <Compile Include="ViewModel\HoaDon_VM.cs" />
+
     <Compile Include="ViewModel\KhachHang_VM.cs" />
     <Compile Include="ViewModel\MainWindows_VM.cs" />
+    <Compile Include="ViewModel\MatHangGio_VM.cs" />
+    <Compile Include="ViewModel\NhanVien_VM.cs" />
+    <Compile Include="ViewModel\ThongKe_VM.cs" />
     <Compile Include="ViewModel\Xe_VM.cs" />
-    <Compile Include="Services\KhachHangRepository.cs" />
+    <Compile Include="ViewModel\MainWindow_User_VM.cs" />
+    <Compile Include="ViewModel\User_TrangChu_VM.cs" />
+    <Compile Include="ViewModel\User_XemXe_VM.cs" />
+    <Compile Include="ViewModel\User_DichVu_VM.cs" />
+    <Compile Include="ViewModel\User_GioHang_VM.cs" />
+    <Compile Include="ViewModel\User_DonHang_VM.cs" />
+    <Compile Include="ViewModel\User_TaiKhoan_VM.cs" />
+    <Compile Include="ViewModel\ThanhToan_VM.cs" />
+    <Compile Include="ViewModel\ThongBao_VM.cs" />
+    <Compile Include="ViewModel\DonChoXuLy_VM.cs" />
+    <Compile Include="ViewModel\CaiDat_VM.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MainWindow_User.xaml.cs">
+      <DependentUpon>MainWindow_User.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_User_TrangChu.xaml.cs">
+      <DependentUpon>UC_User_TrangChu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_User_XemXe.xaml.cs">
+      <DependentUpon>UC_User_XemXe.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_User_DichVu.xaml.cs">
+      <DependentUpon>UC_User_DichVu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_User_GioHang.xaml.cs">
+      <DependentUpon>UC_User_GioHang.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_User_DonHang.xaml.cs">
+      <DependentUpon>UC_User_DonHang.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_User_TaiKhoan.xaml.cs">
+      <DependentUpon>UC_User_TaiKhoan.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_DichVu.xaml.cs">
+      <DependentUpon>UC_DichVu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_DSHangXe.xaml.cs">
+      <DependentUpon>UC_DSHangXe.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_DSXe.xaml.cs">
+      <DependentUpon>UC_DSXe.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\UC_HoaDon.xaml.cs">
       <DependentUpon>UC_HoaDon.xaml</DependentUpon>
@@ -166,11 +151,23 @@
     <Compile Include="View\UC_KhachHang.xaml.cs">
       <DependentUpon>UC_KhachHang.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\UC_DSHangXe.xaml.cs">
-      <DependentUpon>UC_DSHangXe.xaml</DependentUpon>
+    <Compile Include="View\UC_NhanVien.xaml.cs">
+      <DependentUpon>UC_NhanVien.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\UC_DSXe.xaml.cs">
-      <DependentUpon>UC_DSXe.xaml</DependentUpon>
+    <Compile Include="View\UC_ThanhToan.xaml.cs">
+      <DependentUpon>UC_ThanhToan.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_ThongBao.xaml.cs">
+      <DependentUpon>UC_ThongBao.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_CaiDat.xaml.cs">
+      <DependentUpon>UC_CaiDat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\W_XuLyDon.xaml.cs">
+      <DependentUpon>W_XuLyDon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_ThongKe.xaml.cs">
+      <DependentUpon>UC_ThongKe.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\W_DangKy.xaml.cs">
       <DependentUpon>W_DangKy.xaml</DependentUpon>
@@ -187,25 +184,36 @@
     <Compile Include="View\W_ThemHangXe.xaml.cs">
       <DependentUpon>W_ThemHangXe.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\W_ThemSuaDVxaml.xaml.cs">
+      <DependentUpon>W_ThemSuaDVxaml.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\W_ThemXe.xaml.cs">
       <DependentUpon>W_ThemXe.xaml</DependentUpon>
     </Compile>
-    <Compile Include="vw_DanhSachNhanVien.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="vw_TonKho.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="vw_XeBanChay.cs">
-      <DependentUpon>DL_OTO1.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\DuLieuHeThong.cs" />
-    <Compile Include="Model\HangXe.cs" />
-    <Compile Include="Model\KhachHang.cs" />
-    <Compile Include="Model\Car.cs" />
-    <Compile Include="Model\TaiKhoan.cs" />
+    <Compile Include="Helper\BaseViewModel.cs" />
+    <Compile Include="Helper\PhienDangNhap.cs" />
+    <Compile Include="Helper\RelayCommand.cs" />
+    <Compile Include="Model\DichVuPhuTung.cs">
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\HangXe.cs">
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\HoaDon.cs">
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\KhachHang.cs">
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MoTo.cs" />
+    <Compile Include="Model\NhanVien.cs">
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\TaiKhoan.cs">
+      <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -223,26 +231,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EntityDeploy Include="Model\SQLEXPRESS.edmx">
+    <EntityDeploy Include="Model\QLCuaHangXeModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>SQLEXPRESS.Designer.cs</LastGenOutput>
+      <LastGenOutput>QLCuaHangXeModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <EntityDeploy Include="DL_OTO.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>DL_OTO.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="DL_OTO.edmx.diagram">
-      <DependentUpon>DL_OTO.edmx</DependentUpon>
-    </None>
-    <EntityDeploy Include="DL_OTO1.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>DL_OTO1.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="DL_OTO1.edmx.diagram">
-      <DependentUpon>DL_OTO1.edmx</DependentUpon>
-    </None>
-    <None Include="Model\SQLEXPRESS.edmx.diagram">
-      <DependentUpon>SQLEXPRESS.edmx</DependentUpon>
+    <None Include="Model\QLCuaHangXeModel.edmx.diagram">
+      <DependentUpon>QLCuaHangXeModel.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -254,109 +248,125 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="DL_OTO.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>DL_OTO.edmx</DependentUpon>
-      <LastGenOutput>DL_OTO.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="DL_OTO.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>DL_OTO.edmx</DependentUpon>
-      <LastGenOutput>DL_OTO.cs</LastGenOutput>
-    </Content>
-    <Content Include="DL_OTO1.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>DL_OTO1.edmx</DependentUpon>
-      <LastGenOutput>DL_OTO1.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="DL_OTO1.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>DL_OTO1.edmx</DependentUpon>
-      <LastGenOutput>DL_OTO1.cs</LastGenOutput>
-    </Content>
-    <Content Include="images\cars\camry_black.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\cars\camry_silver.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\cars\camry_white.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\logos\ford.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\logos\honda.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\logos\huyndai.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\logos\mercedes.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="images\logos\toyota.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Model\SQLEXPRESS.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>SQLEXPRESS.edmx</DependentUpon>
-      <LastGenOutput>SQLEXPRESS.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Model\SQLEXPRESS.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>SQLEXPRESS.edmx</DependentUpon>
-      <LastGenOutput>SQLEXPRESS.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="View\MainWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\UC_HoaDon.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="View\MainWindow_User.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\UC_KhachHang.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="View\UC_User_TrangChu.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_User_XemXe.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_User_DichVu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_User_GioHang.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_User_DonHang.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_User_TaiKhoan.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_DichVu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\UC_DSHangXe.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\UC_DSXe.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_HoaDon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_KhachHang.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_NhanVien.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_ThanhToan.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_ThongBao.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_CaiDat.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\W_XuLyDon.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_ThongKe.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\W_DangKy.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\W_DangNhap.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\W_SuaHangXe.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\W_SuaXe.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\W_ThemHangXe.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\W_ThemSuaDVxaml.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\W_ThemXe.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Model\QLCuaHangXeModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>QLCuaHangXeModel.Context.cs</LastGenOutput>
+      <DependentUpon>QLCuaHangXeModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="Model\QLCuaHangXeModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>QLCuaHangXeModel.edmx</DependentUpon>
+      <LastGenOutput>QLCuaHangXeModel.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

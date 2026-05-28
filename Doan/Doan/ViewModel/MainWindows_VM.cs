@@ -29,25 +29,19 @@ namespace Doan.ViewModel
 
         public MainWindows_VM()
         {
-            LenhDieuHuong = new RelayCommand(thamSo => DieuHuong(thamSo?.ToString()));
-            NavigationService.NavigateRequested += XuLyYeuCauDieuHuong;
-            DieuHuong("QuanLyXe");
+            LenhDieuHuong = new RelayCommand(thamSo => DieuHuong(thamSo?.ToString(), null));
+            DieuHuong("QuanLyXe", null);
         }
 
-        private void XuLyYeuCauDieuHuong(string duongDan, object duLieu)
+        public void DieuHuong(string tenManHinh, object duLieu = null)
         {
-            if (duongDan == "DanhSachXeTheoHang")
+            if (tenManHinh == "DanhSachXeTheoHang")
             {
                 var hangXeDuocChon = duLieu as HangXe;
                 ManHinhHienTai = new UC_DSXe(hangXeDuocChon);
                 return;
             }
 
-            DieuHuong(duongDan);
-        }
-
-        private void DieuHuong(string tenManHinh)
-        {
             switch (tenManHinh)
             {
                 case "QuanLyXe":
@@ -56,16 +50,28 @@ namespace Doan.ViewModel
                 case "KhachHang":
                     ManHinhHienTai = new UC_KhachHang();
                     break;
-                //case "NhanVien":
-                //    ManHinhHienTai = new UC_NhanVien();
-                //    break;
+                case "NhanVien":
+                    ManHinhHienTai = new UC_NhanVien();
+                    break;
+                case "DichVu":
+                    ManHinhHienTai = new UC_DichVu();
+                    break;
+                case "ThanhToan":
+                    ManHinhHienTai = new UC_ThanhToan();
+                    break;
+                case "LichSu":
                 case "DonHang":
                     ManHinhHienTai = new UC_HoaDon();
                     break;
-                //case "ThongKe":
-                //    ManHinhHienTai = new UC_ThongKe();
-                //    break;
-                
+                case "ThongBao":
+                    ManHinhHienTai = new UC_ThongBao();
+                    break;
+                case "ThongKe":
+                    ManHinhHienTai = new UC_ThongKe();
+                    break;
+                case "CaiDat":
+                    ManHinhHienTai = new UC_CaiDat();
+                    break;
                 case "DangXuat":
                     var cuaSoDangNhap = new W_DangNhap();
                     cuaSoDangNhap.Show();

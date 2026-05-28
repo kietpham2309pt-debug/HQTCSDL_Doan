@@ -1,0 +1,55 @@
+<UserControl x:Class="Doan.View.UC_CaiDat"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+             mc:Ignorable="d"
+             d:DesignHeight="700" d:DesignWidth="1200"
+             Background="#F5F5F5">
+    <UserControl.DataContext>
+        <vm:CaiDat_VM/>
+    </UserControl.DataContext>
+
+    <Grid Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top" Width="520">
+        <StackPanel>
+            <TextBlock Text="CÀI ĐẶT TÀI KHOẢN" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,15"/>
+
+            <Border Background="White" CornerRadius="10" Padding="20" Margin="0,0,0,15">
+                <StackPanel>
+                    <TextBlock Text="THÔNG TIN TÀI KHOẢN" FontSize="14" FontWeight="Bold" Foreground="#2980B9" Margin="0,0,0,12"/>
+                    <Grid Margin="0,0,0,6">
+                        <TextBlock Text="Tên đăng nhập:" Foreground="Gray"/>
+                        <TextBlock Text="{Binding TenDangNhap}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,6">
+                        <TextBlock Text="Vai trò:" Foreground="Gray"/>
+                        <TextBlock Text="{Binding VaiTro}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </Grid>
+                    <Grid>
+                        <TextBlock Text="Nhân viên:" Foreground="Gray"/>
+                        <TextBlock Text="{Binding TenNhanVien}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White" CornerRadius="10" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="ĐỔI MẬT KHẨU" FontSize="14" FontWeight="Bold" Foreground="#2980B9" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Mật khẩu hiện tại:" Foreground="Gray" FontSize="11" Margin="0,0,0,3"/>
+                    <PasswordBox x:Name="MatKhauCuBox" Height="32" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Mật khẩu mới:" Foreground="Gray" FontSize="11" Margin="0,0,0,3"/>
+                    <PasswordBox x:Name="MatKhauMoiBox" Height="32" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Xác nhận mật khẩu mới:" Foreground="Gray" FontSize="11" Margin="0,0,0,3"/>
+                    <PasswordBox x:Name="XacNhanBox" Height="32" Margin="0,0,0,15"/>
+
+                    <Button Content="ĐỔI MẬT KHẨU" Height="40" Background="#27AE60" Foreground="White"
+                            FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="DoiMatKhau_Click"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

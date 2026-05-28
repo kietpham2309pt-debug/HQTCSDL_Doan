@@ -1,127 +1,136 @@
-﻿<Window x:Class="Doan.View.UC_NhanVien"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Doan.ViewModel"
-        mc:Ignorable="d"
-        Title="UC_NhanVien" Height="750" Width="800">
-    <Window.DataContext>
-        <local:NhanVienViewModel/>
-    </Window.DataContext>
-    <Grid>
-        <!-- Khung viền trắng bao quanh form -->
-        <Border Background="White" Margin="25" Padding="30" CornerRadius="2" 
-            BorderBrush="#E5E7EB" BorderThickness="1" VerticalAlignment="Top">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <!-- Header -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Họ tên -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Ngày sinh & Giới tính -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Chức vụ & Lương -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Tìm kiếm & Nút -->
-                    <RowDefinition Height="*"/>
-                    <!-- DataGrid -->
-                </Grid.RowDefinitions>
+﻿<UserControl x:Class="Doan.View.UC_NhanVien"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Doan.View"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1200"
+             Background="#F5F5F5">
+    <UserControl.DataContext>
+        <vm:NhanVien_VM/>
+    </UserControl.DataContext>
 
-                <!-- 1. Tiêu đề giống ảnh mẫu -->
-                <Border Grid.Row="0" BorderBrush="#D1E3F8" BorderThickness="1" Background="#F4F8FD" Padding="15" Margin="0,0,0,25">
-                    <TextBlock Text="QUẢN LÝ THÔNG TIN NHÂN VIÊN" FontSize="20" FontWeight="Bold" Foreground="#2A5C8A"/>
-                </Border>
+    <Grid Margin="15">
+        <Border Background="White" CornerRadius="10" Padding="20">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,15">
+                    <TextBlock Text="QUẢN LÝ DANH SÁCH NHÂN VIÊN" FontSize="20" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
 
-                <!-- 2. Họ tên nhân viên -->
-                <StackPanel Grid.Row="1" Margin="0,0,0,15">
-                    <TextBlock Text="Họ tên nhân viên *" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,8"/>
-                    <TextBox Height="40" Padding="10,0" VerticalContentAlignment="Center" FontSize="14"
-                         BorderBrush="#D1D5DB" BorderThickness="1" 
-                         Text="{Binding SelectedNV.HoTen}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="txtSearchNV" Width="300" Height="35" VerticalContentAlignment="Center" 
+                                 Tag="Nhập tên hoặc mã nhân viên..." Padding="10,0" Margin="0,0,10,0" Text="{Binding TuKhoaTimKiem, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Content="Tìm kiếm" Width="100" Background="#34495E" Foreground="White" BorderThickness="0" Cursor="Hand" Command="{Binding LenhTimKiemNhanVien}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="+ THÊM NHÂN VIÊN" Width="150" Height="35" Background="#27AE60" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Cursor="Hand" Command="{Binding LenhThemNhanVien}"/>
+                            <Button Content="SỬA" Width="80" Height="35" Background="#F1C40F" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Cursor="Hand" Command="{Binding LenhSuaNhanVien}"/>
+                            <Button Content="XÓA" Width="80" Height="35" Background="#E74C3C" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Cursor="Hand" Command="{Binding LenhXoaNhanVien}"/>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
 
-                <!-- 3. Ngày sinh & Giới tính -->
-                <Grid Grid.Row="2" Margin="0,0,0,15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <Border DockPanel.Dock="Top" Background="#F9FAFB" CornerRadius="8" Padding="15" Margin="0,0,0,20" BorderBrush="#E5E7EB" BorderThickness="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="THÔNG TIN CHI TIẾT NHÂN VIÊN CHỌN" FontSize="12" FontWeight="SemiBold" Foreground="#6B7280" Margin="0,0,0,10"/>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Ngày sinh *" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,8"/>
-                        <DatePicker Height="40" VerticalContentAlignment="Center" BorderBrush="#D1D5DB"
-                                SelectedDate="{Binding SelectedNV.NgaySinh}"/>
-                    </StackPanel>
+                        <UniformGrid Grid.Row="1" Columns="3">
+                            <StackPanel Margin="5,0">
+                                <TextBlock Text="Mã NV" FontSize="11" Foreground="Gray"/>
+                                <TextBox Text="{Binding MaNVNhap, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" FontWeight="Bold" BorderThickness="0,0,0,1" Background="Transparent"/>
+                            </StackPanel>
 
-                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                        <TextBlock Text="Giới tính *" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,8"/>
-                        <ComboBox Height="40" VerticalContentAlignment="Center" BorderBrush="#D1D5DB"
-                              SelectedValuePath="Content" SelectedValue="{Binding SelectedNV.GioiTinh}">
-                            <ComboBoxItem Content="Nam"/>
-                            <ComboBoxItem Content="Nữ"/>
-                            <ComboBoxItem Content="Khác"/>
-                        </ComboBox>
-                    </StackPanel>
-                </Grid>
+                            <StackPanel Margin="5,0">
+                                <TextBlock Text="Họ và Tên" FontSize="11" Foreground="Gray"/>
+                                <TextBox Text="{Binding HoTenNhap, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" BorderThickness="0,0,0,1" Background="Transparent"/>
+                            </StackPanel>
 
-                <!-- 4. Chức vụ & Mức lương -->
-                <Grid Grid.Row="3" Margin="0,0,0,25">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                            <StackPanel Margin="5,0">
+                                <TextBlock Text="Số điện thoại" FontSize="11" Foreground="Gray"/>
+                                <TextBox Text="{Binding SDTNhap, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" BorderThickness="0,0,0,1" Background="Transparent"/>
+                            </StackPanel>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Chức vụ *" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,8"/>
-                        <TextBox Height="40" Padding="10,0" VerticalContentAlignment="Center" FontSize="14"
-                             BorderBrush="#D1D5DB" BorderThickness="1" 
-                             Text="{Binding SelectedNV.ChucVu}"/>
-                    </StackPanel>
+                            <StackPanel Margin="5,0">
+                                <TextBlock Text="Chức vụ" FontSize="11" Foreground="Gray"/>
+                                <TextBox Text="{Binding ChucVuNhap, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" BorderThickness="0,0,0,1" Background="Transparent" Foreground="#2980B9"/>
+                            </StackPanel>
 
-                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                        <TextBlock Text="Mức lương (VNĐ) *" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,8"/>
-                        <TextBox Height="40" Padding="10,0" VerticalContentAlignment="Center" FontSize="14"
-                             BorderBrush="#D1D5DB" BorderThickness="1" 
-                             Text="{Binding SelectedNV.Luong}"/>
-                    </StackPanel>
-                </Grid>
+                            <StackPanel Margin="5,0">
+                                <TextBlock Text="Ngày vào làm" FontSize="11" Foreground="Gray"/>
+                                <DatePicker SelectedDate="{Binding NgayVaoLamNhap, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,0,1" Background="Transparent"/>
+                            </StackPanel>
 
-                <!-- 5. Vùng Tìm kiếm và Các nút hành động -->
-                <Grid Grid.Row="4" Margin="0,0,0,15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                            <StackPanel Margin="5,0">
+                                <TextBlock Text="Trạng thái" FontSize="11" Foreground="Gray"/>
+                                <ComboBox SelectedValue="{Binding TrangThaiNhap, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Content" BorderThickness="0,0,0,1" Background="Transparent">
+                                    <ComboBoxItem Content="Đang làm việc"/>
+                                    <ComboBoxItem Content="Tạm nghỉ"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </UniformGrid>
 
-                    <!-- Tìm kiếm -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Bottom">
-                        <TextBlock Text="Tìm kiếm:" VerticalAlignment="Center" FontWeight="Bold" Foreground="#4B5563" Margin="0,0,10,0"/>
-                        <TextBox Width="200" Height="38" VerticalContentAlignment="Center" Padding="10,0"
-                             BorderBrush="#D1D5DB" BorderThickness="1"
-                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
-                    </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                            <Button Content="HỦY NHẬP" Width="110" Height="32" Margin="0,0,10,0" Background="#95a5a6" Foreground="White" BorderThickness="0" FontWeight="Bold" Command="{Binding LenhHuyNhapNhanVien}"/>
+                            <Button Content="LƯU THÔNG TIN" Width="130" Height="32" Background="#27AE60" Foreground="White" BorderThickness="0" FontWeight="Bold" Command="{Binding LenhLuuNhanVien}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
-                    <!-- Nhóm nút bấm -->
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Content="Xóa" Command="{Binding XoaCommand}" Width="80" Height="42" Margin="5,0" 
-                            Background="#9CA3AF" Foreground="White" BorderThickness="0" Cursor="Hand"/>
-                        <Button Content="Sửa" Command="{Binding SuaCommand}" Width="80" Height="42" Margin="5,0" 
-                            Background="#F1C40F" Foreground="White" BorderThickness="0" Cursor="Hand"/>
-                        <Button Content="Thêm nhân viên" Command="{Binding ThemCommand}" Width="150" Height="42" Margin="5,0,0,0" 
-                            Background="#2ECC71" Foreground="White" FontSize="14" FontWeight="Bold" BorderThickness="0" Cursor="Hand"/>
-                    </StackPanel>
-                </Grid>
+                <Border BorderBrush="#EEEEEE" BorderThickness="1" CornerRadius="5">
+                    <DataGrid x:Name="dgNhanVien" AutoGenerateColumns="False" CanUserAddRows="False" 
+                          Background="Transparent" GridLinesVisibility="Horizontal" 
+                          BorderThickness="0" RowHeight="40" SelectionMode="Single" ItemsSource="{Binding DanhSachNhanVien}" SelectedItem="{Binding NhanVienDangChon, Mode=TwoWay}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã NV" Width="80" Binding="{Binding MaNV}"/>
+                            <DataGridTextColumn Header="Họ và Tên" Width="*" Binding="{Binding HoTen}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Padding" Value="5,0"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
 
-                <!-- 6. Bảng hiển thị DataGrid -->
-                <DataGrid Grid.Row="5" ItemsSource="{Binding DanhSachNV}" 
-                      SelectedItem="{Binding SelectedNV}" 
-                      AutoGenerateColumns="True" CanUserAddRows="False" 
-                      Height="220" Background="White" 
-                      BorderBrush="#E5E7EB" BorderThickness="1"
-                      HeadersVisibility="Column" GridLinesVisibility="Horizontal"/>
-            </Grid>
+                            <DataGridTextColumn Header="Số điện thoại" Width="120" Binding="{Binding SDT}"/>
+
+                            <DataGridTextColumn Header="Chức vụ" Width="120" Binding="{Binding ChucVu}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#2980B9"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Ngày vào làm" Width="120" Binding="{Binding NgayVaoLam, StringFormat=dd/MM/yyyy}"/>
+
+                            <DataGridTemplateColumn Header="Trạng thái" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#D5F5E3" CornerRadius="10" HorizontalAlignment="Center" Padding="8,2">
+                                            <TextBlock Text="{Binding TrangThai}" Foreground="#1E8449" FontSize="11" FontWeight="Bold"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </DockPanel>
         </Border>
     </Grid>
-</Window>
+</UserControl>

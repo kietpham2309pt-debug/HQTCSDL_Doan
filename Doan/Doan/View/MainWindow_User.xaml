@@ -1,0 +1,182 @@
+<Window x:Class="Doan.View.MainWindow_User"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Doan.View"
+        xmlns:vm="clr-namespace:Doan.ViewModel"
+        mc:Ignorable="d"
+        Title="Cửa Hàng Xe Ô Tô - Khách Hàng" Height="800" Width="1400"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <vm:MainWindow_User_VM/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="3" Opacity="0.15"/>
+
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#ecf0f1"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,15"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#34495e"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <Grid Grid.Row="0" Background="White" Effect="{StaticResource ShadowEffect}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="30,0,0,0" VerticalAlignment="Center">
+                <TextBlock Text="🚗" FontSize="24" Margin="0,0,15,0"/>
+                <TextBlock
+                    Text="Cửa Hàng Xe Ô Tô - Trang Khách Hàng"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Foreground="#2c3e50"
+                    VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,30,0" VerticalAlignment="Center">
+                <Rectangle Width="1" Height="30" Fill="#ecf0f1" Margin="0,0,20,0"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="40" Height="40" Margin="0,0,12,0">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="#3498db"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock
+                            Text="{Binding TenKhachHienThi}"
+                            FontSize="13"
+                            FontWeight="Bold"
+                            Foreground="#2c3e50"/>
+                        <TextBlock
+                            Text="Khách hàng"
+                            FontSize="11"
+                            Foreground="#95a5a6"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!-- CONTENT AREA -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- SIDEBAR -->
+            <Grid Grid.Column="0" Background="#2c3e50">
+                <StackPanel Orientation="Vertical">
+                    <Grid Margin="15,20,15,20" Height="40" Background="#34495e">
+                        <Label
+                            Content="MENU KHÁCH HÀNG"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            VerticalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"/>
+                    </Grid>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Orientation="Vertical">
+
+                            <Button Style="{StaticResource MenuButtonStyle}"
+                                    Command="{Binding LenhDieuHuong}"
+                                    CommandParameter="TrangChu">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🏠" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Trang chủ" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource MenuButtonStyle}"
+                                    Command="{Binding LenhDieuHuong}"
+                                    CommandParameter="XemXe">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🚗" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Mua xe" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource MenuButtonStyle}"
+                                    Command="{Binding LenhDieuHuong}"
+                                    CommandParameter="DichVu">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🛠️" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Dịch vụ &amp; phụ tùng" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource MenuButtonStyle}"
+                                    Command="{Binding LenhDieuHuong}"
+                                    CommandParameter="GioHang">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🛒" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Giỏ hàng" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource MenuButtonStyle}"
+                                    Command="{Binding LenhDieuHuong}"
+                                    CommandParameter="DonHang">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📋" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Đơn của tôi" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource MenuButtonStyle}"
+                                    Command="{Binding LenhDieuHuong}"
+                                    CommandParameter="TaiKhoan">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="👤" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Tài khoản" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Separator Background="#34495e" Margin="15,15,15,15"/>
+
+                            <Button Style="{StaticResource MenuButtonStyle}"
+                                    Command="{Binding LenhDieuHuong}"
+                                    CommandParameter="DangXuat">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🚪" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Đăng xuất" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                </StackPanel>
+            </Grid>
+
+            <!-- MAIN CONTENT -->
+            <ContentControl
+                Grid.Column="1"
+                Content="{Binding ManHinhHienTai}"
+                Background="#F5F5F5"/>
+        </Grid>
+    </Grid>
+</Window>

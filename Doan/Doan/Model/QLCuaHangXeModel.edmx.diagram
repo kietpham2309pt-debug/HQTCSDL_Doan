@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f36b1e1464d04eecb02f3e155e4b6c02" Name="Diagram1">
+        <EntityTypeShape EntityType="QuanLyBanXeMayModel.DichVuPhuTung" Width="1.5" PointX="9.25" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuanLyBanXeMayModel.HangXe" Width="1.5" PointX="5.125" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuanLyBanXeMayModel.HoaDon" Width="1.5" PointX="2.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuanLyBanXeMayModel.KhachHang" Width="1.5" PointX="2.625" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuanLyBanXeMayModel.NhanVien" Width="1.5" PointX="0.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuanLyBanXeMayModel.TaiKhoan" Width="1.5" PointX="0.5" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QuanLyBanXeMayModel.Xe" Width="1.5" PointX="7.375" PointY="0.5" IsExpanded="true" />
+        <AssociationConnector Association="QuanLyBanXeMayModel.FK_Xe_HangXe" ManuallyRouted="false" />
+        <AssociationConnector Association="QuanLyBanXeMayModel.FK_HoaDon_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="QuanLyBanXeMayModel.FK_HoaDon_NhanVien" ManuallyRouted="false" />
+        <AssociationConnector Association="QuanLyBanXeMayModel.FK_TaiKhoan_NhanVien" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

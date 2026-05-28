@@ -15,43 +15,44 @@
     <Window.DataContext>
         <vm:DangKy_VM/>
     </Window.DataContext>
+
     <Window.Resources>
         <DropShadowEffect 
-        x:Key="ShadowEffect"
-        BlurRadius="15"
-        ShadowDepth="5"
-        Opacity="0.3"/>
+            x:Key="ShadowEffect"
+            BlurRadius="15"
+            ShadowDepth="5"
+            Opacity="0.3"/>
     </Window.Resources>
 
     <Grid Background="#34495e">
         <StackPanel 
-    VerticalAlignment="Center" 
-    HorizontalAlignment="Center"
-    Width="420"
-    Background="White"
-    Effect="{StaticResource ShadowEffect}">
+        VerticalAlignment="Center" 
+        HorizontalAlignment="Center"
+        Width="420"
+        Background="White"
+        Effect="{StaticResource ShadowEffect}">
 
             <TextBlock 
-        Text="Đăng Ký Tài Khoản"
-        FontSize="28"
-        FontWeight="Bold"
-        Foreground="#2c3e50"
-        TextAlignment="Center"
-        Margin="0,30,0,10"/>
+            Text="Đăng Ký Tài Khoản"
+            FontSize="28"
+            FontWeight="Bold"
+            Foreground="#2c3e50"
+            TextAlignment="Center"
+            Margin="0,30,0,10"/>
 
             <TextBlock 
-        Text="Tham gia hệ thống quản lý bán xe oto"
-        FontSize="14"
-        Foreground="#95a5a6"
-        TextAlignment="Center"
-        Margin="0,0,0,25"/>
+            Text="Tham gia hệ thống quản lý bán xe ô tô"
+            FontSize="14"
+            Foreground="#95a5a6"
+            TextAlignment="Center"
+            Margin="0,0,0,25"/>
 
             <TextBlock 
-        Text="Họ và tên"
-        FontSize="13"
-        Foreground="#2c3e50"
-        FontWeight="Medium"
-        Margin="30,0,30,8"/>
+            Text="Họ và tên"
+            FontSize="13"
+            Foreground="#2c3e50"
+            FontWeight="Medium"
+            Margin="30,0,30,8"/>
             <Grid Margin="30,0,30,15">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
@@ -61,27 +62,27 @@
                 <TextBox x:Name="FullNameTextBox" Grid.Column="1" Margin="10,0,0,0" Padding="10,10" FontSize="13" BorderThickness="0,0,0,1" BorderBrush="#ecf0f1" Background="Transparent"/>
             </Grid>
 
-            <TextBlock 
-        Text="Tên đăng nhập"
-        FontSize="13"
-        Foreground="#2c3e50"
-        FontWeight="Medium"
-        Margin="30,0,30,8"/>
+            <TextBlock
+            Text="Số điện thoại (dùng để đăng nhập)"
+            FontSize="13"
+            Foreground="#2c3e50"
+            FontWeight="Medium"
+            Margin="30,0,30,8"/>
             <Grid Margin="30,0,30,15">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="🆔" FontSize="18" VerticalAlignment="Center" Foreground="#95a5a6"/>
+                <TextBlock Grid.Column="0" Text="📱" FontSize="18" VerticalAlignment="Center" Foreground="#95a5a6"/>
                 <TextBox x:Name="RegUsernameTextBox" Grid.Column="1" Margin="10,0,0,0" Padding="10,10" FontSize="13" BorderThickness="0,0,0,1" BorderBrush="#ecf0f1" Background="Transparent"/>
             </Grid>
 
             <TextBlock 
-        Text="Mật khẩu"
-        FontSize="13"
-        Foreground="#2c3e50"
-        FontWeight="Medium"
-        Margin="30,0,30,8"/>
+            Text="Mật khẩu"
+            FontSize="13"
+            Foreground="#2c3e50"
+            FontWeight="Medium"
+            Margin="30,0,30,8"/>
             <Grid Margin="30,0,30,15">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
@@ -92,11 +93,11 @@
             </Grid>
 
             <TextBlock 
-        Text="Xác nhận mật khẩu"
-        FontSize="13"
-        Foreground="#2c3e50"
-        FontWeight="Medium"
-        Margin="30,0,30,8"/>
+            Text="Xác nhận mật khẩu"
+            FontSize="13"
+            Foreground="#2c3e50"
+            FontWeight="Medium"
+            Margin="30,0,30,8"/>
             <Grid Margin="30,0,30,25">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
@@ -107,30 +108,30 @@
             </Grid>
 
             <Button 
-        x:Name="RegisterButton"
-        Content="📝 ĐĂNG KÝ NGAY"
-        Margin="30,0,30,20"
-        Padding="15,12"
-        FontSize="14"
-        FontWeight="Bold"
-        Foreground="White"
-        Background="#2ecc71"
-        BorderThickness="0"
-        Command="{Binding LenhDangKy}"
-        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-        Cursor="Hand"/>
+            x:Name="RegisterButton"
+            Content="📝 ĐĂNG KÝ NGAY"
+            Margin="30,0,30,20"
+            Padding="15,12"
+            FontSize="14"
+            FontWeight="Bold"
+            Foreground="White"
+            Background="#2ecc71"
+            BorderThickness="0"
+            Command="{Binding LenhDangKy}"
+            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+            Cursor="Hand"/>
 
             <TextBlock 
-        TextAlignment="Center" 
-        Foreground="#7f8c8d" 
-        FontSize="11" 
-        Margin="0,0,0,30">
-        <Run Text="Đã có tài khoản?"/>
-        <Hyperlink Foreground="#3498db"
-                   Command="{Binding LenhMoDangNhap}"
-                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
-            <Run Text=" Đăng nhập ngay"/>
-        </Hyperlink>
+            TextAlignment="Center" 
+            Foreground="#7f8c8d" 
+            FontSize="11" 
+            Margin="0,0,0,30">
+            <Run Text="Đã có tài khoản?"/>
+            <Hyperlink Foreground="#3498db"
+                       Command="{Binding LenhMoDangNhap}"
+                       CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                <Run Text=" Đăng nhập ngay"/>
+            </Hyperlink>
             </TextBlock>
         </StackPanel>
     </Grid>

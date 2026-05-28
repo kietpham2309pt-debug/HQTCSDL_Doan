@@ -1,4 +1,3 @@
-﻿using Doan.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +23,6 @@ namespace Doan.View
         public UC_HoaDon()
         {
             InitializeComponent();
-            this.DataContext = new HoaDon_VM();
         }
     }
 }

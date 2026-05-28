@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 namespace Doan.View
 {
     /// <summary>
-    /// Interaction logic for W_DangNhap.xaml
+    /// Interaction logic for DangNhap.xaml
     /// </summary>
     public partial class W_DangNhap : Window
     {
@@ -24,7 +24,6 @@ namespace Doan.View
         public W_DangNhap()
         {
             InitializeComponent();
-            this.DataContext = new Doan.ViewModel.DangNhap_VM();
         }
 
         private void TogglePasswordButton_Click(object sender, RoutedEventArgs e)

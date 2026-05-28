@@ -1,140 +1,103 @@
-﻿using Doan.Helper;
+using Doan.Helper;
 using Doan.Model;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data.SqlClient;
+using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Doan.ViewModel
 {
+    // Màn hình LỊCH SỬ GIAO DỊCH (đã tách khỏi màn thanh toán).
     public class HoaDon_VM : BaseViewModel
     {
-        string connectionString = @"Data Source=LAPTOP-80MIEMQ9\SQLEXPRESS;Initial Catalog=DL_OTO;Integrated Security=True";
-        public ObservableCollection<HoaDonModel> DanhSachHoaDonHienThi { get; set; }
-        public KhachHang KhachHangDuocChon { get; set; }
-        public ObservableCollection<Car> GioHangHienTai { get; set; }
-        public string HinhThucThanhToanDangChon { get; set; }
-
-
-        private string _tenNhanVienLap;
-        public string TenNhanVienLap
+        private ObservableCollection<HoaDon_HienThi_VM> danhSachHoaDonHienThi;
+        public ObservableCollection<HoaDon_HienThi_VM> DanhSachHoaDonHienThi
         {
-            get => _tenNhanVienLap;
-            set { _tenNhanVienLap = value; OnPropertyChanged(); }
+            get { return danhSachHoaDonHienThi; }
+            set
+            {
+                danhSachHoaDonHienThi = value;
+                OnPropertyChanged();
+            }
         }
 
-        private DateTime _ngayLapNhap = DateTime.Now;
-        public DateTime NgayLapNhap
+        private string tuKhoaTimKiem;
+        public string TuKhoaTimKiem
         {
-            get => _ngayLapNhap;
-            set { _ngayLapNhap = value; OnPropertyChanged(); }
+            get { return tuKhoaTimKiem; }
+            set
+            {
+                tuKhoaTimKiem = value;
+                OnPropertyChanged();
+            }
         }
 
-        private string _sdtKhachNhap;
-        public string SDTKhachNhap
+        private int tongSoHoaDon;
+        public int TongSoHoaDon
         {
-            get => _sdtKhachNhap;
-            set { _sdtKhachNhap = value; OnPropertyChanged(); }
+            get { return tongSoHoaDon; }
+            set { tongSoHoaDon = value; OnPropertyChanged(); }
         }
 
-        private decimal _tongTienHang;
-        public decimal TongTienHang
+        private decimal tongDoanhThu;
+        public decimal TongDoanhThu
         {
-            get => _tongTienHang;
-            set { _tongTienHang = value; OnPropertyChanged(); }
+            get { return tongDoanhThu; }
+            set { tongDoanhThu = value; OnPropertyChanged(); }
         }
 
-        private decimal _thanhTienThanhToan;
-        public decimal ThanhTienThanhToan
-        {
-            get => _thanhTienThanhToan;
-            set { _thanhTienThanhToan = value; OnPropertyChanged(); }
-        }
-
-        // Command
-        public ICommand LenhKiemTraSDTKhach { get; set; }
-        public ICommand LenhHuyHoaDon { get; set; }
-        public ICommand LenhXacNhanThanhToan { get; set; }
+        public ICommand LenhTimKiem { get; }
+        public ICommand LenhLamMoi { get; }
 
         public HoaDon_VM()
         {
-            DanhSachHoaDonHienThi = new ObservableCollection<HoaDonModel>();
+            LenhTimKiem = new RelayCommand(_ => TaiDanhSachHoaDonHienThi());
+            LenhLamMoi = new RelayCommand(_ => { TuKhoaTimKiem = string.Empty; TaiDanhSachHoaDonHienThi(); });
 
-            // Thêm dữ liệu mẫu để test
-            DanhSachHoaDonHienThi.Add(new HoaDonModel
+            DanhSachHoaDonHienThi = new ObservableCollection<HoaDon_HienThi_VM>();
+            TaiDanhSachHoaDonHienThi();
+        }
+
+        private void TaiDanhSachHoaDonHienThi()
+        {
+            using (var ctx = new QuanLyBanXeMayEntities())
             {
-                MaHD = Guid.NewGuid(),
-                NgayLap = DateTime.Now,
-                TenNhanVien = "Nguyễn Văn A",
-                TenKhachHang = "Trần Thị B",
-                SDT = "0901234567",
-                TenDV_SP = "Xe Toyota Vios",
-                SoLuong = 1,
-                ThanhTien = 500000000,
-                PhuongThucThanhToan = "Tiền mặt"
-            });
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var ds = ctx.HoaDons
+                    .Include("NhanVien")
+                    .Include("KhachHang")
+                    .OrderByDescending(item => item.NgayLap)
+                    .ThenByDescending(item => item.MaHD)
+                    .ToList();
 
-            // Khởi tạo command
-            LenhKiemTraSDTKhach = new RelayCommand(o => KiemTraSDT());
-            LenhHuyHoaDon = new RelayCommand(o => HuyHoaDon());
-            LenhXacNhanThanhToan = new RelayCommand(o => XacNhanThanhToan());
-        }
+                var danhSachHienThi = ds.Select(item => new HoaDon_HienThi_VM
+                {
+                    MaHD = item.MaHD,
+                    NgayLap = item.NgayLap,
+                    TenNhanVien = item.NhanVien != null ? item.NhanVien.HoTen : "(Khách tự đặt)",
+                    TenKhachHang = item.KhachHang != null ? item.KhachHang.HoTen : string.Empty,
+                    SDT = item.KhachHang != null ? item.KhachHang.SDT : string.Empty,
+                    TenDV_SP = item.TenDV_SP,
+                    SoLuong = item.SoLuong,
+                    ThanhTien = item.ThanhTien,
+                    PhuongThucThanhToan = item.PhuongThucThanhToan,
+                    TrangThai = item.TrangThai
+                }).ToList();
 
-        private void KiemTraSDT()
-        {
-            // Logic kiểm tra khách hàng theo SDT
-        }
+                if (!string.IsNullOrWhiteSpace(TuKhoaTimKiem))
+                {
+                    string tuKhoa = TuKhoaTimKiem.Trim().ToLower();
+                    danhSachHienThi = danhSachHienThi.Where(item =>
+                        (item.MaHD ?? string.Empty).ToLower().Contains(tuKhoa) ||
+                        (item.TenKhachHang ?? string.Empty).ToLower().Contains(tuKhoa) ||
+                        (item.SDT ?? string.Empty).ToLower().Contains(tuKhoa) ||
+                        (item.TenDV_SP ?? string.Empty).ToLower().Contains(tuKhoa)).ToList();
+                }
 
-        private void HuyHoaDon()
-        {
-            // Logic hủy hóa đơn
-        }
-        public Guid ThemDonHang(string tenNV, Guid maKH, DateTime ngayLap, decimal tongTien)
-        {
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                string query = @"INSERT INTO DonHang (TenDH, MaKhachHang, MaNV, NgayLap, TongTien)
-                         OUTPUT INSERTED.MaDH
-                         VALUES (@TenDH, @MaKH, @MaNV, @NgayLap, @TongTien)";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@TenDH", "Hóa đơn mới");
-                cmd.Parameters.AddWithValue("@MaKH", maKH);
-                cmd.Parameters.AddWithValue("@MaNV", 1); // giả sử nhân viên ID=1
-                cmd.Parameters.AddWithValue("@NgayLap", ngayLap);
-                cmd.Parameters.AddWithValue("@TongTien", tongTien);
-
-                conn.Open();
-                return (Guid)cmd.ExecuteScalar();
+                DanhSachHoaDonHienThi = new ObservableCollection<HoaDon_HienThi_VM>(danhSachHienThi);
+                TongSoHoaDon = danhSachHienThi.Count;
+                TongDoanhThu = danhSachHienThi.Sum(item => item.ThanhTien ?? 0);
             }
         }
-
-        public void ThemChiTietDonHang(Guid maDH, int maXe, DateTime ngayLap, int soLuong)
-        {
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                string query = @"INSERT INTO ChiTietDH (MaDH, MaXe, NgayLap, SoLuong)
-                         VALUES (@MaDH, @MaXe, @NgayLap, @SoLuong)";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@MaDH", maDH);
-                cmd.Parameters.AddWithValue("@MaXe", maXe);
-                cmd.Parameters.AddWithValue("@NgayLap", ngayLap);
-                cmd.Parameters.AddWithValue("@SoLuong", soLuong);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        private void XacNhanThanhToan()
-        { 
-        }
-
     }
 }
-

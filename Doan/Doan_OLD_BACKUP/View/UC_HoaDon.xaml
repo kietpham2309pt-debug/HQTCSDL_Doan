@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="Doan.View.UC_HoaDon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             Background="#fff"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+             mc:Ignorable="d" Height="649" Width="1162">
+    <UserControl.DataContext>
+        <vm:HoaDon_VM/>
+    </UserControl.DataContext>
+
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="0.95*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="0,0,10,0" Padding="15">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="LỊCH SỬ GIAO DỊCH CHI TIẾT" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                <DataGrid ItemsSource="{Binding DanhSachHoaDonHienThi}"
+                          AutoGenerateColumns="False"
+                          Background="Transparent"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0.5"
+                          RowHeight="35">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mã HĐ" Width="80" Binding="{Binding MaHD}"/>
+                        <DataGridTextColumn Header="Ngày lập" Width="100" Binding="{Binding NgayLap, StringFormat=dd/MM/yyyy}"/>
+                        <DataGridTextColumn Header="Nhân viên" Width="130" Binding="{Binding TenNhanVien}"/>
+                        <DataGridTextColumn Header="Khách hàng" Width="130" Binding="{Binding TenKhachHang}"/>
+                        <DataGridTextColumn Header="SĐT" Width="110" Binding="{Binding SDT}"/>
+                        <DataGridTextColumn Header="Tên DV/SP" Width="*" Binding="{Binding TenDV_SP}"/>
+                        <DataGridTextColumn Header="Số lượng" Width="70" Binding="{Binding SoLuong}"/>
+                        <DataGridTextColumn Header="Thành tiền" Width="130" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
+                        <DataGridTextColumn Header="PT thanh toán" Width="120" Binding="{Binding PhuongThucThanhToan}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="15">
+            <StackPanel>
+                <TextBlock Text="THÔNG TIN THANH TOÁN" FontSize="16" FontWeight="Bold" Foreground="#E67E22" Margin="0,0,0,15"/>
+
+                <UniformGrid Columns="2" Margin="0,0,0,10">
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Text="Nhân viên lập:" FontSize="11" Foreground="Gray"/>
+                        <TextBox Text="{Binding TenNhanVienLap, UpdateSourceTrigger=PropertyChanged}" FontWeight="SemiBold"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Ngày lập:" FontSize="11" Foreground="Gray"/>
+                        <DatePicker SelectedDate="{Binding NgayLapNhap, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <TextBlock Text="Số điện thoại khách:" FontSize="11" Foreground="Gray"/>
+                <Grid Margin="0,5,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Height="30"
+                             VerticalContentAlignment="Center"
+                             Padding="5,0"
+                             Text="{Binding SDTKhachNhap, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Button Grid.Column="1"
+                            Content="Kiểm tra"
+                            Width="80"
+                            Margin="5,0,0,0"
+                            Background="#34495E"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Command="{Binding LenhKiemTraSDTKhach}"/>
+                </Grid>
+
+                <Border Background="#F9F9F9" Padding="10" CornerRadius="5" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="{Binding KhachHangDuocChon.HoTen, FallbackValue=Chưa chọn khách hàng}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding DiaChiKhachHang, StringFormat=Địa chỉ: {0}}" FontSize="11" Foreground="Gray" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="Sản phẩm/dịch vụ đang chọn:" FontSize="11" Foreground="Gray" Margin="0,0,0,5"/>
+                <ListBox ItemsSource="{Binding GioHangHienTai}" Height="120" BorderBrush="#EEEEEE" BorderThickness="1" Background="#FAFAFA">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="300" Margin="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding TenMatHang}" FontWeight="SemiBold" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SoLuong, StringFormat='x{0}'}" Margin="10,0" Foreground="#2980B9"/>
+                                <TextBlock Grid.Column="2" Text="{Binding ThanhTien, StringFormat={}{0:N0}}" Foreground="#E67E22" FontWeight="Bold"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock Text="Hình thức thanh toán:" FontSize="11" Foreground="Gray" Margin="0,15,0,5"/>
+                <ComboBox ItemsSource="{Binding DanhSachHinhThucThanhToan}"
+                          SelectedItem="{Binding HinhThucThanhToanDangChon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Height="30"
+                          Margin="0,0,0,15"/>
+
+                <Separator Margin="0,0,0,15"/>
+
+                <Grid Margin="0,0,0,8">
+                    <TextBlock Text="Tổng tiền hàng:"/>
+                    <TextBlock Text="{Binding TongTienHang, StringFormat={}{0:N0}}" HorizontalAlignment="Right" FontWeight="Bold"/>
+                </Grid>
+
+                <Grid Margin="0,10,0,20">
+                    <TextBlock Text="THÀNH TIỀN:" FontWeight="Bold" FontSize="16" Foreground="#E74C3C" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ThanhTienThanhToan, StringFormat={}{0:N0}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="22" Foreground="#E74C3C"/>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Content="HỦY"
+                            Height="55"
+                            Margin="0,0,10,0"
+                            Background="#95A5A6"
+                            Foreground="White"
+                            FontSize="14"
+                            FontWeight="Bold"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding LenhHuyHoaDon}"/>
+
+                    <Button Grid.Column="1"
+                            Content="XÁC NHẬN THANH TOÁN"
+                            Height="55"
+                            Background="#27AE60"
+                            Foreground="White"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding LenhXacNhanThanhToan}">
+                        <Button.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                        </Button.Effect>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

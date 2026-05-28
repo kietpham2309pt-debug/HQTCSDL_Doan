@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,10 +26,10 @@ namespace Doan.View
 
         private void ChonHinhAnh_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog hopThoai = new OpenFileDialog
+            var hopThoai = new Microsoft.Win32.OpenFileDialog
             {
                 Title = "Chọn hình ảnh xe",
-                Filter = "Tệp ảnh|*.jpg;*.jpeg;*.png;*.webp;*.bmp|Tất cả tệp|*.*"
+                Filter = "Tệp ảnh (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif|Tất cả tệp (*.*)|*.*"
             };
 
             if (hopThoai.ShowDialog() == true)

@@ -1,0 +1,136 @@
+<UserControl x:Class="Doan.View.UC_ThanhToan"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+             mc:Ignorable="d"
+             d:DesignHeight="750"
+             d:DesignWidth="1300"
+             Background="#F5F5F5">
+    <UserControl.DataContext>
+        <vm:ThanhToan_VM/>
+    </UserControl.DataContext>
+
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== CỘT TRÁI: THÔNG TIN KHÁCH HÀNG + GIỎ HÀNG ===== -->
+        <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="0,0,10,0" Padding="15">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="LẬP HÓA ĐƠN - THANH TOÁN" FontSize="16" FontWeight="Bold" Foreground="#E67E22" Margin="0,0,0,15"/>
+
+                <!-- Tra cứu khách -->
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="Số điện thoại khách:" FontSize="11" Foreground="Gray"/>
+                    <Grid Margin="0,5,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Height="32" VerticalContentAlignment="Center" Padding="5,0"
+                                 Text="{Binding SDTKhachNhap, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Column="1" Content="Kiểm tra" Width="90" Margin="5,0,0,0"
+                                Background="#34495E" Foreground="White" BorderThickness="0" Cursor="Hand"
+                                Command="{Binding LenhKiemTraSDTKhach}"/>
+                    </Grid>
+
+                    <!-- Thông tin đầy đủ khách hàng -->
+                    <Border Background="#F9F9F9" Padding="12" CornerRadius="6" Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Ảnh khách -->
+                            <Border Grid.Column="0" Width="90" Height="90" CornerRadius="6" Margin="0,0,12,0"
+                                    Background="#ECECEC" BorderBrush="#DDDDDD" BorderThickness="1">
+                                <Image Source="{Binding KhachHangDuocChon.AnhCaNhan, TargetNullValue={x:Null}}" Stretch="UniformToFill"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="{Binding KhachHangDuocChon.HoTen, FallbackValue=Chưa chọn khách hàng}" FontWeight="Bold" FontSize="15" Foreground="#2C3E50"/>
+                                <TextBlock Text="{Binding KhachHangDuocChon.MaKH, StringFormat=Mã KH: {0}}" FontSize="11" Foreground="Gray" Visibility="{Binding CoKhachHang, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Text="{Binding KhachHangDuocChon.SDT, StringFormat=SĐT: {0}}" FontSize="12" Foreground="#555" Visibility="{Binding CoKhachHang, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Text="{Binding KhachHangDuocChon.CCCD, StringFormat=CCCD: {0}}" FontSize="12" Foreground="#555" Visibility="{Binding CoKhachHang, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Text="{Binding KhachHangDuocChon.Email, StringFormat=Email: {0}}" FontSize="12" Foreground="#555" Visibility="{Binding CoKhachHang, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Text="{Binding KhachHangDuocChon.GioiTinh, StringFormat=Giới tính: {0}}" FontSize="12" Foreground="#555" Visibility="{Binding CoKhachHang, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Text="{Binding KhachHangDuocChon.NgaySinh, StringFormat=Ngày sinh: {0:dd/MM/yyyy}}" FontSize="12" Foreground="#555" Visibility="{Binding CoKhachHang, Converter={StaticResource BoolToVis}}"/>
+                                <TextBlock Text="{Binding DiaChiKhachHang, StringFormat=Địa chỉ: {0}}" FontSize="12" Foreground="#555" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Giỏ hàng -->
+                <TextBlock DockPanel.Dock="Top" Text="Sản phẩm/dịch vụ đang chọn:" FontSize="11" Foreground="Gray" Margin="0,0,0,5"/>
+                <DataGrid ItemsSource="{Binding GioHangHienTai}"
+                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          GridLinesVisibility="Horizontal" BorderThickness="0.5" RowHeight="34" Background="White">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mặt hàng" Width="*" Binding="{Binding TenMatHang}"/>
+                        <DataGridTextColumn Header="Đơn giá" Width="120" Binding="{Binding DonGia, StringFormat={}{0:N0}}"/>
+                        <DataGridTextColumn Header="SL" Width="50" Binding="{Binding SoLuong}"/>
+                        <DataGridTextColumn Header="Thành tiền" Width="130" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+
+        <!-- ===== CỘT PHẢI: THÔNG TIN LẬP + TỔNG TIỀN ===== -->
+        <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="15">
+            <StackPanel>
+                <TextBlock Text="THÔNG TIN HÓA ĐƠN" FontSize="16" FontWeight="Bold" Foreground="#2980B9" Margin="0,0,0,15"/>
+
+                <TextBlock Text="Nhân viên lập:" FontSize="11" Foreground="Gray"/>
+                <ComboBox ItemsSource="{Binding DanhSachNhanVienLap}"
+                          SelectedItem="{Binding NhanVienLapDuocChon, Mode=TwoWay}"
+                          DisplayMemberPath="HoTen"
+                          Height="32" Margin="0,5,0,12"/>
+
+                <TextBlock Text="Ngày lập:" FontSize="11" Foreground="Gray"/>
+                <DatePicker SelectedDate="{Binding NgayLapNhap, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,12"/>
+
+                <TextBlock Text="Hình thức thanh toán:" FontSize="11" Foreground="Gray"/>
+                <ComboBox ItemsSource="{Binding DanhSachHinhThucThanhToan}"
+                          SelectedItem="{Binding HinhThucThanhToanDangChon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Height="32" Margin="0,5,0,15"/>
+
+                <Separator Margin="0,0,0,15"/>
+
+                <Grid Margin="0,0,0,8">
+                    <TextBlock Text="Tổng tiền hàng:"/>
+                    <TextBlock Text="{Binding TongTienHang, StringFormat={}{0:N0}}" HorizontalAlignment="Right" FontWeight="Bold"/>
+                </Grid>
+
+                <Grid Margin="0,10,0,20">
+                    <TextBlock Text="THÀNH TIỀN:" FontWeight="Bold" FontSize="16" Foreground="#E74C3C" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ThanhTienThanhToan, StringFormat={}{0:N0}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="22" Foreground="#E74C3C"/>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="HỦY" Height="55" Margin="0,0,10,0"
+                            Background="#95A5A6" Foreground="White" FontSize="14" FontWeight="Bold"
+                            BorderThickness="0" Cursor="Hand" Command="{Binding LenhHuyHoaDon}"/>
+
+                    <Button Grid.Column="1" Content="XÁC NHẬN THANH TOÁN" Height="55"
+                            Background="#27AE60" Foreground="White" FontSize="16" FontWeight="Bold"
+                            BorderThickness="0" Cursor="Hand" Command="{Binding LenhXacNhanThanhToan}">
+                        <Button.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                        </Button.Effect>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
