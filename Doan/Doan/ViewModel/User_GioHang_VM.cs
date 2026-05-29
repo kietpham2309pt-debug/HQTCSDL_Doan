@@ -17,7 +17,7 @@ namespace Doan.ViewModel
             get { return PhienDangNhap.GioHangKhach; }
         }
 
-        public int TongTien
+        public long TongTien
         {
             get { return GioHang.Sum(item => item.ThanhTien); }
         }

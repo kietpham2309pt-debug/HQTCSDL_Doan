@@ -92,12 +92,12 @@ namespace Doan.ViewModel
             }
         }
 
-        public int TongTienHang
+        public long TongTienHang
         {
             get { return GioHangHienTai.Sum(item => item.ThanhTien); }
         }
 
-        public int ThanhTienThanhToan
+        public long ThanhTienThanhToan
         {
             get { return TongTienHang; }
         }

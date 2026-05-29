@@ -116,7 +116,7 @@ namespace Doan.ViewModel
             get { return GioHangDungChung; }
         }
 
-        public int TongTienTamTinh
+        public long TongTienTamTinh
         {
             get { return GioHangTam.Sum(item => item.ThanhTien); }
         }
@@ -444,7 +444,7 @@ namespace Doan.ViewModel
                 {
                     MaMatHang = dichVu.MaPT,
                     TenMatHang = dichVu.Ten,
-                    DonGia = (int)(dichVu.Gia ?? 0),
+                    DonGia = (long)(dichVu.Gia ?? 0),
                     SoLuong = 1
                 });
             }

@@ -266,7 +266,7 @@ namespace Doan.ViewModel
             SoLuongTonNhap = "0";
         }
 
-        private bool KiemTraDuLieuXe(out int namSX, out int soLuongTon, out int giaXe)
+        private bool KiemTraDuLieuXe(out int namSX, out int soLuongTon, out long giaXe)
         {
             namSX = 0;
             soLuongTon = 0;
@@ -325,7 +325,7 @@ namespace Doan.ViewModel
             return true;
         }
 
-        private bool ThuChuanHoaGiaXe(string giaNhap, out int gia, out string giaChuanHoa)
+        private bool ThuChuanHoaGiaXe(string giaNhap, out long gia, out string giaChuanHoa)
         {
             gia = 0;
             giaChuanHoa = "0";
@@ -336,7 +336,7 @@ namespace Doan.ViewModel
             }
 
             string giaRaw = giaNhap.Trim().Replace(".", string.Empty).Replace(",", string.Empty).Replace(" ", string.Empty);
-            if (!int.TryParse(giaRaw, out gia) || gia < 0)
+            if (!long.TryParse(giaRaw, out gia) || gia < 0)
             {
                 return false;
             }
@@ -387,7 +387,7 @@ namespace Doan.ViewModel
         {
             int namSX;
             int soLuongTon;
-            int giaXe;
+            long giaXe;
             if (!KiemTraDuLieuXe(out namSX, out soLuongTon, out giaXe))
             {
                 return;
@@ -591,7 +591,7 @@ namespace Doan.ViewModel
                 {
                     MaMatHang = XeDangChon.MaXe,
                     TenMatHang = XeDangChon.TenXe,
-                    DonGia = (int)(XeDangChon.GiaBan ?? 0),
+                    DonGia = (long)(XeDangChon.GiaBan ?? 0),
                     SoLuong = 1
                 });
             }

@@ -92,7 +92,7 @@ namespace Doan.ViewModel
                 {
                     MaMatHang = dichVu.MaPT,
                     TenMatHang = dichVu.Ten,
-                    DonGia = (int)(dichVu.Gia ?? 0),
+                    DonGia = (long)(dichVu.Gia ?? 0),
                     SoLuong = 1
                 });
             }

@@ -128,7 +128,7 @@ namespace Doan.ViewModel
             {
                 Mouse.OverrideCursor = null;
                 MessageBox.Show("Lỗi khi đăng nhập: " + LayThongDiepLoi(ex) +
-                    "\n\nKiểm tra SQL Server và database 'QuanLyBanXeMay'." +
+                    "\n\nKiểm tra SQL Server và database 'DL_OTO'." +
                     "\nConnection string đang trỏ tới: " + LayConnectionInfo(),
                     "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -221,23 +221,6 @@ namespace Doan.ViewModel
 
                 return true;
             }
-        }
-
-        private string TaoMaKhachHangMoi(QuanLyBanXeMayEntities ctx)
-        {
-            int maLonNhat = 0;
-            var tatCa = ctx.KhachHangs.Select(k => k.MaKH).ToList();
-            foreach (string ma in tatCa)
-            {
-                if (string.IsNullOrWhiteSpace(ma)) continue;
-                string so = ma.Trim().ToUpper().Replace("KH", string.Empty);
-                int maSo;
-                if (int.TryParse(so, out maSo) && maSo > maLonNhat)
-                {
-                    maLonNhat = maSo;
-                }
-            }
-            return "KH" + (maLonNhat + 1).ToString("000");
         }
 
         private void DongCuaSoDangNhap(Window cuaSoDangNhap)

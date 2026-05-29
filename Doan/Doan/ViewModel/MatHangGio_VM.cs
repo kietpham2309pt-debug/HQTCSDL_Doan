@@ -29,8 +29,10 @@ namespace Doan.ViewModel
             }
         }
 
-        private int donGia;
-        public int DonGia
+        // Giá xe ô tô có thể lên tới vài tỷ đồng, vượt giới hạn của kiểu int
+        // (khoảng 2,1 tỷ) nên phải dùng long để không bị tràn số.
+        private long donGia;
+        public long DonGia
         {
             get { return donGia; }
             set
@@ -53,7 +55,7 @@ namespace Doan.ViewModel
             }
         }
 
-        public int ThanhTien
+        public long ThanhTien
         {
             get { return DonGia * SoLuong; }
         }

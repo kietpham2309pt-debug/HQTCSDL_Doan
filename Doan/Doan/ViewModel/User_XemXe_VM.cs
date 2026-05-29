@@ -177,7 +177,7 @@ namespace Doan.ViewModel
                 {
                     MaMatHang = XeDangChon.MaXe,
                     TenMatHang = XeDangChon.TenXe,
-                    DonGia = (int)(XeDangChon.GiaBan ?? 0),
+                    DonGia = (long)(XeDangChon.GiaBan ?? 0),
                     SoLuong = 1
                 };
                 gio.Add(matHangMoi);
