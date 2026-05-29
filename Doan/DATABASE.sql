@@ -570,3 +570,135 @@ GO
 
 PRINT N'>>> Da tao xong VIEW / FUNCTION / PROCEDURE / CURSOR / TRIGGER.';
 GO
+
+/* ============================================================
+   PHẦN 4. RÀNG BUỘC UNIQUE & QUAN HỆ 1-1
+   (bổ sung cho phần Xây dựng CSDL)
+   ------------------------------------------------------------
+   - Các bảng đã có sẵn ràng buộc PRIMARY KEY, FOREIGN KEY,
+     CHECK (GiaBan > 0, SoLuongTon >= 0, ...) và DEFAULT
+     (NgayVaoLam, TrangThai, NgayLap...) ở phần tạo bảng.
+   - Phần này bổ sung ràng buộc UNIQUE và thiết lập quan hệ 1-1.
+   - Dùng "filtered unique index" (UNIQUE ... WHERE) để vẫn cho
+     phép nhiều dòng NULL/rỗng (vd: nhiều tài khoản khách hàng
+     có MaNV = NULL, khách đăng ký online chưa nhập CCCD/Email).
+   ============================================================ */
+
+-- QUAN HỆ 1-1: mỗi nhân viên chỉ gắn với tối đa MỘT tài khoản đăng nhập.
+-- (NhanVien 1 --- 1 TaiKhoan). Tài khoản khách hàng có MaNV = NULL nên được bỏ qua.
+CREATE UNIQUE INDEX UX_TaiKhoan_MaNV  ON TaiKhoan(MaNV)  WHERE MaNV  IS NOT NULL;
+GO
+
+-- Số điện thoại khách hàng là duy nhất.
+CREATE UNIQUE INDEX UX_KhachHang_SDT  ON KhachHang(SDT)  WHERE SDT   IS NOT NULL;
+GO
+-- CCCD duy nhất (bỏ qua rỗng vì khách đăng ký online có thể chưa nhập).
+CREATE UNIQUE INDEX UX_KhachHang_CCCD ON KhachHang(CCCD) WHERE CCCD  IS NOT NULL AND CCCD  <> '';
+GO
+-- Email duy nhất (bỏ qua rỗng).
+CREATE UNIQUE INDEX UX_KhachHang_Email ON KhachHang(Email) WHERE Email IS NOT NULL AND Email <> '';
+GO
+-- Số điện thoại nhân viên là duy nhất.
+CREATE UNIQUE INDEX UX_NhanVien_SDT   ON NhanVien(SDT)   WHERE SDT   IS NOT NULL;
+GO
+
+/* ============================================================
+   PHẦN 5. MÔ TẢ THUỘC TÍNH TỪNG BẢNG (extended properties)
+   ------------------------------------------------------------
+   Mô tả sẽ hiển thị trong SSMS ở cột Description khi xem thiết kế
+   bảng, hoặc truy vấn từ sys.extended_properties.
+   ============================================================ */
+
+-- Bảng HangXe
+EXEC sp_addextendedproperty 'MS_Description', N'Hãng xe (thương hiệu)', 'SCHEMA','dbo','TABLE','HangXe',NULL,NULL;
+EXEC sp_addextendedproperty 'MS_Description', N'Mã hãng - khóa chính',          'SCHEMA','dbo','TABLE','HangXe','COLUMN','MaHang';
+EXEC sp_addextendedproperty 'MS_Description', N'Tên hãng xe',                    'SCHEMA','dbo','TABLE','HangXe','COLUMN','TenHang';
+EXEC sp_addextendedproperty 'MS_Description', N'Quốc gia của hãng',              'SCHEMA','dbo','TABLE','HangXe','COLUMN','QuocGia';
+EXEC sp_addextendedproperty 'MS_Description', N'Đường dẫn ảnh logo',             'SCHEMA','dbo','TABLE','HangXe','COLUMN','LogoPath';
+GO
+
+-- Bảng Xe
+EXEC sp_addextendedproperty 'MS_Description', N'Xe ô tô đang bán', 'SCHEMA','dbo','TABLE','Xe',NULL,NULL;
+EXEC sp_addextendedproperty 'MS_Description', N'Mã xe - khóa chính',             'SCHEMA','dbo','TABLE','Xe','COLUMN','MaXe';
+EXEC sp_addextendedproperty 'MS_Description', N'Tên/đời xe',                      'SCHEMA','dbo','TABLE','Xe','COLUMN','TenXe';
+EXEC sp_addextendedproperty 'MS_Description', N'Loại xe (Sedan, SUV, ...)',       'SCHEMA','dbo','TABLE','Xe','COLUMN','LoaiXe';
+EXEC sp_addextendedproperty 'MS_Description', N'Năm sản xuất',                    'SCHEMA','dbo','TABLE','Xe','COLUMN','NamSX';
+EXEC sp_addextendedproperty 'MS_Description', N'Giá bán (VNĐ)',                   'SCHEMA','dbo','TABLE','Xe','COLUMN','GiaBan';
+EXEC sp_addextendedproperty 'MS_Description', N'Màu sắc',                         'SCHEMA','dbo','TABLE','Xe','COLUMN','MauSac';
+EXEC sp_addextendedproperty 'MS_Description', N'Mô tả chi tiết',                  'SCHEMA','dbo','TABLE','Xe','COLUMN','MoTa';
+EXEC sp_addextendedproperty 'MS_Description', N'Đường dẫn ảnh xe',               'SCHEMA','dbo','TABLE','Xe','COLUMN','HinhAnh';
+EXEC sp_addextendedproperty 'MS_Description', N'Mã hãng - khóa ngoại tới HangXe', 'SCHEMA','dbo','TABLE','Xe','COLUMN','MaHang';
+EXEC sp_addextendedproperty 'MS_Description', N'Số lượng tồn kho',               'SCHEMA','dbo','TABLE','Xe','COLUMN','SoLuongTon';
+GO
+
+-- Bảng KhachHang
+EXEC sp_addextendedproperty 'MS_Description', N'Khách hàng', 'SCHEMA','dbo','TABLE','KhachHang',NULL,NULL;
+EXEC sp_addextendedproperty 'MS_Description', N'Mã khách hàng - khóa chính',     'SCHEMA','dbo','TABLE','KhachHang','COLUMN','MaKH';
+EXEC sp_addextendedproperty 'MS_Description', N'Họ tên khách',                    'SCHEMA','dbo','TABLE','KhachHang','COLUMN','HoTen';
+EXEC sp_addextendedproperty 'MS_Description', N'Số điện thoại (dùng đăng nhập)',  'SCHEMA','dbo','TABLE','KhachHang','COLUMN','SDT';
+EXEC sp_addextendedproperty 'MS_Description', N'Căn cước công dân',               'SCHEMA','dbo','TABLE','KhachHang','COLUMN','CCCD';
+EXEC sp_addextendedproperty 'MS_Description', N'Email',                           'SCHEMA','dbo','TABLE','KhachHang','COLUMN','Email';
+EXEC sp_addextendedproperty 'MS_Description', N'Địa chỉ',                         'SCHEMA','dbo','TABLE','KhachHang','COLUMN','DiaChi';
+EXEC sp_addextendedproperty 'MS_Description', N'Ngày sinh',                       'SCHEMA','dbo','TABLE','KhachHang','COLUMN','NgaySinh';
+EXEC sp_addextendedproperty 'MS_Description', N'Giới tính',                       'SCHEMA','dbo','TABLE','KhachHang','COLUMN','GioiTinh';
+EXEC sp_addextendedproperty 'MS_Description', N'Đường dẫn ảnh cá nhân',          'SCHEMA','dbo','TABLE','KhachHang','COLUMN','AnhCaNhan';
+GO
+
+-- Bảng NhanVien
+EXEC sp_addextendedproperty 'MS_Description', N'Nhân viên', 'SCHEMA','dbo','TABLE','NhanVien',NULL,NULL;
+EXEC sp_addextendedproperty 'MS_Description', N'Mã nhân viên - khóa chính',      'SCHEMA','dbo','TABLE','NhanVien','COLUMN','MaNV';
+EXEC sp_addextendedproperty 'MS_Description', N'Họ tên nhân viên',               'SCHEMA','dbo','TABLE','NhanVien','COLUMN','HoTen';
+EXEC sp_addextendedproperty 'MS_Description', N'Chức vụ',                         'SCHEMA','dbo','TABLE','NhanVien','COLUMN','ChucVu';
+EXEC sp_addextendedproperty 'MS_Description', N'Ngày vào làm',                    'SCHEMA','dbo','TABLE','NhanVien','COLUMN','NgayVaoLam';
+EXEC sp_addextendedproperty 'MS_Description', N'Số điện thoại',                   'SCHEMA','dbo','TABLE','NhanVien','COLUMN','SDT';
+EXEC sp_addextendedproperty 'MS_Description', N'Trạng thái (Đang làm việc/Tạm nghỉ)','SCHEMA','dbo','TABLE','NhanVien','COLUMN','TrangThai';
+GO
+
+-- Bảng TaiKhoan
+EXEC sp_addextendedproperty 'MS_Description', N'Tài khoản đăng nhập', 'SCHEMA','dbo','TABLE','TaiKhoan',NULL,NULL;
+EXEC sp_addextendedproperty 'MS_Description', N'Tên đăng nhập - khóa chính',     'SCHEMA','dbo','TABLE','TaiKhoan','COLUMN','Username';
+EXEC sp_addextendedproperty 'MS_Description', N'Mật khẩu',                        'SCHEMA','dbo','TABLE','TaiKhoan','COLUMN','Password';
+EXEC sp_addextendedproperty 'MS_Description', N'Vai trò/quyền (KhachHang, Quản lý, Bán hàng...)','SCHEMA','dbo','TABLE','TaiKhoan','COLUMN','Role';
+EXEC sp_addextendedproperty 'MS_Description', N'Mã nhân viên - khóa ngoại (NULL nếu là khách)','SCHEMA','dbo','TABLE','TaiKhoan','COLUMN','MaNV';
+GO
+
+-- Bảng DichVuPhuTung
+EXEC sp_addextendedproperty 'MS_Description', N'Dịch vụ và phụ tùng', 'SCHEMA','dbo','TABLE','DichVuPhuTung',NULL,NULL;
+EXEC sp_addextendedproperty 'MS_Description', N'Mã DV/PT - khóa chính',          'SCHEMA','dbo','TABLE','DichVuPhuTung','COLUMN','MaPT';
+EXEC sp_addextendedproperty 'MS_Description', N'Tên dịch vụ/phụ tùng',           'SCHEMA','dbo','TABLE','DichVuPhuTung','COLUMN','Ten';
+EXEC sp_addextendedproperty 'MS_Description', N'Giá (VNĐ)',                       'SCHEMA','dbo','TABLE','DichVuPhuTung','COLUMN','Gia';
+EXEC sp_addextendedproperty 'MS_Description', N'Tồn kho (dịch vụ = 0)',           'SCHEMA','dbo','TABLE','DichVuPhuTung','COLUMN','TonKho';
+GO
+
+-- Bảng HoaDon
+EXEC sp_addextendedproperty 'MS_Description', N'Hóa đơn bán hàng/đơn đặt', 'SCHEMA','dbo','TABLE','HoaDon',NULL,NULL;
+EXEC sp_addextendedproperty 'MS_Description', N'Mã hóa đơn - khóa chính',        'SCHEMA','dbo','TABLE','HoaDon','COLUMN','MaHD';
+EXEC sp_addextendedproperty 'MS_Description', N'Ngày lập',                        'SCHEMA','dbo','TABLE','HoaDon','COLUMN','NgayLap';
+EXEC sp_addextendedproperty 'MS_Description', N'Mã NV lập - khóa ngoại (NULL nếu khách tự đặt)','SCHEMA','dbo','TABLE','HoaDon','COLUMN','MaNV';
+EXEC sp_addextendedproperty 'MS_Description', N'Mã khách - khóa ngoại',          'SCHEMA','dbo','TABLE','HoaDon','COLUMN','MaKH';
+EXEC sp_addextendedproperty 'MS_Description', N'Tên dịch vụ/sản phẩm',           'SCHEMA','dbo','TABLE','HoaDon','COLUMN','TenDV_SP';
+EXEC sp_addextendedproperty 'MS_Description', N'Số lượng',                        'SCHEMA','dbo','TABLE','HoaDon','COLUMN','SoLuong';
+EXEC sp_addextendedproperty 'MS_Description', N'Thành tiền (VNĐ)',                'SCHEMA','dbo','TABLE','HoaDon','COLUMN','ThanhTien';
+EXEC sp_addextendedproperty 'MS_Description', N'Phương thức thanh toán',          'SCHEMA','dbo','TABLE','HoaDon','COLUMN','PhuongThucThanhToan';
+EXEC sp_addextendedproperty 'MS_Description', N'Trạng thái (Chờ xác nhận/Đã xác nhận)','SCHEMA','dbo','TABLE','HoaDon','COLUMN','TrangThai';
+GO
+
+/* ============================================================
+   PHẦN 6. LƯỢC ĐỒ QUAN HỆ (DIAGRAM)
+   ------------------------------------------------------------
+   Diagram là đối tượng đồ họa, không tạo bằng câu lệnh T-SQL.
+   Cách tạo trong SSMS để chụp nộp:
+     1. Mở database DL_OTO > chuột phải "Database Diagrams" > New Database Diagram.
+        (Nếu hỏi cài đối tượng hỗ trợ thì bấm Yes.)
+     2. Add 7 bảng: HangXe, Xe, KhachHang, NhanVien, TaiKhoan,
+        DichVuPhuTung, HoaDon.
+     3. SSMS tự vẽ các đường khóa ngoại:
+        - HangXe (1) --- (n) Xe
+        - NhanVien (1) --- (n) HoaDon
+        - KhachHang (1) --- (n) HoaDon
+        - NhanVien (1) --- (1) TaiKhoan   (do UNIQUE UX_TaiKhoan_MaNV)
+     4. Save (Ctrl+S), đặt tên "SoDoQuanHe", rồi chụp màn hình.
+   ============================================================ */
+
+PRINT N'>>> Da them UNIQUE, quan he 1-1 va mo ta thuoc tinh.';
+GO
