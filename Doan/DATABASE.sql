@@ -27,6 +27,7 @@ GO
 
 IF OBJECT_ID('ChiTietDH', 'U') IS NOT NULL DROP TABLE ChiTietDH;
 IF OBJECT_ID('DonHang', 'U') IS NOT NULL DROP TABLE DonHang;
+IF OBJECT_ID('LichSuGiaXe', 'U') IS NOT NULL DROP TABLE LichSuGiaXe;
 IF OBJECT_ID('HoaDon', 'U') IS NOT NULL DROP TABLE HoaDon;
 IF OBJECT_ID('TaiKhoan', 'U') IS NOT NULL DROP TABLE TaiKhoan;
 IF OBJECT_ID('Xe', 'U') IS NOT NULL DROP TABLE Xe;
@@ -295,12 +296,277 @@ INSERT INTO HoaDon (MaHD, NgayLap, MaNV, MaKH, TenDV_SP, SoLuong, ThanhTien, Phu
 ('HD010', '2025-05-07 08:30:00', 'NV002', 'KH010', N'Camera hành trình Vietmap C61',       1, 2400000,    N'Tiền mặt');
 GO
 
-PRINT N'>>> DL_OTO đã được tạo và nạp xong dữ liệu.';
-PRINT N'    - HangXe        : ' + CAST((SELECT COUNT(*) FROM HangXe) AS NVARCHAR(10));
-PRINT N'    - Xe            : ' + CAST((SELECT COUNT(*) FROM Xe) AS NVARCHAR(10));
-PRINT N'    - KhachHang     : ' + CAST((SELECT COUNT(*) FROM KhachHang) AS NVARCHAR(10));
-PRINT N'    - NhanVien      : ' + CAST((SELECT COUNT(*) FROM NhanVien) AS NVARCHAR(10));
-PRINT N'    - TaiKhoan      : ' + CAST((SELECT COUNT(*) FROM TaiKhoan) AS NVARCHAR(10));
-PRINT N'    - DichVuPhuTung : ' + CAST((SELECT COUNT(*) FROM DichVuPhuTung) AS NVARCHAR(10));
-PRINT N'    - HoaDon        : ' + CAST((SELECT COUNT(*) FROM HoaDon) AS NVARCHAR(10));
+-- Lưu ý: PRINT không cho phép chứa subquery, nên dùng SELECT để xem
+-- số dòng đã nạp cho từng bảng (kết quả hiện ở tab Results trong SSMS).
+PRINT N'>>> DL_OTO đã được tạo và nạp xong dữ liệu mẫu.';
+GO
+SELECT      N'HangXe'        AS Bang, COUNT(*) AS SoDong FROM HangXe
+UNION ALL SELECT N'Xe',            COUNT(*) FROM Xe
+UNION ALL SELECT N'KhachHang',     COUNT(*) FROM KhachHang
+UNION ALL SELECT N'NhanVien',      COUNT(*) FROM NhanVien
+UNION ALL SELECT N'TaiKhoan',      COUNT(*) FROM TaiKhoan
+UNION ALL SELECT N'DichVuPhuTung', COUNT(*) FROM DichVuPhuTung
+UNION ALL SELECT N'HoaDon',        COUNT(*) FROM HoaDon;
+GO
+
+/* ============================================================
+   PHẦN 3. CÁC CẤU TRÚC XỬ LÝ (theo yêu cầu đồ án)
+   Gồm 5 loại khác nhau: VIEW, FUNCTION, STORED PROCEDURE,
+   CURSOR (trong procedure) và TRIGGER.
+   ------------------------------------------------------------
+   Xoá các đối tượng cũ (nếu chạy lại file) trước khi tạo mới.
+   ============================================================ */
+
+IF OBJECT_ID('trg_Xe_LuuLichSuGia', 'TR')   IS NOT NULL DROP TRIGGER trg_Xe_LuuLichSuGia;
+IF OBJECT_ID('trg_HoaDon_HoanTra', 'TR')    IS NOT NULL DROP TRIGGER trg_HoaDon_HoanTra;
+IF OBJECT_ID('sp_LapHoaDon', 'P')           IS NOT NULL DROP PROCEDURE sp_LapHoaDon;
+IF OBJECT_ID('sp_XacNhanDonChoXuLy', 'P')   IS NOT NULL DROP PROCEDURE sp_XacNhanDonChoXuLy;
+IF OBJECT_ID('sp_CanhBaoTonKhoThap', 'P')   IS NOT NULL DROP PROCEDURE sp_CanhBaoTonKhoThap;
+IF OBJECT_ID('fn_TongDoanhThuNhanVien','FN')IS NOT NULL DROP FUNCTION fn_TongDoanhThuNhanVien;
+IF OBJECT_ID('fn_XepHangKhachHang', 'FN')   IS NOT NULL DROP FUNCTION fn_XepHangKhachHang;
+IF OBJECT_ID('vw_DanhSachNhanVien', 'V')    IS NOT NULL DROP VIEW vw_DanhSachNhanVien;
+IF OBJECT_ID('vw_TonKho', 'V')              IS NOT NULL DROP VIEW vw_TonKho;
+IF OBJECT_ID('vw_XeBanChay', 'V')           IS NOT NULL DROP VIEW vw_XeBanChay;
+GO
+
+/* ------------------------------------------------------------
+   3.1 VIEW – phục vụ thống kê (yêu cầu: xây dựng View thống kê)
+   ------------------------------------------------------------ */
+
+-- View 1: Danh sách nhân viên kèm số hóa đơn đã lập và tổng doanh thu.
+CREATE VIEW vw_DanhSachNhanVien AS
+SELECT  nv.MaNV,
+        nv.HoTen,
+        nv.ChucVu,
+        nv.SDT,
+        nv.TrangThai,
+        COUNT(hd.MaHD)                AS SoHoaDon,
+        ISNULL(SUM(hd.ThanhTien), 0)  AS TongDoanhThu
+FROM        NhanVien nv
+LEFT JOIN   HoaDon   hd ON hd.MaNV = nv.MaNV
+GROUP BY    nv.MaNV, nv.HoTen, nv.ChucVu, nv.SDT, nv.TrangThai;
+GO
+
+-- View 2: Tồn kho xe theo từng hãng, kèm tình trạng còn/sắp hết/hết hàng.
+CREATE VIEW vw_TonKho AS
+SELECT  x.MaXe,
+        x.TenXe,
+        h.TenHang,
+        x.GiaBan,
+        x.SoLuongTon,
+        CASE WHEN x.SoLuongTon <= 0 THEN N'Hết hàng'
+             WHEN x.SoLuongTon < 5  THEN N'Sắp hết'
+             ELSE                        N'Còn hàng'
+        END AS TinhTrang
+FROM        Xe     x
+LEFT JOIN   HangXe h ON h.MaHang = x.MaHang;
+GO
+
+-- View 3: Xe bán chạy – tổng số lượng bán và doanh thu lấy từ hóa đơn.
+CREATE VIEW vw_XeBanChay AS
+SELECT  x.MaXe,
+        x.TenXe,
+        h.TenHang,
+        SUM(hd.SoLuong)    AS SoLuongBan,
+        SUM(hd.ThanhTien)  AS DoanhThu
+FROM        HoaDon hd
+INNER JOIN  Xe     x ON x.TenXe  = hd.TenDV_SP
+INNER JOIN  HangXe h ON h.MaHang = x.MaHang
+GROUP BY    x.MaXe, x.TenXe, h.TenHang;
+GO
+
+/* ------------------------------------------------------------
+   3.2 FUNCTION – hàm tự định nghĩa
+   ------------------------------------------------------------ */
+
+-- Function 1: Tính tổng doanh thu của một nhân viên.
+CREATE FUNCTION fn_TongDoanhThuNhanVien(@MaNV VARCHAR(20))
+RETURNS DECIMAL(18,2)
+AS
+BEGIN
+    DECLARE @Tong DECIMAL(18,2);
+    SELECT  @Tong = ISNULL(SUM(ThanhTien), 0)
+    FROM    HoaDon
+    WHERE   MaNV = @MaNV;
+    RETURN @Tong;
+END;
+GO
+
+-- Function 2: Xếp hạng khách hàng dựa trên tổng tiền đã mua.
+CREATE FUNCTION fn_XepHangKhachHang(@MaKH VARCHAR(20))
+RETURNS NVARCHAR(30)
+AS
+BEGIN
+    DECLARE @Tong DECIMAL(18,2);
+    SELECT  @Tong = ISNULL(SUM(ThanhTien), 0)
+    FROM    HoaDon
+    WHERE   MaKH = @MaKH;
+
+    DECLARE @XepHang NVARCHAR(30);
+    IF      @Tong >= 2000000000 SET @XepHang = N'Khách VIP';
+    ELSE IF @Tong >=  500000000 SET @XepHang = N'Khách thân thiết';
+    ELSE                        SET @XepHang = N'Khách thường';
+    RETURN @XepHang;
+END;
+GO
+
+/* ------------------------------------------------------------
+   3.3 STORED PROCEDURE – xử lý nghiệp vụ
+   ------------------------------------------------------------ */
+
+-- Procedure 1: Lập hóa đơn bán xe.
+-- Tự sinh mã hóa đơn, kiểm tra tồn kho, trừ kho, dùng transaction + TRY/CATCH.
+CREATE PROCEDURE sp_LapHoaDon
+    @MaNV       VARCHAR(20),
+    @MaKH       VARCHAR(20),
+    @MaXe       VARCHAR(20),
+    @SoLuong    INT,
+    @PhuongThuc NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        DECLARE @Ton INT, @Gia DECIMAL(18,2), @TenXe NVARCHAR(100);
+        SELECT  @Ton = SoLuongTon, @Gia = GiaBan, @TenXe = TenXe
+        FROM    Xe WHERE MaXe = @MaXe;
+
+        IF @TenXe IS NULL
+        BEGIN
+            RAISERROR(N'Khong tim thay xe.', 16, 1);
+            ROLLBACK TRANSACTION; RETURN;
+        END
+        IF @SoLuong <= 0
+        BEGIN
+            RAISERROR(N'So luong phai lon hon 0.', 16, 1);
+            ROLLBACK TRANSACTION; RETURN;
+        END
+        IF @Ton < @SoLuong
+        BEGIN
+            RAISERROR(N'Khong du ton kho.', 16, 1);
+            ROLLBACK TRANSACTION; RETURN;
+        END
+
+        -- Sinh mã hóa đơn mới dạng HDxxx.
+        DECLARE @SoMoi INT;
+        SELECT  @SoMoi = ISNULL(MAX(CAST(SUBSTRING(MaHD, 3, 10) AS INT)), 0) + 1
+        FROM    HoaDon WHERE MaHD LIKE 'HD%';
+        DECLARE @MaHD VARCHAR(20) = 'HD' + RIGHT('000' + CAST(@SoMoi AS VARCHAR(10)), 3);
+
+        INSERT INTO HoaDon (MaHD, NgayLap, MaNV, MaKH, TenDV_SP, SoLuong, ThanhTien, PhuongThucThanhToan, TrangThai)
+        VALUES (@MaHD, GETDATE(), @MaNV, @MaKH, @TenXe, @SoLuong, @Gia * @SoLuong, @PhuongThuc, N'Đã xác nhận');
+
+        UPDATE Xe SET SoLuongTon = SoLuongTon - @SoLuong WHERE MaXe = @MaXe;
+
+        COMMIT TRANSACTION;
+        PRINT N'>>> Da lap hoa don ' + @MaHD;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        PRINT N'>>> Loi: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+
+-- Procedure 2: Xác nhận toàn bộ đơn 'Chờ xác nhận' của 1 khách, gán nhân viên phụ trách.
+CREATE PROCEDURE sp_XacNhanDonChoXuLy
+    @MaKH VARCHAR(20),
+    @MaNV VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE  HoaDon
+    SET     TrangThai = N'Đã xác nhận', MaNV = @MaNV
+    WHERE   MaKH = @MaKH AND TrangThai = N'Chờ xác nhận';
+    PRINT N'>>> Da xac nhan ' + CAST(@@ROWCOUNT AS NVARCHAR(10)) + N' dong hoa don.';
+END;
+GO
+
+-- Procedure 3 (CURSOR): duyệt từng xe có tồn kho thấp để in cảnh báo nhập hàng.
+CREATE PROCEDURE sp_CanhBaoTonKhoThap
+    @Nguong INT = 5
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @MaXe VARCHAR(20), @TenXe NVARCHAR(100), @Ton INT, @Dem INT = 0;
+
+    DECLARE con_xe CURSOR FOR
+        SELECT  MaXe, TenXe, SoLuongTon
+        FROM    Xe
+        WHERE   SoLuongTon < @Nguong
+        ORDER BY SoLuongTon;
+
+    OPEN con_xe;
+    FETCH NEXT FROM con_xe INTO @MaXe, @TenXe, @Ton;
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        PRINT N'Canh bao: ' + @TenXe + N' (' + @MaXe + N') chi con '
+              + CAST(@Ton AS NVARCHAR(10)) + N' chiec.';
+        SET @Dem = @Dem + 1;
+        FETCH NEXT FROM con_xe INTO @MaXe, @TenXe, @Ton;
+    END
+    CLOSE con_xe;
+    DEALLOCATE con_xe;
+
+    PRINT N'>>> Tong so xe can nhap them: ' + CAST(@Dem AS NVARCHAR(10));
+END;
+GO
+
+/* ------------------------------------------------------------
+   3.4 TRIGGER – xử lý tự động
+   ------------------------------------------------------------ */
+
+-- Bảng phụ lưu lịch sử thay đổi giá xe (phục vụ trigger audit bên dưới).
+IF OBJECT_ID('LichSuGiaXe', 'U') IS NULL
+CREATE TABLE LichSuGiaXe (
+    ID       INT IDENTITY(1,1) PRIMARY KEY,
+    MaXe     VARCHAR(20),
+    GiaCu    DECIMAL(18,2),
+    GiaMoi   DECIMAL(18,2),
+    ThoiGian DATETIME DEFAULT GETDATE()
+);
+GO
+
+-- Trigger 1 (AFTER UPDATE): tự động ghi log mỗi khi giá bán của xe thay đổi.
+CREATE TRIGGER trg_Xe_LuuLichSuGia
+ON Xe AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO LichSuGiaXe (MaXe, GiaCu, GiaMoi)
+    SELECT  i.MaXe, d.GiaBan, i.GiaBan
+    FROM    inserted i
+    INNER JOIN deleted d ON i.MaXe = d.MaXe
+    WHERE   ISNULL(i.GiaBan, 0) <> ISNULL(d.GiaBan, 0);
+END;
+GO
+
+-- Trigger 2 (AFTER DELETE): khi xóa hóa đơn thì hoàn trả lại tồn kho cho xe.
+CREATE TRIGGER trg_HoaDon_HoanTra
+ON HoaDon AFTER DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE  x
+    SET     x.SoLuongTon = x.SoLuongTon + d.SoLuong
+    FROM    Xe x
+    INNER JOIN deleted d ON x.TenXe = d.TenDV_SP
+    WHERE   d.SoLuong IS NOT NULL;
+END;
+GO
+
+/* ------------------------------------------------------------
+   3.5 VÍ DỤ GỌI THỬ (bỏ dấu -- để chạy demo cho cô xem)
+   ------------------------------------------------------------ */
+-- SELECT * FROM vw_DanhSachNhanVien;
+-- SELECT * FROM vw_TonKho;
+-- SELECT * FROM vw_XeBanChay;
+-- SELECT dbo.fn_TongDoanhThuNhanVien('NV002') AS DoanhThu_NV002;
+-- SELECT dbo.fn_XepHangKhachHang('KH009')     AS XepHang_KH009;
+-- EXEC sp_CanhBaoTonKhoThap 5;
+-- EXEC sp_LapHoaDon 'NV002', 'KH001', 'XE02', 1, N'Tiền mặt';
+-- EXEC sp_XacNhanDonChoXuLy 'KH001', 'NV002';
+
+PRINT N'>>> Da tao xong VIEW / FUNCTION / PROCEDURE / CURSOR / TRIGGER.';
 GO
