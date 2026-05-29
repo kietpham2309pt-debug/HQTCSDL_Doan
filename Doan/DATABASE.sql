@@ -334,45 +334,47 @@ GO
    ------------------------------------------------------------ */
 
 -- View 1: Danh sách nhân viên kèm số hóa đơn đã lập và tổng doanh thu.
+-- Dùng subquery trong WHERE thay cho JOIN để vẫn lấy được nhân viên chưa lập hóa đơn nào.
 CREATE VIEW vw_DanhSachNhanVien AS
 SELECT  nv.MaNV,
         nv.HoTen,
         nv.ChucVu,
         nv.SDT,
         nv.TrangThai,
-        COUNT(hd.MaHD)                AS SoHoaDon,
-        ISNULL(SUM(hd.ThanhTien), 0)  AS TongDoanhThu
-FROM        NhanVien nv
-LEFT JOIN   HoaDon   hd ON hd.MaNV = nv.MaNV
-GROUP BY    nv.MaNV, nv.HoTen, nv.ChucVu, nv.SDT, nv.TrangThai;
+        (SELECT COUNT(*)
+         FROM   HoaDon hd WHERE hd.MaNV = nv.MaNV)         AS SoHoaDon,
+        (SELECT ISNULL(SUM(hd.ThanhTien), 0)
+         FROM   HoaDon hd WHERE hd.MaNV = nv.MaNV)         AS TongDoanhThu
+FROM    NhanVien nv;
 GO
 
 -- View 2: Tồn kho xe theo từng hãng, kèm tình trạng còn/sắp hết/hết hàng.
+-- Lấy tên hãng bằng subquery trong WHERE thay cho JOIN.
 CREATE VIEW vw_TonKho AS
 SELECT  x.MaXe,
         x.TenXe,
-        h.TenHang,
+        (SELECT h.TenHang FROM HangXe h WHERE h.MaHang = x.MaHang) AS TenHang,
         x.GiaBan,
         x.SoLuongTon,
         CASE WHEN x.SoLuongTon <= 0 THEN N'Hết hàng'
              WHEN x.SoLuongTon < 5  THEN N'Sắp hết'
              ELSE                        N'Còn hàng'
         END AS TinhTrang
-FROM        Xe     x
-LEFT JOIN   HangXe h ON h.MaHang = x.MaHang;
+FROM    Xe x;
 GO
 
 -- View 3: Xe bán chạy – tổng số lượng bán và doanh thu lấy từ hóa đơn.
+-- Nối 3 bảng bằng dấu phẩy + điều kiện ở WHERE (thay cho INNER JOIN).
 CREATE VIEW vw_XeBanChay AS
 SELECT  x.MaXe,
         x.TenXe,
         h.TenHang,
         SUM(hd.SoLuong)    AS SoLuongBan,
         SUM(hd.ThanhTien)  AS DoanhThu
-FROM        HoaDon hd
-INNER JOIN  Xe     x ON x.TenXe  = hd.TenDV_SP
-INNER JOIN  HangXe h ON h.MaHang = x.MaHang
-GROUP BY    x.MaXe, x.TenXe, h.TenHang;
+FROM    HoaDon hd, Xe x, HangXe h
+WHERE   x.TenXe  = hd.TenDV_SP
+  AND   h.MaHang = x.MaHang
+GROUP BY x.MaXe, x.TenXe, h.TenHang;
 GO
 
 /* ------------------------------------------------------------
@@ -536,9 +538,9 @@ BEGIN
     SET NOCOUNT ON;
     INSERT INTO LichSuGiaXe (MaXe, GiaCu, GiaMoi)
     SELECT  i.MaXe, d.GiaBan, i.GiaBan
-    FROM    inserted i
-    INNER JOIN deleted d ON i.MaXe = d.MaXe
-    WHERE   ISNULL(i.GiaBan, 0) <> ISNULL(d.GiaBan, 0);
+    FROM    inserted i, deleted d
+    WHERE   i.MaXe = d.MaXe
+      AND   ISNULL(i.GiaBan, 0) <> ISNULL(d.GiaBan, 0);
 END;
 GO
 
@@ -550,9 +552,9 @@ BEGIN
     SET NOCOUNT ON;
     UPDATE  x
     SET     x.SoLuongTon = x.SoLuongTon + d.SoLuong
-    FROM    Xe x
-    INNER JOIN deleted d ON x.TenXe = d.TenDV_SP
-    WHERE   d.SoLuong IS NOT NULL;
+    FROM    Xe x, deleted d
+    WHERE   x.TenXe = d.TenDV_SP
+      AND   d.SoLuong IS NOT NULL;
 END;
 GO
 
@@ -682,23 +684,6 @@ EXEC sp_addextendedproperty 'MS_Description', N'Thành tiền (VNĐ)',          
 EXEC sp_addextendedproperty 'MS_Description', N'Phương thức thanh toán',          'SCHEMA','dbo','TABLE','HoaDon','COLUMN','PhuongThucThanhToan';
 EXEC sp_addextendedproperty 'MS_Description', N'Trạng thái (Chờ xác nhận/Đã xác nhận)','SCHEMA','dbo','TABLE','HoaDon','COLUMN','TrangThai';
 GO
-
-/* ============================================================
-   PHẦN 6. LƯỢC ĐỒ QUAN HỆ (DIAGRAM)
-   ------------------------------------------------------------
-   Diagram là đối tượng đồ họa, không tạo bằng câu lệnh T-SQL.
-   Cách tạo trong SSMS để chụp nộp:
-     1. Mở database DL_OTO > chuột phải "Database Diagrams" > New Database Diagram.
-        (Nếu hỏi cài đối tượng hỗ trợ thì bấm Yes.)
-     2. Add 7 bảng: HangXe, Xe, KhachHang, NhanVien, TaiKhoan,
-        DichVuPhuTung, HoaDon.
-     3. SSMS tự vẽ các đường khóa ngoại:
-        - HangXe (1) --- (n) Xe
-        - NhanVien (1) --- (n) HoaDon
-        - KhachHang (1) --- (n) HoaDon
-        - NhanVien (1) --- (1) TaiKhoan   (do UNIQUE UX_TaiKhoan_MaNV)
-     4. Save (Ctrl+S), đặt tên "SoDoQuanHe", rồi chụp màn hình.
-   ============================================================ */
 
 PRINT N'>>> Da them UNIQUE, quan he 1-1 va mo ta thuoc tinh.';
 GO
