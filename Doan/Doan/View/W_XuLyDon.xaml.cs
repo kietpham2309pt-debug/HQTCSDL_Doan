@@ -58,17 +58,12 @@ namespace Doan.View
 
             try
             {
-                var maHDList = don.DanhSachMaHD;
                 using (var ctx = new QuanLyBanXeMayEntities())
                 {
-                    ctx.Configuration.LazyLoadingEnabled = false;
-                    var cacDong = ctx.HoaDons.Where(h => maHDList.Contains(h.MaHD)).ToList();
-                    foreach (var hd in cacDong)
-                    {
-                        hd.MaNV = nv.MaNV;
-                        hd.TrangThai = "Đã xác nhận";
-                    }
-                    ctx.SaveChanges();
+                    // Gọi STORED PROCEDURE sp_XacNhanDonChoXuLy của CSDL để
+                    // xác nhận các đơn 'Chờ xác nhận' của khách và gán nhân viên phụ trách.
+                    ctx.Database.ExecuteSqlCommand(
+                        "EXEC sp_XacNhanDonChoXuLy {0}, {1}", don.MaKH, nv.MaNV);
                 }
             }
             catch (System.Exception ex)

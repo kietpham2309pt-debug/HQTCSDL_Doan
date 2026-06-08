@@ -159,34 +159,37 @@ namespace Doan.ViewModel
         private void TaiDanhSachTop(List<HoaDon> danhSachHoaDon)
         {
             HashSet<string> tapTenXe;
+            List<MucThongKeTop_VM> topXe;
             try
             {
                 using (var ctx = new QuanLyBanXeMayEntities())
                 {
                     tapTenXe = new HashSet<string>(ctx.Xes.Select(x => x.TenXe ?? string.Empty), StringComparer.OrdinalIgnoreCase);
+
+                    // Xe bán chạy lấy trực tiếp từ VIEW vw_XeBanChay của CSDL.
+                    topXe = ctx.Database.SqlQuery<XeBanChay_DTO>(
+                            "SELECT TenXe, SoLuongBan, DoanhThu FROM vw_XeBanChay")
+                        .ToList()
+                        .Select(item => new MucThongKeTop_VM
+                        {
+                            TenMuc = item.TenXe ?? "Không xác định",
+                            SoLuongBan = item.SoLuongBan ?? 0,
+                            DoanhThu = item.DoanhThu ?? 0m
+                        })
+                        .OrderByDescending(item => item.DoanhThu)
+                        .ThenByDescending(item => item.SoLuongBan)
+                        .Take(5)
+                        .ToList();
                 }
             }
             catch (Exception)
             {
                 tapTenXe = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                topXe = new List<MucThongKeTop_VM>();
             }
 
             List<MucThongKeTop_VM> topDichVu = danhSachHoaDon
                 .Where(item => !tapTenXe.Contains(item.TenDV_SP ?? string.Empty))
-                .GroupBy(item => item.TenDV_SP ?? "Không xác định")
-                .Select(nhom => new MucThongKeTop_VM
-                {
-                    TenMuc = nhom.Key,
-                    SoLuongBan = nhom.Sum(item => item.SoLuong ?? 0),
-                    DoanhThu = nhom.Sum(item => item.ThanhTien ?? 0m)
-                })
-                .OrderByDescending(item => item.DoanhThu)
-                .ThenByDescending(item => item.SoLuongBan)
-                .Take(5)
-                .ToList();
-
-            List<MucThongKeTop_VM> topXe = danhSachHoaDon
-                .Where(item => tapTenXe.Contains(item.TenDV_SP ?? string.Empty))
                 .GroupBy(item => item.TenDV_SP ?? "Không xác định")
                 .Select(nhom => new MucThongKeTop_VM
                 {
@@ -266,5 +269,13 @@ namespace Doan.ViewModel
         public string TenMuc { get; set; }
         public int SoLuongBan { get; set; }
         public decimal DoanhThu { get; set; }
+    }
+
+    // Ánh xạ kết quả đọc từ VIEW vw_XeBanChay.
+    internal class XeBanChay_DTO
+    {
+        public string TenXe { get; set; }
+        public int? SoLuongBan { get; set; }
+        public decimal? DoanhThu { get; set; }
     }
 }

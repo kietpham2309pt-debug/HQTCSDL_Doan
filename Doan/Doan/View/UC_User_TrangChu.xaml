@@ -109,7 +109,7 @@
                         <Border Width="180" Margin="0,0,15,15" Background="White"
                                 CornerRadius="10" Effect="{StaticResource ShadowEffect}">
                             <StackPanel>
-                                <Image Source="{Binding HinhAnh}" Height="120" Stretch="Uniform" Margin="10"/>
+                                <Image Source="{Binding HinhAnh, Converter={StaticResource AnhConverter}}" Height="120" Stretch="Uniform" Margin="10"/>
                                 <StackPanel Margin="10,5,10,10">
                                     <TextBlock Text="{Binding TenXe}" FontSize="13" FontWeight="Bold"
                                                Foreground="#2C3E50" TextTrimming="CharacterEllipsis"/>

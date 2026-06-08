@@ -84,7 +84,7 @@
                     <DataTemplate>
                         <Border Width="150" Height="220" Margin="0,0,20,20" Background="White" CornerRadius="8" Effect="{StaticResource ShadowEffect}" Cursor="Hand">
                             <StackPanel Orientation="Vertical">
-                                <Image Source="{Binding HinhAnh}" Height="100" Margin="10" Stretch="Uniform"/>
+                                <Image Source="{Binding HinhAnh, Converter={StaticResource AnhConverter}}" Height="100" Margin="10" Stretch="Uniform"/>
                                 <StackPanel Margin="10,5">
                                     <TextBlock Text="{Binding TenXe}" FontSize="14" FontWeight="Bold" Foreground="#2c3e50" />
                                     <TextBlock Text="{Binding GiaBan, StringFormat={}{0:N0} đ}" FontSize="12" Foreground="#e74c3c" FontWeight="Bold" Margin="0,5,0,0"/>
@@ -118,7 +118,7 @@
                 <!-- Nội dung chi tiết -->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="20,0,20,20">
-                        <Image Source="{Binding XeDangChon.HinhAnh}" Height="180" Stretch="Uniform" Margin="0,0,0,20"/>
+                        <Image Source="{Binding XeDangChon.HinhAnh, Converter={StaticResource AnhConverter}}" Height="180" Stretch="Uniform" Margin="0,0,0,20"/>
                         <TextBlock Text="{Binding XeDangChon.TenXe}" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                         <TextBlock Text="{Binding XeDangChon.HangXe.TenHang, StringFormat=Hãng xe: {0}}" FontSize="13" Foreground="DimGray" Margin="0,0,0,8"/>
                         <TextBlock Text="{Binding XeDangChon.LoaiXe, StringFormat=Loại xe: {0}}" FontSize="13" Foreground="DimGray" Margin="0,0,0,8"/>

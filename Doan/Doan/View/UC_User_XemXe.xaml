@@ -80,7 +80,7 @@
                                     Background="White" CornerRadius="10"
                                     Effect="{StaticResource ShadowEffect}" Cursor="Hand">
                                 <StackPanel>
-                                    <Image Source="{Binding HinhAnh}" Height="110" Margin="10" Stretch="Uniform"/>
+                                    <Image Source="{Binding HinhAnh, Converter={StaticResource AnhConverter}}" Height="110" Margin="10" Stretch="Uniform"/>
                                     <StackPanel Margin="10,0,10,5">
                                         <TextBlock Text="{Binding TenXe}" FontSize="13" FontWeight="Bold"
                                                    Foreground="#2C3E50" TextTrimming="CharacterEllipsis"/>
@@ -112,7 +112,7 @@
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
-                        <Image Source="{Binding XeDangChon.HinhAnh}" Height="180" Stretch="Uniform" Margin="0,0,0,15"/>
+                        <Image Source="{Binding XeDangChon.HinhAnh, Converter={StaticResource AnhConverter}}" Height="180" Stretch="Uniform" Margin="0,0,0,15"/>
 
                         <TextBlock Text="{Binding XeDangChon.TenXe, FallbackValue='Chưa chọn xe'}"
                                    FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,8"/>

@@ -199,6 +199,20 @@ namespace Doan.ViewModel
             {
                 ctx.Configuration.LazyLoadingEnabled = false;
                 danhSachLoc = ctx.KhachHangs.ToList();
+
+                // Xếp hạng khách hàng tính bằng FUNCTION fn_XepHangKhachHang của CSDL.
+                var bangXepHang = ctx.Database.SqlQuery<XepHangKH_DTO>(
+                        "SELECT MaKH, dbo.fn_XepHangKhachHang(MaKH) AS XepHang FROM KhachHang")
+                    .ToList()
+                    .ToDictionary(item => item.MaKH ?? string.Empty, item => item.XepHang,
+                        StringComparer.OrdinalIgnoreCase);
+
+                foreach (var kh in danhSachLoc)
+                {
+                    string xh;
+                    kh.XepHang = bangXepHang.TryGetValue(kh.MaKH ?? string.Empty, out xh)
+                        ? xh : string.Empty;
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(TuKhoaTimKiem))
@@ -535,6 +549,13 @@ namespace Doan.ViewModel
             {
                 AnhCaNhanNhap = hopThoai.FileName;
             }
+        }
+
+        // Ánh xạ kết quả gọi FUNCTION fn_XepHangKhachHang.
+        private class XepHangKH_DTO
+        {
+            public string MaKH { get; set; }
+            public string XepHang { get; set; }
         }
 
         private void LamMoiNhapKhachHang()

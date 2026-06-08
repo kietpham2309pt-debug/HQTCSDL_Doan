@@ -296,7 +296,6 @@ INSERT INTO HoaDon (MaHD, NgayLap, MaNV, MaKH, TenDV_SP, SoLuong, ThanhTien, Phu
 ('HD010', '2025-05-07 08:30:00', 'NV002', 'KH010', N'Camera hành trình Vietmap C61',       1, 2400000,    N'Tiền mặt');
 GO
 
--- Lưu ý: PRINT không cho phép chứa subquery, nên dùng SELECT để xem
 -- số dòng đã nạp cho từng bảng (kết quả hiện ở tab Results trong SSMS).
 PRINT N'>>> DL_OTO đã được tạo và nạp xong dữ liệu mẫu.';
 GO
@@ -313,9 +312,18 @@ GO
    PHẦN 3. CÁC CẤU TRÚC XỬ LÝ (theo yêu cầu đồ án)
    Gồm 5 loại khác nhau: VIEW, FUNCTION, STORED PROCEDURE,
    CURSOR (trong procedure) và TRIGGER.
-   ------------------------------------------------------------
-   Xoá các đối tượng cũ (nếu chạy lại file) trước khi tạo mới.
    ============================================================ */
+
+-- Dọn các object cũ thuộc thiết kế khác (không dùng trong đồ án này).
+IF OBJECT_ID('TaoDonHang', 'P')        IS NOT NULL DROP PROCEDURE TaoDonHang;
+IF OBJECT_ID('fn_TinhTongTien', 'FN')  IS NOT NULL DROP FUNCTION fn_TinhTongTien;
+IF OBJECT_ID('sp_ThemKhachHang', 'P')  IS NOT NULL DROP PROCEDURE sp_ThemKhachHang;
+IF OBJECT_ID('sp_SuaKhachHang', 'P')   IS NOT NULL DROP PROCEDURE sp_SuaKhachHang;
+IF OBJECT_ID('sp_XoaKhachHangMKH', 'P')IS NOT NULL DROP PROCEDURE sp_XoaKhachHangMKH;
+IF OBJECT_ID('sp_XoaKhachHangSDT', 'P')IS NOT NULL DROP PROCEDURE sp_XoaKhachHangSDT;
+IF OBJECT_ID('sp_TimKhachHangSDT', 'P')IS NOT NULL DROP PROCEDURE sp_TimKhachHangSDT;
+IF OBJECT_ID('sp_ThemNhanVien', 'P')   IS NOT NULL DROP PROCEDURE sp_ThemNhanVien;
+GO
 
 IF OBJECT_ID('trg_Xe_LuuLichSuGia', 'TR')   IS NOT NULL DROP TRIGGER trg_Xe_LuuLichSuGia;
 IF OBJECT_ID('trg_HoaDon_HoanTra', 'TR')    IS NOT NULL DROP TRIGGER trg_HoaDon_HoanTra;
@@ -334,7 +342,6 @@ GO
    ------------------------------------------------------------ */
 
 -- View 1: Danh sách nhân viên kèm số hóa đơn đã lập và tổng doanh thu.
--- Dùng subquery trong WHERE thay cho JOIN để vẫn lấy được nhân viên chưa lập hóa đơn nào.
 CREATE VIEW vw_DanhSachNhanVien AS
 SELECT  nv.MaNV,
         nv.HoTen,
@@ -349,7 +356,6 @@ FROM    NhanVien nv;
 GO
 
 -- View 2: Tồn kho xe theo từng hãng, kèm tình trạng còn/sắp hết/hết hàng.
--- Lấy tên hãng bằng subquery trong WHERE thay cho JOIN.
 CREATE VIEW vw_TonKho AS
 SELECT  x.MaXe,
         x.TenXe,
@@ -364,7 +370,6 @@ FROM    Xe x;
 GO
 
 -- View 3: Xe bán chạy – tổng số lượng bán và doanh thu lấy từ hóa đơn.
--- Nối 3 bảng bằng dấu phẩy + điều kiện ở WHERE (thay cho INNER JOIN).
 CREATE VIEW vw_XeBanChay AS
 SELECT  x.MaXe,
         x.TenXe,

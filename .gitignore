@@ -1,0 +1,19 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# NuGet packages (restore tự tải lại)
+packages/
+*.nupkg
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Video demo (quá lớn cho GitHub)
+*.mp4

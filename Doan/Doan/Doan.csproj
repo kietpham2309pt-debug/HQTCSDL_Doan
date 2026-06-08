@@ -193,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\BaseViewModel.cs" />
+    <Compile Include="Helper\DuongDanAnhConverter.cs" />
     <Compile Include="Helper\PhienDangNhap.cs" />
     <Compile Include="Helper\RelayCommand.cs" />
     <Compile Include="Model\DichVuPhuTung.cs">
@@ -207,6 +208,7 @@
     <Compile Include="Model\KhachHang.cs">
       <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\KhachHang_Extra.cs" />
     <Compile Include="Model\MoTo.cs" />
     <Compile Include="Model\NhanVien.cs">
       <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>

@@ -116,11 +116,27 @@ PRINT N'>>> Da sao luu DL_OTO vao C:\Backup\DL_OTO\DL_OTO_Full.bak';
 GO
 
 /* ------------------------------------------------------------
+   4b. PHỤC HỒI CSDL (RESTORE)
+   ------------------------------------------------------------ */
+-- Kiểm tra file sao lưu còn dùng được trước khi phục hồi.
+RESTORE VERIFYONLY FROM DISK = N'C:\Backup\DL_OTO\DL_OTO_Full.bak';
+GO
+
+-- Phục hồi đè lên DL_OTO. Phải đóng mọi kết nối tới DL_OTO trước khi chạy.
+USE master;
+GO
+ALTER DATABASE DL_OTO SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+RESTORE DATABASE DL_OTO
+FROM DISK = N'C:\Backup\DL_OTO\DL_OTO_Full.bak'
+WITH REPLACE, RECOVERY, STATS = 10;
+ALTER DATABASE DL_OTO SET MULTI_USER;
+GO
+
+PRINT N'>>> Da phuc hoi DL_OTO tu file sao luu.';
+GO
+
+/* ------------------------------------------------------------
    5. LẬP LỊCH SAO LƯU TỰ ĐỘNG (SQL SERVER AGENT JOB)
-   ------------------------------------------------------------
-   Job "DL_OTO_AutoBackup" tự động sao lưu đầy đủ HẰNG NGÀY lúc 02:00.
-   Yêu cầu: dịch vụ SQL Server Agent phải đang chạy.
-   (Bản Express không có Agent -> xem cách thay thế ở cuối file.)
    ------------------------------------------------------------ */
 USE msdb;
 GO
@@ -164,13 +180,3 @@ GO
 PRINT N'>>> Da tao job tu dong sao luu DL_OTO_AutoBackup (chay 02:00 hang ngay).';
 GO
 
-/* ------------------------------------------------------------
-   GHI CHÚ - Nếu dùng SQL Server EXPRESS (không có Agent):
-   Thay bằng Windows Task Scheduler chạy lệnh sau mỗi ngày:
-
-     sqlcmd -S . -E -Q "BACKUP DATABASE DL_OTO TO DISK='C:\Backup\DL_OTO\DL_OTO_Auto.bak' WITH INIT"
-
-   Tạo task:  Task Scheduler > Create Basic Task > Daily > Start a program
-              Program: sqlcmd
-              Arguments: -S . -E -Q "BACKUP DATABASE DL_OTO TO DISK='C:\Backup\DL_OTO\DL_OTO_Auto.bak' WITH INIT"
-   ------------------------------------------------------------ */

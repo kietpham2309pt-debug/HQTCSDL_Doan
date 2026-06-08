@@ -37,6 +37,8 @@
 
                         <DataGridTextColumn Header="Họ và Tên" Binding="{Binding HoTen}" Width="150"/>
 
+                        <DataGridTextColumn Header="Xếp hạng" Binding="{Binding XepHang}" Width="110"/>
+
                         <DataGridTextColumn Header="Số điện thoại" Binding="{Binding SDT}" Width="110"/>
 
                         <DataGridTextColumn Header="CCCD" Binding="{Binding CCCD}" Width="120"/>

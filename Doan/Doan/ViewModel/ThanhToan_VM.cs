@@ -273,7 +273,10 @@ namespace Doan.ViewModel
                 int soBatDau = LaySoHoaDonLonNhat();
 
                 using (var ctx = new QuanLyBanXeMayEntities())
+                using (var giaoTac = ctx.Database.BeginTransaction())
                 {
+                    try
+                    {
                     ctx.Configuration.LazyLoadingEnabled = false;
                     string maNV = NhanVienLapDuocChon != null ? NhanVienLapDuocChon.MaNV : null;
                     string maKH = KhachHangDuocChon != null ? KhachHangDuocChon.MaKH : null;
@@ -331,6 +334,15 @@ namespace Doan.ViewModel
                     }
 
                     ctx.SaveChanges();
+                    // Mọi hóa đơn và việc trừ kho thành công thì mới xác nhận giao tác.
+                    giaoTac.Commit();
+                    }
+                    catch
+                    {
+                        // Có lỗi giữa chừng: hủy toàn bộ giao tác để dữ liệu không sai lệch.
+                        giaoTac.Rollback();
+                        throw;
+                    }
                 }
             }
             catch (Exception ex)
