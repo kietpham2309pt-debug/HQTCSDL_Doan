@@ -692,3 +692,244 @@ GO
 
 PRINT N'>>> Da them UNIQUE, quan he 1-1 va mo ta thuoc tinh.';
 GO
+
+/* ============================================================
+   PHẦN 6. NÂNG CẤP V2 — chức năng mở rộng
+   ------------------------------------------------------------
+   Ẩn/hiện xe, tách Dịch vụ/Phụ tùng, khoá tài khoản + quên
+   mật khẩu (câu hỏi bảo mật), nhập kho + lịch sử nhập, VIEW
+   thống kê chi tiết, PROC nghiệp vụ, TRIGGER tự động.
+   (Nội dung này cũng nằm trong file DATABASE_v2_migration.sql
+    để chạy bổ sung cho CSDL đã cài sẵn — đều idempotent.)
+   ============================================================ */
+
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
+GO
+
+-- 6.1 Cột mới
+IF COL_LENGTH('dbo.Xe', 'TrangThaiHienThi') IS NULL
+    ALTER TABLE Xe ADD TrangThaiHienThi NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Xe_TrangThaiHienThi DEFAULT N'Đang bán';
+GO
+IF COL_LENGTH('dbo.DichVuPhuTung', 'Loai') IS NULL
+    ALTER TABLE DichVuPhuTung ADD Loai NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_DichVuPhuTung_Loai DEFAULT N'DichVu';
+GO
+UPDATE DichVuPhuTung SET Loai = CASE WHEN MaPT LIKE 'PT%' THEN N'PhuTung' ELSE N'DichVu' END;
+GO
+IF COL_LENGTH('dbo.TaiKhoan', 'TrangThai') IS NULL
+    ALTER TABLE TaiKhoan ADD TrangThai NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_TaiKhoan_TrangThai DEFAULT N'Hoạt động';
+GO
+IF COL_LENGTH('dbo.TaiKhoan', 'CauHoiBaoMat') IS NULL
+    ALTER TABLE TaiKhoan ADD CauHoiBaoMat NVARCHAR(200) NULL;
+GO
+IF COL_LENGTH('dbo.TaiKhoan', 'CauTraLoiBaoMat') IS NULL
+    ALTER TABLE TaiKhoan ADD CauTraLoiBaoMat NVARCHAR(200) NULL;
+GO
+UPDATE TaiKhoan
+SET    CauHoiBaoMat    = N'Mã nhân viên của bạn là gì?',
+       CauTraLoiBaoMat = MaNV
+WHERE  MaNV IS NOT NULL
+  AND  (CauHoiBaoMat IS NULL OR LTRIM(RTRIM(CauHoiBaoMat)) = N'');
+GO
+
+-- 6.2 Bảng nhập kho
+IF OBJECT_ID('PhieuNhap', 'U') IS NULL
+CREATE TABLE PhieuNhap (
+    MaPN       VARCHAR(20)  PRIMARY KEY,
+    NgayNhap   DATETIME     NOT NULL DEFAULT GETDATE(),
+    MaNV       VARCHAR(20)  NULL,
+    NhaCungCap NVARCHAR(150),
+    TongTien   DECIMAL(18,2) NOT NULL DEFAULT 0,
+    GhiChu     NVARCHAR(255),
+    CONSTRAINT FK_PhieuNhap_NhanVien FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV)
+);
+GO
+IF OBJECT_ID('ChiTietPhieuNhap', 'U') IS NULL
+CREATE TABLE ChiTietPhieuNhap (
+    ID          INT IDENTITY(1,1) PRIMARY KEY,
+    MaPN        VARCHAR(20)  NOT NULL,
+    LoaiMatHang NVARCHAR(10) NOT NULL,
+    MaXe        VARCHAR(20)  NULL,
+    MaPT        VARCHAR(20)  NULL,
+    SoLuong     INT          NOT NULL CHECK (SoLuong > 0),
+    DonGiaNhap  DECIMAL(18,2) NOT NULL CHECK (DonGiaNhap >= 0),
+    ThanhTien   AS (SoLuong * DonGiaNhap) PERSISTED,
+    CONSTRAINT FK_CTPN_PhieuNhap FOREIGN KEY (MaPN) REFERENCES PhieuNhap(MaPN),
+    CONSTRAINT FK_CTPN_Xe        FOREIGN KEY (MaXe) REFERENCES Xe(MaXe),
+    CONSTRAINT FK_CTPN_PhuTung   FOREIGN KEY (MaPT) REFERENCES DichVuPhuTung(MaPT),
+    CONSTRAINT CK_CTPN_MatHang   CHECK (
+        (LoaiMatHang = N'Xe'      AND MaXe IS NOT NULL AND MaPT IS NULL) OR
+        (LoaiMatHang = N'PhuTung' AND MaPT IS NOT NULL AND MaXe IS NULL)
+    )
+);
+GO
+
+-- 6.3 Dọn object V2 cũ
+IF OBJECT_ID('sp_NhapKho', 'P')                 IS NOT NULL DROP PROCEDURE sp_NhapKho;
+IF OBJECT_ID('sp_DoiMatKhau', 'P')              IS NOT NULL DROP PROCEDURE sp_DoiMatKhau;
+IF OBJECT_ID('sp_CapMatKhau', 'P')              IS NOT NULL DROP PROCEDURE sp_CapMatKhau;
+IF OBJECT_ID('sp_DatLaiMatKhauQuaCauHoi', 'P')  IS NOT NULL DROP PROCEDURE sp_DatLaiMatKhauQuaCauHoi;
+IF OBJECT_ID('sp_KhoaTaiKhoanTheoNhanVien', 'P')IS NOT NULL DROP PROCEDURE sp_KhoaTaiKhoanTheoNhanVien;
+GO
+IF OBJECT_ID('trg_ChiTietPhieuNhap_TongTien','TR') IS NOT NULL DROP TRIGGER trg_ChiTietPhieuNhap_TongTien;
+IF OBJECT_ID('trg_NhanVien_KhoaTaiKhoan','TR')     IS NOT NULL DROP TRIGGER trg_NhanVien_KhoaTaiKhoan;
+GO
+IF OBJECT_ID('vw_LichSuNhap', 'V')      IS NOT NULL DROP VIEW vw_LichSuNhap;
+IF OBJECT_ID('vw_ThongKeXe', 'V')       IS NOT NULL DROP VIEW vw_ThongKeXe;
+IF OBJECT_ID('vw_ThongKeDichVu', 'V')   IS NOT NULL DROP VIEW vw_ThongKeDichVu;
+IF OBJECT_ID('vw_ThongKePhuTung', 'V')  IS NOT NULL DROP VIEW vw_ThongKePhuTung;
+GO
+IF TYPE_ID('dbo.ChiTietNhapType') IS NOT NULL DROP TYPE dbo.ChiTietNhapType;
+GO
+
+-- 6.4 TVP
+CREATE TYPE dbo.ChiTietNhapType AS TABLE (
+    LoaiMatHang NVARCHAR(10),
+    MaXe        VARCHAR(20)  NULL,
+    MaPT        VARCHAR(20)  NULL,
+    SoLuong     INT,
+    DonGiaNhap  DECIMAL(18,2)
+);
+GO
+
+-- 6.5 Stored procedure
+CREATE PROCEDURE sp_NhapKho
+    @MaNV VARCHAR(20), @NhaCungCap NVARCHAR(150), @GhiChu NVARCHAR(255),
+    @ChiTiet dbo.ChiTietNhapType READONLY, @MaPN VARCHAR(20) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM @ChiTiet)
+        BEGIN RAISERROR(N'Phieu nhap phai co it nhat 1 dong.', 16, 1); RETURN; END
+
+        BEGIN TRANSACTION;
+        DECLARE @SoMoi INT;
+        SELECT @SoMoi = ISNULL(MAX(CAST(SUBSTRING(MaPN, 3, 10) AS INT)), 0) + 1
+        FROM   PhieuNhap WHERE MaPN LIKE 'PN%';
+        SET @MaPN = 'PN' + RIGHT('000' + CAST(@SoMoi AS VARCHAR(10)), 3);
+
+        INSERT INTO PhieuNhap (MaPN, NgayNhap, MaNV, NhaCungCap, TongTien, GhiChu)
+        VALUES (@MaPN, GETDATE(), @MaNV, @NhaCungCap, 0, @GhiChu);
+
+        INSERT INTO ChiTietPhieuNhap (MaPN, LoaiMatHang, MaXe, MaPT, SoLuong, DonGiaNhap)
+        SELECT @MaPN, LoaiMatHang, MaXe, MaPT, SoLuong, DonGiaNhap FROM @ChiTiet;
+
+        UPDATE x SET x.SoLuongTon = ISNULL(x.SoLuongTon, 0) + ct.TongSL
+        FROM Xe x JOIN (SELECT MaXe, SUM(SoLuong) TongSL FROM @ChiTiet WHERE LoaiMatHang = N'Xe' GROUP BY MaXe) ct ON ct.MaXe = x.MaXe;
+
+        UPDATE p SET p.TonKho = ISNULL(p.TonKho, 0) + ct.TongSL
+        FROM DichVuPhuTung p JOIN (SELECT MaPT, SUM(SoLuong) TongSL FROM @ChiTiet WHERE LoaiMatHang = N'PhuTung' GROUP BY MaPT) ct ON ct.MaPT = p.MaPT;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        ;THROW;
+    END CATCH
+END;
+GO
+
+CREATE PROCEDURE sp_DoiMatKhau
+    @Username VARCHAR(50), @MatKhauCu VARCHAR(255), @MatKhauMoi VARCHAR(255), @KetQua INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON; SET @KetQua = 0;
+    IF NOT EXISTS (SELECT 1 FROM TaiKhoan WHERE Username = @Username) BEGIN SET @KetQua = -1; RETURN; END
+    IF NOT EXISTS (SELECT 1 FROM TaiKhoan WHERE Username = @Username AND Password = @MatKhauCu) BEGIN SET @KetQua = 0; RETURN; END
+    UPDATE TaiKhoan SET Password = @MatKhauMoi WHERE Username = @Username; SET @KetQua = 1;
+END;
+GO
+
+CREATE PROCEDURE sp_CapMatKhau @Username VARCHAR(50), @MatKhauMoi VARCHAR(255)
+AS BEGIN SET NOCOUNT ON; UPDATE TaiKhoan SET Password = @MatKhauMoi WHERE Username = @Username; END;
+GO
+
+CREATE PROCEDURE sp_DatLaiMatKhauQuaCauHoi
+    @Username VARCHAR(50), @CauTraLoi NVARCHAR(200), @MatKhauMoi VARCHAR(255), @KetQua INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON; SET @KetQua = 0;
+    IF NOT EXISTS (SELECT 1 FROM TaiKhoan WHERE Username = @Username) BEGIN SET @KetQua = -1; RETURN; END
+    IF NOT EXISTS (SELECT 1 FROM TaiKhoan WHERE Username = @Username
+                   AND LOWER(LTRIM(RTRIM(CauTraLoiBaoMat))) = LOWER(LTRIM(RTRIM(@CauTraLoi))))
+    BEGIN SET @KetQua = 0; RETURN; END
+    UPDATE TaiKhoan SET Password = @MatKhauMoi WHERE Username = @Username; SET @KetQua = 1;
+END;
+GO
+
+CREATE PROCEDURE sp_KhoaTaiKhoanTheoNhanVien @MaNV VARCHAR(20), @Khoa BIT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE TaiKhoan SET TrangThai = CASE WHEN @Khoa = 1 THEN N'Đã khóa' ELSE N'Hoạt động' END WHERE MaNV = @MaNV;
+END;
+GO
+
+-- 6.6 Trigger
+CREATE TRIGGER trg_ChiTietPhieuNhap_TongTien
+ON ChiTietPhieuNhap AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    ;WITH PN_AFFECTED AS (SELECT MaPN FROM inserted UNION SELECT MaPN FROM deleted)
+    UPDATE pn SET pn.TongTien = ISNULL((SELECT SUM(ct.ThanhTien) FROM ChiTietPhieuNhap ct WHERE ct.MaPN = pn.MaPN), 0)
+    FROM PhieuNhap pn JOIN PN_AFFECTED a ON a.MaPN = pn.MaPN;
+END;
+GO
+
+CREATE TRIGGER trg_NhanVien_KhoaTaiKhoan
+ON NhanVien AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE tk SET tk.TrangThai = N'Đã khóa'
+    FROM TaiKhoan tk JOIN inserted i ON tk.MaNV = i.MaNV JOIN deleted d ON d.MaNV = i.MaNV
+    WHERE i.TrangThai = N'Đã nghỉ việc' AND ISNULL(d.TrangThai, N'') <> N'Đã nghỉ việc';
+    UPDATE tk SET tk.TrangThai = N'Hoạt động'
+    FROM TaiKhoan tk JOIN inserted i ON tk.MaNV = i.MaNV JOIN deleted d ON d.MaNV = i.MaNV
+    WHERE i.TrangThai = N'Đang làm việc' AND d.TrangThai = N'Đã nghỉ việc';
+END;
+GO
+
+-- 6.7 View thống kê
+CREATE VIEW vw_LichSuNhap AS
+SELECT pn.MaPN, pn.NgayNhap, pn.NhaCungCap, pn.GhiChu, pn.TongTien, pn.MaNV,
+       nv.HoTen AS TenNhanVien, ct.ID AS ChiTietID, ct.LoaiMatHang,
+       CASE WHEN ct.LoaiMatHang = N'Xe' THEN ct.MaXe ELSE ct.MaPT END AS MaMatHang,
+       CASE WHEN ct.LoaiMatHang = N'Xe' THEN x.TenXe ELSE p.Ten END   AS TenMatHang,
+       ct.SoLuong, ct.DonGiaNhap, ct.ThanhTien
+FROM PhieuNhap pn
+LEFT JOIN NhanVien nv ON nv.MaNV = pn.MaNV
+LEFT JOIN ChiTietPhieuNhap ct ON ct.MaPN = pn.MaPN
+LEFT JOIN Xe x ON x.MaXe = ct.MaXe
+LEFT JOIN DichVuPhuTung p ON p.MaPT = ct.MaPT;
+GO
+
+CREATE VIEW vw_ThongKeXe AS
+SELECT h.MaHang, h.TenHang, COUNT(x.MaXe) AS SoMauXe,
+       ISNULL(SUM(x.SoLuongTon), 0) AS TongTon,
+       ISNULL(SUM(x.SoLuongTon * x.GiaBan), 0) AS GiaTriTon,
+       SUM(CASE WHEN x.TrangThaiHienThi = N'Đang bán' THEN 1 ELSE 0 END) AS SoXeDangBan,
+       SUM(CASE WHEN x.TrangThaiHienThi = N'Ẩn' THEN 1 ELSE 0 END) AS SoXeAn
+FROM HangXe h LEFT JOIN Xe x ON x.MaHang = h.MaHang
+GROUP BY h.MaHang, h.TenHang;
+GO
+
+CREATE VIEW vw_ThongKeDichVu AS
+SELECT d.MaPT, d.Ten, d.Gia, ISNULL(SUM(hd.SoLuong), 0) AS SoLuongBan, ISNULL(SUM(hd.ThanhTien), 0) AS DoanhThu
+FROM DichVuPhuTung d LEFT JOIN HoaDon hd ON hd.TenDV_SP = d.Ten
+WHERE d.Loai = N'DichVu' GROUP BY d.MaPT, d.Ten, d.Gia;
+GO
+
+CREATE VIEW vw_ThongKePhuTung AS
+SELECT d.MaPT, d.Ten, d.Gia, d.TonKho, ISNULL(SUM(hd.SoLuong), 0) AS SoLuongBan, ISNULL(SUM(hd.ThanhTien), 0) AS DoanhThu
+FROM DichVuPhuTung d LEFT JOIN HoaDon hd ON hd.TenDV_SP = d.Ten
+WHERE d.Loai = N'PhuTung' GROUP BY d.MaPT, d.Ten, d.Gia, d.TonKho;
+GO
+
+PRINT N'>>> PHAN 6 (V2): da tao cot moi, bang nhap kho, PROC/VIEW/TRIGGER/TVP.';
+GO

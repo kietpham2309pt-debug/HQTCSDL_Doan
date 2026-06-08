@@ -76,6 +76,7 @@ namespace Doan.ViewModel
                 DanhSachHangXe = new ObservableCollection<HangXe>(ctx.HangXes.ToList());
 
                 var topXe = ctx.Xes.Include("HangXe")
+                    .Where(x => x.TrangThaiHienThi == "Đang bán")
                     .OrderByDescending(x => x.GiaBan)
                     .Take(6)
                     .ToList();

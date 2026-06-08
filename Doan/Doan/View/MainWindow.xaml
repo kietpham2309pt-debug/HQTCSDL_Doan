@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <!-- ========== TOP HEADER ========== -->
-        <Grid Grid.Row="0" Background="White" Effect="{DynamicResource ShadowEffect}">
+        <Grid Grid.Row="0" Background="{DynamicResource BrushHeader}" Effect="{DynamicResource ShadowEffect}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -32,7 +32,7 @@
             Text="Hệ Thống Quản Lý Bán Xe Ô Tô"
             FontSize="18"
             FontWeight="Bold"
-            Foreground="#2c3e50"
+            Foreground="{DynamicResource BrushText}"
             VerticalAlignment="Center"/>
             </StackPanel>
 
@@ -42,30 +42,28 @@
 
 
                 <!-- Divider -->
-                <Rectangle Width="1" Height="30" Fill="#ecf0f1" Margin="0,0,20,0"/>
+                <Rectangle Width="1" Height="30" Fill="{DynamicResource BrushBorder}" Margin="0,0,20,0"/>
 
                 <!-- Avatar và Tên đăng nhập -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Ellipse 
-                Width="40" 
-                Height="40" 
-                Margin="0,0,12,0">
-                        <Ellipse.Fill>
-                            <SolidColorBrush Color="#bdc3c7"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
+                    <Ellipse
+                Width="40"
+                Height="40"
+                Margin="0,0,12,0"
+                Fill="{DynamicResource BrushPrimary}"/>
 
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock 
+                        <TextBlock
                     x:Name="UserNameTextBlock"
                     Text="Quản Trị Viên"
                     FontSize="13"
                     FontWeight="Bold"
-                    Foreground="#2c3e50"/>
-                        <TextBlock 
+                    Foreground="{DynamicResource BrushText}"/>
+                        <TextBlock
+                    x:Name="RoleTextBlock"
                     Text="Admin"
                     FontSize="11"
-                    Foreground="#95a5a6"/>
+                    Foreground="{DynamicResource BrushTextMuted}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -79,24 +77,28 @@
             </Grid.ColumnDefinitions>
 
             <!-- ========== SIDEBAR MENU ========== -->
-            <Grid Grid.Column="0" Background="#2c3e50">
-                <StackPanel Orientation="Vertical">
+            <Grid Grid.Column="0" Background="{DynamicResource BrushSidebar}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
                     <!-- Search Box -->
-                    <Grid Margin="15,20,15,20" Height="40" Background="#34495e" >
+                    <Grid Grid.Row="0" Margin="15,20,15,20" Height="40" Background="{DynamicResource BrushSidebarActive}" >
                         <Label
                         Content="MENU CHỨC NĂNG"
                         FontSize="18"
                         FontWeight="Bold"
-                        Foreground="White"
+                        Foreground="{DynamicResource BrushSidebarText}"
                         VerticalAlignment="Center" 
                         HorizontalContentAlignment="Center" 
                         VerticalContentAlignment="Center"/>
                     </Grid>
 
                     <!-- Menu Items -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel Orientation="Vertical">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="MenuPanel" Orientation="Vertical">
 
                             <!-- Quản lý xe -->
                             <Button 
@@ -112,7 +114,7 @@
                             </Button>
 
                             <!-- Dịch vụ -->
-                            <Button 
+                            <Button
                         x:Name="BtnDV"
                         Style="{DynamicResource MenuButtonStyle}"
                         Tag="DichVu"
@@ -123,8 +125,60 @@
                                     <TextBlock Text="Dịch vụ" FontSize="14" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
+
+                            <!-- Phụ tùng -->
+                            <Button
+                        x:Name="BtnPhuTung"
+                        Style="{DynamicResource MenuButtonStyle}"
+                        Tag="PhuTung"
+                        Command="{Binding LenhDieuHuong}"
+                        CommandParameter="PhuTung">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🔧" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Phụ tùng" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <!-- Tất cả xe -->
+                            <Button
+                        x:Name="BtnTatCaXe"
+                        Style="{DynamicResource MenuButtonStyle}"
+                        Tag="TatCaXe"
+                        Command="{Binding LenhDieuHuong}"
+                        CommandParameter="TatCaXe">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🚙" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Tất cả xe" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Nhập kho -->
+                            <Button
+                        x:Name="BtnNhapKho"
+                        Style="{DynamicResource MenuButtonStyle}"
+                        Tag="NhapKho"
+                        Command="{Binding LenhDieuHuong}"
+                        CommandParameter="NhapKho">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📥" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Nhập kho" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Lịch sử nhập -->
+                            <Button
+                        x:Name="BtnLichSuNhap"
+                        Style="{DynamicResource MenuButtonStyle}"
+                        Tag="LichSuNhap"
+                        Command="{Binding LenhDieuHuong}"
+                        CommandParameter="LichSuNhap">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📜" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Lịch sử nhập" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
                             <!-- Khách hàng -->
-                            <Button 
+                            <Button
                         x:Name="BtnKhachHang"
                         Style="{DynamicResource MenuButtonStyle}"
                         Tag="KhachHang"
@@ -159,6 +213,19 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="💳" FontSize="18" Margin="0,0,12,0"/>
                                     <TextBlock Text="Thanh toán" FontSize="14" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Trả góp -->
+                            <Button
+                        x:Name="BtnTraGop"
+                        Style="{DynamicResource MenuButtonStyle}"
+                        Tag="TraGop"
+                        Command="{Binding LenhDieuHuong}"
+                        CommandParameter="TraGop">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="💳" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Trả góp" FontSize="14" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
 
@@ -202,7 +269,7 @@
                             </Button>
 
                             <!-- Separator -->
-                            <Separator Background="#34495e" Margin="15,15,15,15"/>
+                            <Separator Background="{DynamicResource BrushBorder}" Margin="15,15,15,15"/>
 
                             <!-- Cài đặt -->
                             <Button 
@@ -230,39 +297,18 @@
                             </Button>
                         </StackPanel>
                     </ScrollViewer>
-                </StackPanel>
+                </Grid>
             </Grid>
 
             <!-- ========== MAIN CONTENT ========== -->
-            <ContentControl 
+            <ContentControl
         Grid.Column="1"
         x:Name="MainContentControl"
         Content="{Binding ManHinhHienTai}"
-        Background="White"
+        TextElement.Foreground="{DynamicResource BrushText}"
+        Background="{DynamicResource BrushBackground}"
         Margin="20"/>
         </Grid>
     </Grid>
 
-    <Window.Resources>
-        <!-- Shadow Effect -->
-        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="3" Opacity="0.15"/>
-
-        <!-- Menu Button Style -->
-        <Style x:Key="MenuButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#ecf0f1"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="20,15"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Cursor" Value="Hand"/>
-
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#34495e"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
 </Window>

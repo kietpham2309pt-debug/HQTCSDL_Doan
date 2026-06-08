@@ -6,50 +6,72 @@
              xmlns:vm="clr-namespace:Doan.ViewModel"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1200"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
     <UserControl.DataContext>
         <vm:CaiDat_VM/>
     </UserControl.DataContext>
 
-    <Grid Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top" Width="520">
-        <StackPanel>
-            <TextBlock Text="CÀI ĐẶT TÀI KHOẢN" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,15"/>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="15" HorizontalAlignment="Left" VerticalAlignment="Top" Width="560">
+            <StackPanel>
+                <TextBlock Text="CÀI ĐẶT" Style="{StaticResource PageTitle}"/>
 
-            <Border Background="White" CornerRadius="10" Padding="20" Margin="0,0,0,15">
-                <StackPanel>
-                    <TextBlock Text="THÔNG TIN TÀI KHOẢN" FontSize="14" FontWeight="Bold" Foreground="#2980B9" Margin="0,0,0,12"/>
-                    <Grid Margin="0,0,0,6">
-                        <TextBlock Text="Tên đăng nhập:" Foreground="Gray"/>
-                        <TextBlock Text="{Binding TenDangNhap}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
-                    </Grid>
-                    <Grid Margin="0,0,0,6">
-                        <TextBlock Text="Vai trò:" Foreground="Gray"/>
-                        <TextBlock Text="{Binding VaiTro}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
-                    </Grid>
-                    <Grid>
-                        <TextBlock Text="Nhân viên:" Foreground="Gray"/>
-                        <TextBlock Text="{Binding TenNhanVien}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
+                <!-- THÔNG TIN TÀI KHOẢN -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="THÔNG TIN TÀI KHOẢN" Style="{StaticResource SectionTitle}"/>
+                        <Grid Margin="0,0,0,6">
+                            <TextBlock Text="Tên đăng nhập:" Foreground="{DynamicResource BrushTextMuted}"/>
+                            <TextBlock Text="{Binding TenDangNhap}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="{DynamicResource BrushText}"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,6">
+                            <TextBlock Text="Vai trò:" Foreground="{DynamicResource BrushTextMuted}"/>
+                            <TextBlock Text="{Binding VaiTro}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="{DynamicResource BrushText}"/>
+                        </Grid>
+                        <Grid>
+                            <TextBlock Text="Nhân viên:" Foreground="{DynamicResource BrushTextMuted}"/>
+                            <TextBlock Text="{Binding TenNhanVien}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="{DynamicResource BrushText}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
 
-            <Border Background="White" CornerRadius="10" Padding="20">
-                <StackPanel>
-                    <TextBlock Text="ĐỔI MẬT KHẨU" FontSize="14" FontWeight="Bold" Foreground="#2980B9" Margin="0,0,0,12"/>
+                <!-- CÂU HỎI BẢO MẬT -->
+                <Border Style="{StaticResource Card}" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="CÂU HỎI BẢO MẬT (khôi phục mật khẩu)" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="Tự đặt câu hỏi và câu trả lời riêng để dùng khi quên mật khẩu (tránh câu hỏi dễ đoán)."
+                                   FontSize="12" Foreground="{DynamicResource BrushTextMuted}" TextWrapping="Wrap" Margin="0,0,0,12"/>
 
-                    <TextBlock Text="Mật khẩu hiện tại:" Foreground="Gray" FontSize="11" Margin="0,0,0,3"/>
-                    <PasswordBox x:Name="MatKhauCuBox" Height="32" Margin="0,0,0,10"/>
+                        <TextBlock Text="Câu hỏi bảo mật:" Foreground="{DynamicResource BrushTextMuted}" FontSize="11" Margin="0,0,0,3"/>
+                        <TextBox Text="{Binding CauHoiBaoMat, UpdateSourceTrigger=PropertyChanged}" Height="36" Margin="0,0,0,10"
+                                 BorderThickness="1" BorderBrush="{DynamicResource BrushBorder}" Padding="8,0" VerticalContentAlignment="Center"/>
 
-                    <TextBlock Text="Mật khẩu mới:" Foreground="Gray" FontSize="11" Margin="0,0,0,3"/>
-                    <PasswordBox x:Name="MatKhauMoiBox" Height="32" Margin="0,0,0,10"/>
+                        <TextBlock Text="Câu trả lời:" Foreground="{DynamicResource BrushTextMuted}" FontSize="11" Margin="0,0,0,3"/>
+                        <TextBox Text="{Binding CauTraLoiBaoMat, UpdateSourceTrigger=PropertyChanged}" Height="36" Margin="0,0,0,15"
+                                 BorderThickness="1" BorderBrush="{DynamicResource BrushBorder}" Padding="8,0" VerticalContentAlignment="Center"/>
 
-                    <TextBlock Text="Xác nhận mật khẩu mới:" Foreground="Gray" FontSize="11" Margin="0,0,0,3"/>
-                    <PasswordBox x:Name="XacNhanBox" Height="32" Margin="0,0,0,15"/>
+                        <Button Content="LƯU CÂU HỎI BẢO MẬT" Height="40" Style="{StaticResource PrimaryButton}" Command="{Binding LenhLuuCauHoi}"/>
+                    </StackPanel>
+                </Border>
 
-                    <Button Content="ĐỔI MẬT KHẨU" Height="40" Background="#27AE60" Foreground="White"
-                            FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="DoiMatKhau_Click"/>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-    </Grid>
+                <!-- ĐỔI MẬT KHẨU -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="ĐỔI MẬT KHẨU" Style="{StaticResource SectionTitle}"/>
+
+                        <TextBlock Text="Mật khẩu hiện tại:" Foreground="{DynamicResource BrushTextMuted}" FontSize="11" Margin="0,0,0,3"/>
+                        <PasswordBox x:Name="MatKhauCuBox" Height="36" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Mật khẩu mới:" Foreground="{DynamicResource BrushTextMuted}" FontSize="11" Margin="0,0,0,3"/>
+                        <PasswordBox x:Name="MatKhauMoiBox" Height="36" Margin="0,0,0,10"/>
+
+                        <TextBlock Text="Xác nhận mật khẩu mới:" Foreground="{DynamicResource BrushTextMuted}" FontSize="11" Margin="0,0,0,3"/>
+                        <PasswordBox x:Name="XacNhanBox" Height="36" Margin="0,0,0,15"/>
+
+                        <Button Content="ĐỔI MẬT KHẨU" Height="40" Style="{StaticResource SuccessButton}" Click="DoiMatKhau_Click"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

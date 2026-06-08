@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:Doan.ViewModel"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
 
     <UserControl.DataContext>
         <vm:User_TrangChu_VM/>
@@ -20,13 +20,8 @@
         <StackPanel Margin="20">
 
             <!-- Banner chào mừng -->
-            <Border CornerRadius="10" Margin="0,0,0,20" Padding="30" Effect="{StaticResource ShadowEffect}">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#3498DB" Offset="0"/>
-                        <GradientStop Color="#2C3E50" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
+            <Border CornerRadius="14" Margin="0,0,0,20" Padding="30" Effect="{StaticResource ShadowEffect}"
+                    Background="{DynamicResource BrushBanner}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -40,13 +35,11 @@
                         <TextBlock Text="Chào mừng đến với cửa hàng xe ô tô của chúng tôi 🚗"
                                    FontSize="14" Foreground="#ECF0F1" Margin="0,0,0,15"/>
                         <StackPanel Orientation="Horizontal">
-                            <Button Content="🚗 XEM XE NGAY"
-                                    Padding="18,10" Background="#E74C3C" Foreground="White"
-                                    FontWeight="Bold" BorderThickness="0" Cursor="Hand"
-                                    Margin="0,0,10,0"
+                            <Button Content="🚗 XEM XE NGAY" Style="{StaticResource AccentButton}"
+                                    Padding="18,10" Margin="0,0,10,0"
                                     Command="{Binding LenhMoMuaXe}"/>
                             <Button Content="🛠️ DỊCH VỤ"
-                                    Padding="18,10" Background="#F39C12" Foreground="White"
+                                    Padding="18,10" Background="#FFFFFF" Foreground="{DynamicResource BrushPrimary}"
                                     FontWeight="Bold" BorderThickness="0" Cursor="Hand"
                                     Command="{Binding LenhMoDichVu}"/>
                         </StackPanel>
@@ -60,7 +53,7 @@
 
             <!-- Danh sách hãng xe -->
             <TextBlock Text="CÁC HÃNG XE" FontSize="18" FontWeight="Bold"
-                       Foreground="#2C3E50" Margin="0,5,0,15"/>
+                       Foreground="{DynamicResource BrushText}" Margin="0,5,0,15"/>
 
             <ItemsControl ItemsSource="{Binding DanhSachHangXe}" Margin="0,0,0,25">
                 <ItemsControl.ItemsPanel>
@@ -77,7 +70,7 @@
                                 ToolTip="Bấm để xem các xe của hãng này">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border Background="White" CornerRadius="10" Effect="{StaticResource ShadowEffect}">
+                                    <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Effect="{StaticResource ShadowEffect}">
                                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                 </ControlTemplate>
@@ -85,9 +78,9 @@
                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <Image Source="{Binding LogoPath}" Width="70" Height="70" Margin="0,0,0,10" Stretch="Uniform"/>
                                 <TextBlock Text="{Binding TenHang}" FontSize="14" FontWeight="Bold"
-                                           Foreground="#2C3E50" TextAlignment="Center"/>
+                                           Foreground="{DynamicResource BrushText}" TextAlignment="Center"/>
                                 <TextBlock Text="{Binding QuocGia}" FontSize="11"
-                                           Foreground="#95A5A6" TextAlignment="Center" Margin="0,3,0,0"/>
+                                           Foreground="{DynamicResource BrushTextMuted}" TextAlignment="Center" Margin="0,3,0,0"/>
                             </StackPanel>
                         </Button>
                     </DataTemplate>
@@ -96,7 +89,7 @@
 
             <!-- Xe nổi bật -->
             <TextBlock Text="XE NỔI BẬT" FontSize="18" FontWeight="Bold"
-                       Foreground="#2C3E50" Margin="0,5,0,15"/>
+                       Foreground="{DynamicResource BrushText}" Margin="0,5,0,15"/>
 
             <ItemsControl ItemsSource="{Binding DanhSachXeNoiBat}">
                 <ItemsControl.ItemsPanel>
@@ -106,17 +99,17 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="180" Margin="0,0,15,15" Background="White"
+                        <Border Width="180" Margin="0,0,15,15" Background="{DynamicResource BrushCard}"
                                 CornerRadius="10" Effect="{StaticResource ShadowEffect}">
                             <StackPanel>
                                 <Image Source="{Binding HinhAnh, Converter={StaticResource AnhConverter}}" Height="120" Stretch="Uniform" Margin="10"/>
                                 <StackPanel Margin="10,5,10,10">
                                     <TextBlock Text="{Binding TenXe}" FontSize="13" FontWeight="Bold"
-                                               Foreground="#2C3E50" TextTrimming="CharacterEllipsis"/>
+                                               Foreground="{DynamicResource BrushText}" TextTrimming="CharacterEllipsis"/>
                                     <TextBlock Text="{Binding HangXe.TenHang}" FontSize="11"
-                                               Foreground="#7F8C8D" Margin="0,3,0,5"/>
+                                               Foreground="{DynamicResource BrushTextMuted}" Margin="0,3,0,5"/>
                                     <TextBlock Text="{Binding GiaBan, StringFormat={}{0:N0} VNĐ}"
-                                               FontSize="13" FontWeight="Bold" Foreground="#E74C3C"/>
+                                               FontSize="13" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>

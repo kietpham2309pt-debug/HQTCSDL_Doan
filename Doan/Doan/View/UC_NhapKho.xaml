@@ -1,0 +1,123 @@
+<UserControl x:Class="Doan.View.UC_NhapKho"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+             mc:Ignorable="d"
+             d:DesignHeight="720" d:DesignWidth="1200"
+             Background="{DynamicResource BrushBackground}">
+    <UserControl.DataContext>
+        <vm:NhapKho_VM/>
+    </UserControl.DataContext>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="NHẬP KHO" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource BrushText}" Margin="0,0,0,15"/>
+
+        <!-- Form thêm dòng -->
+        <Border Grid.Row="1" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="18" Margin="0,0,0,15">
+            <StackPanel>
+                <TextBlock Text="THÊM MẶT HÀNG VÀO PHIẾU" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource BrushPrimary}" Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Loại" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <ComboBox ItemsSource="{Binding DanhSachLoai}" SelectedItem="{Binding LoaiDangChon, Mode=TwoWay}" Height="32"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                        <TextBlock Text="Mặt hàng" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <ComboBox ItemsSource="{Binding DanhSachMatHang}" SelectedItem="{Binding MatHangDangChon, Mode=TwoWay}"
+                                  DisplayMemberPath="HienThi" Height="32"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                        <TextBlock Text="Số lượng" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <TextBox Text="{Binding SoLuongNhap, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Margin="0,0,10,0">
+                        <TextBlock Text="Đơn giá nhập (VNĐ)" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <TextBox Text="{Binding DonGiaNhap, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="4" Content="➕ Thêm dòng" VerticalAlignment="Bottom" Height="32" Padding="14,0"
+                            Background="{DynamicResource BrushSuccess}" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                            Command="{Binding LenhThemDong}"/>
+                </Grid>
+
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Nhà cung cấp" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <TextBox Text="{Binding NhaCungCap, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Ghi chú" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <TextBox Text="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}" Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Danh sách dòng đã thêm -->
+        <Border Grid.Row="2" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="10">
+            <DataGrid ItemsSource="{Binding GioNhap}" AutoGenerateColumns="False" CanUserAddRows="False"
+                      HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0"
+                      Background="Transparent" RowHeight="36" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Loại" Width="90" Binding="{Binding LoaiMatHang}"/>
+                    <DataGridTextColumn Header="Mã" Width="90" Binding="{Binding MaMatHang}"/>
+                    <DataGridTextColumn Header="Tên mặt hàng" Width="*" Binding="{Binding TenMatHang}"/>
+                    <DataGridTextColumn Header="Số lượng" Width="90" Binding="{Binding SoLuong}"/>
+                    <DataGridTextColumn Header="Đơn giá" Width="140" Binding="{Binding DonGiaNhap, StringFormat={}{0:N0}}"/>
+                    <DataGridTextColumn Header="Thành tiền" Width="160" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
+                    <DataGridTemplateColumn Header="" Width="70">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="🗑" Background="{DynamicResource BrushDanger}" Foreground="White" BorderThickness="0" Cursor="Hand"
+                                        Command="{Binding DataContext.LenhXoaDong, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Tổng + lưu -->
+        <Border Grid.Row="3" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="18" Margin="0,15,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="TỔNG TIỀN NHẬP: " FontSize="14" FontWeight="Bold" Foreground="{DynamicResource BrushText}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding TongTienNhap, StringFormat={}{0:N0} VNĐ}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="LÀM MỚI" Height="40" Padding="18,0" Margin="0,0,10,0" Background="#95a5a6" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Command="{Binding LenhLamMoi}"/>
+                    <Button Content="💾 LƯU PHIẾU NHẬP" Height="40" Padding="18,0" Background="{DynamicResource BrushPrimary}" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Command="{Binding LenhLuuPhieu}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

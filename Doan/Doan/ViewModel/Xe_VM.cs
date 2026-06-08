@@ -16,6 +16,7 @@ namespace Doan.ViewModel
         private readonly HangXe hangXeDuocChon;
         private readonly RelayCommand lenhMoSuaXe;
         private readonly RelayCommand lenhXoaXe;
+        private readonly RelayCommand lenhAnHienXe;
         private bool dangSuaXe;
 
         private ObservableCollection<Xe> danhSachXe;
@@ -52,6 +53,7 @@ namespace Doan.ViewModel
                 }
                 lenhMoSuaXe?.RaiseCanExecuteChanged();
                 lenhXoaXe?.RaiseCanExecuteChanged();
+                lenhAnHienXe?.RaiseCanExecuteChanged();
                 OnPropertyChanged(nameof(CoXeDuocChon));
             }
         }
@@ -75,8 +77,12 @@ namespace Doan.ViewModel
             {
                 tuKhoaTimKiem = value;
                 OnPropertyChanged();
+                TaiDanhSachXe(); // lọc trực tiếp khi gõ
             }
         }
+
+        // Gợi ý tìm kiếm (tên xe / loại / màu).
+        public ObservableCollection<string> GoiYTimKiem { get; } = new ObservableCollection<string>();
 
         private string tenDongXeNhap;
         public string TenDongXeNhap
@@ -172,6 +178,7 @@ namespace Doan.ViewModel
         public ICommand LenhMoThemXe { get; }
         public ICommand LenhMoSuaXe => lenhMoSuaXe;
         public ICommand LenhXoaXe => lenhXoaXe;
+        public ICommand LenhAnHienXe => lenhAnHienXe;
         public ICommand LenhLuuXe { get; }
         public ICommand LenhHuyFormXe { get; }
         public ICommand LenhTimKiemXe { get; }
@@ -186,6 +193,7 @@ namespace Doan.ViewModel
             LenhMoThemXe = new RelayCommand(_ => MoThemXe());
             lenhMoSuaXe = new RelayCommand(_ => MoSuaXe(), _ => XeDangChon != null);
             lenhXoaXe = new RelayCommand(_ => XoaXe(), _ => XeDangChon != null);
+            lenhAnHienXe = new RelayCommand(_ => AnHienXe(), _ => XeDangChon != null);
             LenhLuuXe = new RelayCommand(parameter => LuuXe(parameter as Window));
             LenhHuyFormXe = new RelayCommand(parameter => DongFormXe(parameter as Window));
             LenhTimKiemXe = new RelayCommand(_ => TaiDanhSachXe());
@@ -218,6 +226,15 @@ namespace Doan.ViewModel
             {
                 ctx.Configuration.LazyLoadingEnabled = false;
                 var xeEntities = ctx.Xes.Include("HangXe").ToList();
+
+                if (GoiYTimKiem.Count == 0)
+                {
+                    foreach (var xe in xeEntities)
+                    {
+                        if (!string.IsNullOrWhiteSpace(xe.TenXe)) GoiYTimKiem.Add(xe.TenXe);
+                        if (!string.IsNullOrWhiteSpace(xe.LoaiXe) && !GoiYTimKiem.Contains(xe.LoaiXe)) GoiYTimKiem.Add(xe.LoaiXe);
+                    }
+                }
 
                 // Lọc theo hãng nếu có chọn
                 if (hangXeDuocChon != null && !string.IsNullOrWhiteSpace(hangXeDuocChon.TenHang))
@@ -613,6 +630,35 @@ namespace Doan.ViewModel
             dangSuaXe = false;
             LamMoiNhapXe();
             cuaSo?.Close();
+        }
+
+        // Ẩn/hiện xe: 'Đang bán' (khách thấy) <-> 'Ẩn' (chỉ tồn kho, không hiện ở cổng khách).
+        private void AnHienXe()
+        {
+            if (XeDangChon == null)
+            {
+                return;
+            }
+
+            string ma = XeDangChon.MaXe;
+            string trangThaiMoi;
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var ef = ctx.Xes.FirstOrDefault(x => x.MaXe == ma);
+                if (ef == null)
+                {
+                    return;
+                }
+                string ttCu = (ef.TrangThaiHienThi ?? "Đang bán").Trim();
+                trangThaiMoi = ttCu == "Ẩn" ? "Đang bán" : "Ẩn";
+                ef.TrangThaiHienThi = trangThaiMoi;
+                ctx.SaveChanges();
+            }
+
+            TaiDanhSachXe();
+            XeDangChon = DanhSachXe.FirstOrDefault(x => x.MaXe == ma);
+            MessageBox.Show("Đã chuyển trạng thái xe sang: " + trangThaiMoi, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

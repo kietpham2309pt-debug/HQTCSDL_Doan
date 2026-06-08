@@ -1,0 +1,90 @@
+<UserControl x:Class="Doan.View.UC_LichSuNhap"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Doan.ViewModel"
+             mc:Ignorable="d"
+             d:DesignHeight="720" d:DesignWidth="1200"
+             Background="{DynamicResource BrushBackground}">
+    <UserControl.DataContext>
+        <vm:LichSuNhap_VM/>
+    </UserControl.DataContext>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="LỊCH SỬ NHẬP KHO" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource BrushText}" Margin="0,0,0,15"/>
+
+        <Grid Grid.Row="1" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Width="320" Height="35" VerticalContentAlignment="Center" Padding="10,0" Margin="0,0,10,0"
+                         Text="{Binding TuKhoa, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Content="Tìm kiếm" Width="100" Height="35" Background="{DynamicResource BrushPrimary}" Foreground="White" BorderThickness="0" Cursor="Hand" Command="{Binding LenhTimKiem}"/>
+                <Button Content="↻ Tải lại" Width="100" Height="35" Margin="10,0,0,0" Background="{DynamicResource BrushPrimary}" Foreground="White" BorderThickness="0" Cursor="Hand" Command="{Binding LenhTaiLai}"/>
+            </StackPanel>
+
+        </Grid>
+
+        <!-- KPI thống kê chi tiết -->
+        <UniformGrid Grid.Row="2" Columns="5" Margin="0,0,0,15">
+            <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="14,10" Margin="0,0,8,0" Effect="{StaticResource ShadowEffect}">
+                <StackPanel>
+                    <TextBlock Text="SỐ PHIẾU NHẬP" FontSize="10" Foreground="{DynamicResource BrushTextMuted}"/>
+                    <TextBlock Text="{Binding SoPhieu}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource BrushPrimary}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="14,10" Margin="4,0" Effect="{StaticResource ShadowEffect}">
+                <StackPanel>
+                    <TextBlock Text="SỐ DÒNG NHẬP" FontSize="10" Foreground="{DynamicResource BrushTextMuted}"/>
+                    <TextBlock Text="{Binding SoDong}" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource BrushInfo}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="14,10" Margin="4,0" Effect="{StaticResource ShadowEffect}">
+                <StackPanel>
+                    <TextBlock Text="CHI NHẬP XE" FontSize="10" Foreground="{DynamicResource BrushTextMuted}"/>
+                    <TextBlock Text="{Binding ChiNhapXe, StringFormat={}{0:N0}}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource BrushWarning}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="14,10" Margin="4,0" Effect="{StaticResource ShadowEffect}">
+                <StackPanel>
+                    <TextBlock Text="CHI NHẬP PHỤ TÙNG" FontSize="10" Foreground="{DynamicResource BrushTextMuted}"/>
+                    <TextBlock Text="{Binding ChiNhapPhuTung, StringFormat={}{0:N0}}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource BrushWarning}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="14,10" Margin="8,0,0,0" Effect="{StaticResource ShadowEffect}">
+                <StackPanel>
+                    <TextBlock Text="TỔNG CHI NHẬP" FontSize="10" Foreground="{DynamicResource BrushTextMuted}"/>
+                    <TextBlock Text="{Binding TongChiNhap, StringFormat={}{0:N0}}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Border Grid.Row="3" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="10">
+            <DataGrid ItemsSource="{Binding DanhSach}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                      HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0"
+                      Background="Transparent" RowHeight="34">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã PN" Width="80" Binding="{Binding MaPN}"/>
+                    <DataGridTextColumn Header="Ngày nhập" Width="140" Binding="{Binding NgayNhap, StringFormat=dd/MM/yyyy HH:mm}"/>
+                    <DataGridTextColumn Header="Nhà cung cấp" Width="160" Binding="{Binding NhaCungCap}"/>
+                    <DataGridTextColumn Header="NV nhập" Width="130" Binding="{Binding TenNhanVien}"/>
+                    <DataGridTextColumn Header="Loại" Width="80" Binding="{Binding LoaiMatHang}"/>
+                    <DataGridTextColumn Header="Mặt hàng" Width="*" Binding="{Binding TenMatHang}"/>
+                    <DataGridTextColumn Header="SL" Width="60" Binding="{Binding SoLuong}"/>
+                    <DataGridTextColumn Header="Đơn giá" Width="120" Binding="{Binding DonGiaNhap, StringFormat={}{0:N0}}"/>
+                    <DataGridTextColumn Header="Thành tiền" Width="140" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

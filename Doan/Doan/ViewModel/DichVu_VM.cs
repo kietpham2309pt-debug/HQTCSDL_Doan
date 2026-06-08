@@ -62,6 +62,37 @@ namespace Doan.ViewModel
             }
         }
 
+        public ObservableCollection<string> DanhSachLoaiLoc { get; } =
+            new ObservableCollection<string> { "Tất cả", "Dịch vụ", "Phụ tùng" };
+
+        private string loaiLocDangChon = "Tất cả";
+        public string LoaiLocDangChon
+        {
+            get { return loaiLocDangChon; }
+            set
+            {
+                loaiLocDangChon = value;
+                OnPropertyChanged();
+                TaiDanhSachDichVu();
+            }
+        }
+
+        // Tiêu đề trang (đổi theo mục Dịch vụ / Phụ tùng / tất cả).
+        private string tieuDe = "QUẢN LÝ DỊCH VỤ & PHỤ TÙNG";
+        public string TieuDe
+        {
+            get { return tieuDe; }
+            set { tieuDe = value; OnPropertyChanged(); }
+        }
+
+        // Khi mở theo 1 mục cố định (Dịch vụ hoặc Phụ tùng) thì ẩn bộ lọc loại.
+        private bool choLocLoai = true;
+        public bool ChoLocLoai
+        {
+            get { return choLocLoai; }
+            set { choLocLoai = value; OnPropertyChanged(); }
+        }
+
         private string maPTNhap;
         public string MaPTNhap
         {
@@ -139,8 +170,24 @@ namespace Doan.ViewModel
         public ICommand LenhGiamSoLuongTrongGio { get; }
         public ICommand LenhXoaKhoiGio { get; }
 
-        public DichVu_VM()
+        public DichVu_VM() : this(null) { }
+
+        // loaiCoDinh: "Dịch vụ" hoặc "Phụ tùng" để mở đúng mục; null = hiện tất cả.
+        public DichVu_VM(string loaiCoDinh)
         {
+            if (loaiCoDinh == "Dịch vụ")
+            {
+                loaiLocDangChon = "Dịch vụ";
+                choLocLoai = false;
+                tieuDe = "QUẢN LÝ DỊCH VỤ";
+            }
+            else if (loaiCoDinh == "Phụ tùng")
+            {
+                loaiLocDangChon = "Phụ tùng";
+                choLocLoai = false;
+                tieuDe = "QUẢN LÝ PHỤ TÙNG";
+            }
+
             LenhMoThemDichVu = new RelayCommand(_ => MoManHinhThemSuaDichVu());
             lenhMoSuaDichVu = new RelayCommand(_ => MoManHinhSuaDichVu(), _ => DichVuDangChon != null);
             lenhXoaDichVu = new RelayCommand(_ => XoaDichVu(), _ => DichVuDangChon != null);
@@ -204,6 +251,16 @@ namespace Doan.ViewModel
                 danhSachLoc = danhSachLoc.Where(item =>
                     (item.MaPT ?? string.Empty).ToLower().Contains(tuKhoa) ||
                     (item.Ten ?? string.Empty).ToLower().Contains(tuKhoa)).ToList();
+            }
+
+            // Lọc theo loại (Dịch vụ / Phụ tùng).
+            if (LoaiLocDangChon == "Dịch vụ")
+            {
+                danhSachLoc = danhSachLoc.Where(item => XacDinhLoai(item) == "DichVu").ToList();
+            }
+            else if (LoaiLocDangChon == "Phụ tùng")
+            {
+                danhSachLoc = danhSachLoc.Where(item => XacDinhLoai(item) == "PhuTung").ToList();
             }
 
             DanhSachDichVu = new ObservableCollection<DichVuPhuTung>(danhSachLoc);
@@ -346,6 +403,7 @@ namespace Doan.ViewModel
                         ef.Ten = TenNhap.Trim();
                         ef.Gia = gia;
                         ef.TonKho = tonKho;
+                        ef.Loai = XacDinhLoaiTheoMa(MaPTNhap);
                         ctx.SaveChanges();
                     }
                 }
@@ -363,7 +421,8 @@ namespace Doan.ViewModel
                         MaPT = MaPTNhap.Trim().ToUpper(),
                         Ten = TenNhap.Trim(),
                         Gia = gia,
-                        TonKho = tonKho
+                        TonKho = tonKho,
+                        Loai = XacDinhLoaiTheoMa(MaPTNhap)
                     };
                     ctx.DichVuPhuTungs.Add(ef);
                     ctx.SaveChanges();
@@ -541,6 +600,21 @@ namespace Doan.ViewModel
         private bool LaPhuTung(string ma)
         {
             return !string.IsNullOrWhiteSpace(ma) && ma.Trim().StartsWith("PT", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Xác định loại: ưu tiên cột Loai, nếu trống thì suy ra từ tiền tố mã (PT->PhuTung).
+        private string XacDinhLoai(DichVuPhuTung item)
+        {
+            if (item != null && !string.IsNullOrWhiteSpace(item.Loai))
+            {
+                return item.Loai.Trim();
+            }
+            return XacDinhLoaiTheoMa(item?.MaPT);
+        }
+
+        private string XacDinhLoaiTheoMa(string ma)
+        {
+            return LaPhuTung(ma) ? "PhuTung" : "DichVu";
         }
 
         private void XuLyThayDoiGioHang(object nguon, System.Collections.Specialized.NotifyCollectionChangedEventArgs suKien)

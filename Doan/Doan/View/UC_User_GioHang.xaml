@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:Doan.ViewModel"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
 
     <UserControl.DataContext>
         <vm:User_GioHang_VM/>
@@ -23,13 +23,13 @@
         </Grid.ColumnDefinitions>
 
         <!-- Bên trái: danh sách sản phẩm trong giỏ -->
-        <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="0,0,10,0" Padding="15"
+        <Border Grid.Column="0" Background="{DynamicResource BrushCard}" CornerRadius="10" Margin="0,0,10,0" Padding="15"
                 Effect="{StaticResource ShadowEffect}">
             <DockPanel>
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,15">
-                    <TextBlock Text="🛒 GIỎ HÀNG CỦA TÔI" FontSize="18" FontWeight="Bold" Foreground="#2C3E50"/>
+                    <TextBlock Text="🛒 GIỎ HÀNG CỦA TÔI" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushText}"/>
                     <Button HorizontalAlignment="Right" Content="🗑 Xóa tất cả"
-                            Padding="12,6" Background="#E74C3C" Foreground="White"
+                            Padding="12,6" Background="{DynamicResource BrushDanger}" Foreground="White"
                             FontWeight="Bold" BorderThickness="0" Cursor="Hand"
                             Command="{Binding LenhXoaTatCa}"/>
                 </Grid>
@@ -48,13 +48,13 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Button Content="-" Width="24" Height="24"
-                                                Background="#ECF0F1" BorderBrush="#BDC3C7"
+                                                Background="#ECF0F1" BorderBrush="{DynamicResource BrushBorder}"
                                                 Cursor="Hand"
                                                 Command="{Binding DataContext.LenhGiamSoLuong, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"/>
                                         <TextBlock Text="{Binding SoLuong}" Margin="10,0" VerticalAlignment="Center" FontWeight="Bold"/>
                                         <Button Content="+" Width="24" Height="24"
-                                                Background="#ECF0F1" BorderBrush="#BDC3C7"
+                                                Background="#ECF0F1" BorderBrush="{DynamicResource BrushBorder}"
                                                 Cursor="Hand"
                                                 Command="{Binding DataContext.LenhTangSoLuong, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"/>
@@ -68,7 +68,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="❌" Background="Transparent" BorderThickness="0"
-                                            Foreground="#E74C3C" FontSize="14" Cursor="Hand"
+                                            Foreground="{DynamicResource BrushDanger}" FontSize="14" Cursor="Hand"
                                             Command="{Binding DataContext.LenhXoaKhoiGio, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"/>
                                 </DataTemplate>
@@ -80,43 +80,54 @@
         </Border>
 
         <!-- Bên phải: tóm tắt đơn -->
-        <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="15"
+        <Border Grid.Column="1" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15"
                 Effect="{StaticResource ShadowEffect}">
             <StackPanel>
                 <TextBlock Text="THÔNG TIN ĐẶT HÀNG" FontSize="16" FontWeight="Bold"
-                           Foreground="#E67E22" Margin="0,0,0,15"/>
+                           Foreground="{DynamicResource BrushWarning}" Margin="0,0,0,15"/>
 
-                <TextBlock Text="Người nhận:" FontSize="11" Foreground="#95A5A6"/>
+                <TextBlock Text="Người nhận:" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
                 <TextBlock Text="{Binding TenKhachHienThi}" FontSize="14" FontWeight="SemiBold"
-                           Foreground="#2C3E50" Margin="0,3,0,10"/>
+                           Foreground="{DynamicResource BrushText}" Margin="0,3,0,10"/>
 
-                <TextBlock Text="SĐT:" FontSize="11" Foreground="#95A5A6"/>
+                <TextBlock Text="SĐT:" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
                 <TextBlock Text="{Binding SDTKhachHienThi}" FontSize="13"
-                           Foreground="#2C3E50" Margin="0,3,0,10"/>
+                           Foreground="{DynamicResource BrushText}" Margin="0,3,0,10"/>
 
-                <TextBlock Text="Địa chỉ giao:" FontSize="11" Foreground="#95A5A6"/>
+                <TextBlock Text="Địa chỉ giao:" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
                 <TextBlock Text="{Binding DiaChiKhachHienThi}" FontSize="13" TextWrapping="Wrap"
-                           Foreground="#2C3E50" Margin="0,3,0,15"/>
+                           Foreground="{DynamicResource BrushText}" Margin="0,3,0,15"/>
 
                 <Separator Background="#ECF0F1" Margin="0,5,0,15"/>
 
-                <TextBlock Text="Hình thức thanh toán:" FontSize="11" Foreground="#95A5A6" Margin="0,0,0,5"/>
+                <TextBlock Text="Hình thức thanh toán:" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,5"/>
                 <ComboBox ItemsSource="{Binding DanhSachHinhThucThanhToan}"
                           SelectedItem="{Binding HinhThucThanhToanDangChon, Mode=TwoWay}"
-                          Height="32" Margin="0,0,0,15"/>
+                          Height="32" Margin="0,0,0,10"/>
+
+                <Border Background="{DynamicResource BrushCardAlt}" CornerRadius="6" Padding="10" Margin="0,0,0,12"
+                        Visibility="{Binding LaTraGop, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="💳 MUA TRẢ GÓP" FontWeight="Bold" Foreground="{DynamicResource BrushAccent}" Margin="0,0,0,6"/>
+                        <TextBlock Text="Trả trước (VNĐ):" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <TextBox Text="{Binding TraTruocNhap, UpdateSourceTrigger=PropertyChanged}" Height="30" Margin="0,3,0,8" VerticalContentAlignment="Center" Padding="6,0"/>
+                        <TextBlock Text="Số kỳ (tháng):" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <TextBox Text="{Binding SoKyNhap, UpdateSourceTrigger=PropertyChanged}" Height="30" Margin="0,3,0,0" VerticalContentAlignment="Center" Padding="6,0"/>
+                    </StackPanel>
+                </Border>
 
                 <Separator Background="#ECF0F1" Margin="0,5,0,15"/>
 
                 <Grid Margin="0,5,0,20">
-                    <TextBlock Text="TỔNG TIỀN:" FontSize="15" FontWeight="Bold" Foreground="#E74C3C"
+                    <TextBlock Text="TỔNG TIỀN:" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}"
                                VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding TongTien, StringFormat={}{0:N0} đ}"
-                               FontSize="22" FontWeight="Bold" Foreground="#E74C3C"
+                               FontSize="22" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}"
                                HorizontalAlignment="Right"/>
                 </Grid>
 
                 <Button Content="✅ ĐẶT HÀNG NGAY"
-                        Padding="10,15" Background="#27AE60" Foreground="White"
+                        Padding="10,15" Background="{DynamicResource BrushSuccess}" Foreground="White"
                         FontSize="15" FontWeight="Bold" BorderThickness="0"
                         Cursor="Hand"
                         Command="{Binding LenhDatHang}">

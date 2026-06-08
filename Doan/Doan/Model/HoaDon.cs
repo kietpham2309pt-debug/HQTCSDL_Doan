@@ -23,6 +23,7 @@ namespace Doan.Model
         public Nullable<decimal> ThanhTien { get; set; }
         public string PhuongThucThanhToan { get; set; }
         public string TrangThai { get; set; }
+        public string MaGiaoDich { get; set; }
 
         public virtual KhachHang KhachHang { get; set; }
         public virtual NhanVien NhanVien { get; set; }

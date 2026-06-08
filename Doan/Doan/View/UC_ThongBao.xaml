@@ -7,12 +7,12 @@
              mc:Ignorable="d"
              d:DesignHeight="750"
              d:DesignWidth="1300"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
     <UserControl.DataContext>
         <vm:ThongBao_VM/>
     </UserControl.DataContext>
 
-    <Border Background="White" CornerRadius="10" Margin="15" Padding="15">
+    <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Margin="15" Padding="15">
         <DockPanel>
             <Grid DockPanel.Dock="Top" Margin="0,0,0,15">
                 <Grid.ColumnDefinitions>
@@ -21,17 +21,17 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="🔔" FontSize="20" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                    <TextBlock Text="ĐƠN ĐẶT HÀNG CHỜ XỬ LÝ" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" VerticalAlignment="Center"/>
-                    <Border Background="#E74C3C" CornerRadius="11" MinWidth="22" Height="22" Margin="10,0,0,0" Padding="6,0" VerticalAlignment="Center">
+                    <TextBlock Text="ĐƠN ĐẶT HÀNG CHỜ XỬ LÝ" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushText}" VerticalAlignment="Center"/>
+                    <Border Background="{DynamicResource BrushDanger}" CornerRadius="11" MinWidth="22" Height="22" Margin="10,0,0,0" Padding="6,0" VerticalAlignment="Center">
                         <TextBlock Text="{Binding SoDonCho}" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </StackPanel>
-                <Button Grid.Column="1" Content="Làm mới" Width="90" Height="32" Background="#34495E" Foreground="White" BorderThickness="0" Cursor="Hand" Command="{Binding LenhLamMoi}"/>
+                <Button Grid.Column="1" Content="Làm mới" Width="90" Height="32" Background="{DynamicResource BrushPrimary}" Foreground="White" BorderThickness="0" Cursor="Hand" Command="{Binding LenhLamMoi}"/>
             </Grid>
 
             <!-- Khi không có đơn chờ -->
             <TextBlock DockPanel.Dock="Top" Text="Hiện không có đơn đặt hàng nào chờ xử lý."
-                       Foreground="#95A5A6" FontStyle="Italic" Margin="5,10,0,0">
+                       Foreground="{DynamicResource BrushTextMuted}" FontStyle="Italic" Margin="5,10,0,0">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -57,17 +57,17 @@
 
                                     <StackPanel Grid.Column="0" Margin="0,0,15,0">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding TenKhachHang}" FontWeight="Bold" FontSize="15" Foreground="#2C3E50"/>
-                                            <TextBlock Text="{Binding SDT, StringFormat=  •  {0}}" FontSize="13" Foreground="#7F8C8D" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding NgayLap, StringFormat=  •  {0:dd/MM/yyyy HH:mm}}" FontSize="12" Foreground="#7F8C8D" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding TenKhachHang}" FontWeight="Bold" FontSize="15" Foreground="{DynamicResource BrushText}"/>
+                                            <TextBlock Text="{Binding SDT, StringFormat=  •  {0}}" FontSize="13" Foreground="{DynamicResource BrushTextMuted}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding NgayLap, StringFormat=  •  {0:dd/MM/yyyy HH:mm}}" FontSize="12" Foreground="{DynamicResource BrushTextMuted}" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                        <TextBlock Text="{Binding DiaChi, StringFormat=Địa chỉ: {0}}" FontSize="12" Foreground="#95A5A6" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                        <TextBlock Text="{Binding DiaChi, StringFormat=Địa chỉ: {0}}" FontSize="12" Foreground="{DynamicResource BrushTextMuted}" TextWrapping="Wrap" Margin="0,3,0,0"/>
                                         <TextBlock Text="{Binding MoTaMatHang}" FontSize="13" Foreground="#34495E" TextWrapping="Wrap" Margin="0,6,0,0"/>
-                                        <TextBlock Text="{Binding TongTien, StringFormat=Tổng tiền: {0:N0} đ}" FontSize="14" FontWeight="Bold" Foreground="#E74C3C" Margin="0,6,0,0"/>
+                                        <TextBlock Text="{Binding TongTien, StringFormat=Tổng tiền: {0:N0} đ}" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}" Margin="0,6,0,0"/>
                                     </StackPanel>
 
                                     <Button Grid.Column="1" Content="Xử lý đơn" Width="120" Height="45" VerticalAlignment="Center"
-                                            Background="#27AE60" Foreground="White" FontWeight="Bold" FontSize="14" BorderThickness="0" Cursor="Hand"
+                                            Background="{DynamicResource BrushSuccess}" Foreground="White" FontWeight="Bold" FontSize="14" BorderThickness="0" Cursor="Hand"
                                             Command="{Binding DataContext.LenhXuLyDon, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                             CommandParameter="{Binding}"/>
                                 </Grid>

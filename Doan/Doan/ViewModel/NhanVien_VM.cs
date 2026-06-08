@@ -45,6 +45,8 @@ namespace Doan.ViewModel
                 }
                 lenhSuaNhanVien?.RaiseCanExecuteChanged();
                 lenhXoaNhanVien?.RaiseCanExecuteChanged();
+                lenhChoNghiViec?.RaiseCanExecuteChanged();
+                lenhCapMatKhau?.RaiseCanExecuteChanged();
             }
         }
 
@@ -56,8 +58,12 @@ namespace Doan.ViewModel
             {
                 tuKhoaTimKiem = value;
                 OnPropertyChanged();
+                TaiDanhSachNhanVien(); // lọc trực tiếp khi gõ
             }
         }
+
+        // Gợi ý tìm kiếm (tên / mã / SĐT nhân viên).
+        public ObservableCollection<string> GoiYTimKiem { get; } = new ObservableCollection<string>();
 
         private string maNVNhap;
         public string MaNVNhap
@@ -129,6 +135,8 @@ namespace Doan.ViewModel
         private bool dangSua;
         private readonly RelayCommand lenhSuaNhanVien;
         private readonly RelayCommand lenhXoaNhanVien;
+        private readonly RelayCommand lenhChoNghiViec;
+        private readonly RelayCommand lenhCapMatKhau;
 
         public ICommand LenhThemNhanVien { get; }
         public ICommand LenhSuaNhanVien
@@ -139,6 +147,14 @@ namespace Doan.ViewModel
         {
             get { return lenhXoaNhanVien; }
         }
+        public ICommand LenhChoNghiViec
+        {
+            get { return lenhChoNghiViec; }
+        }
+        public ICommand LenhCapMatKhau
+        {
+            get { return lenhCapMatKhau; }
+        }
         public ICommand LenhLuuNhanVien { get; }
         public ICommand LenhTimKiemNhanVien { get; }
         public ICommand LenhHuyNhapNhanVien { get; }
@@ -148,6 +164,8 @@ namespace Doan.ViewModel
             LenhThemNhanVien = new RelayCommand(_ => ThemNhanVien());
             lenhSuaNhanVien = new RelayCommand(_ => SuaNhanVien(), _ => NhanVienDangChon != null);
             lenhXoaNhanVien = new RelayCommand(_ => XoaNhanVien(), _ => NhanVienDangChon != null);
+            lenhChoNghiViec = new RelayCommand(_ => ChoNghiViec(), _ => NhanVienDangChon != null);
+            lenhCapMatKhau = new RelayCommand(_ => CapLaiMatKhau(), _ => NhanVienDangChon != null);
             LenhLuuNhanVien = new RelayCommand(_ => LuuNhanVien());
             LenhTimKiemNhanVien = new RelayCommand(_ => TaiDanhSachNhanVien());
             LenhHuyNhapNhanVien = new RelayCommand(_ => HuyNhapNhanVien());
@@ -167,6 +185,8 @@ namespace Doan.ViewModel
                 ctx.Configuration.LazyLoadingEnabled = false;
                 danhSachLoc = ctx.NhanViens.ToList();
             }
+
+            CapNhatGoiY(danhSachLoc);
 
             if (!string.IsNullOrWhiteSpace(TuKhoaTimKiem))
             {
@@ -189,6 +209,17 @@ namespace Doan.ViewModel
 
             lenhSuaNhanVien.RaiseCanExecuteChanged();
             lenhXoaNhanVien.RaiseCanExecuteChanged();
+        }
+
+        private void CapNhatGoiY(List<NhanVien> danhSachDayDu)
+        {
+            if (GoiYTimKiem.Count > 0) return; // chỉ dựng 1 lần
+            foreach (var nv in danhSachDayDu)
+            {
+                if (!string.IsNullOrWhiteSpace(nv.HoTen)) GoiYTimKiem.Add(nv.HoTen);
+                if (!string.IsNullOrWhiteSpace(nv.MaNV)) GoiYTimKiem.Add(nv.MaNV);
+                if (!string.IsNullOrWhiteSpace(nv.SDT)) GoiYTimKiem.Add(nv.SDT);
+            }
         }
 
         private void ThemNhanVien()
@@ -378,13 +409,97 @@ namespace Doan.ViewModel
         {
             string giaTri = (trangThai ?? string.Empty).Trim();
 
-            if (string.Equals(giaTri, "Dang lam viec", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(giaTri, "Đang làm việc", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(giaTri, "Da nghi viec", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(giaTri, "Đã nghỉ việc", StringComparison.OrdinalIgnoreCase))
             {
-                return "Đang làm việc";
+                return "Đã nghỉ việc";
             }
 
-            return "Tạm nghỉ";
+            if (string.Equals(giaTri, "Tam nghi", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(giaTri, "Tạm nghỉ", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Tạm nghỉ";
+            }
+
+            return "Đang làm việc";
+        }
+
+        // Cho nhân viên nghỉ việc -> đặt trạng thái 'Đã nghỉ việc' và KHÓA tài khoản đăng nhập.
+        // (Trigger trg_NhanVien_KhoaTaiKhoan cũng tự khóa; ở đây khóa luôn trong app cho chắc chắn.)
+        private void ChoNghiViec()
+        {
+            if (NhanVienDangChon == null)
+            {
+                return;
+            }
+
+            string maNV = NhanVienDangChon.MaNV;
+            string hoTen = NhanVienDangChon.HoTen;
+
+            var ketQua = MessageBox.Show(
+                "Cho nhân viên '" + hoTen + "' nghỉ việc?\nTài khoản đăng nhập của nhân viên này (nếu có) sẽ bị KHÓA.",
+                "Xác nhận nghỉ việc", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (ketQua != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var nv = ctx.NhanViens.FirstOrDefault(n => n.MaNV == maNV);
+                if (nv != null)
+                {
+                    nv.TrangThai = "Đã nghỉ việc";
+                }
+                var tk = ctx.TaiKhoans.FirstOrDefault(t => t.MaNV == maNV);
+                if (tk != null)
+                {
+                    tk.TrangThai = "Đã khóa";
+                }
+                ctx.SaveChanges();
+            }
+
+            TaiDanhSachNhanVien();
+            NhanVienDangChon = DanhSachNhanVien.FirstOrDefault(item => item.MaNV == maNV);
+            MessageBox.Show("Đã cho nghỉ việc và khóa tài khoản đăng nhập (nếu có).", "Hoàn tất", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // Admin cấp lại mật khẩu cho tài khoản của nhân viên đang chọn (đặt về mật khẩu mặc định).
+        private void CapLaiMatKhau()
+        {
+            if (NhanVienDangChon == null)
+            {
+                return;
+            }
+
+            string maNV = NhanVienDangChon.MaNV;
+            const string matKhauMacDinh = "123456";
+
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var tk = ctx.TaiKhoans.FirstOrDefault(t => t.MaNV == maNV);
+                if (tk == null)
+                {
+                    MessageBox.Show("Nhân viên này chưa có tài khoản đăng nhập.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var ketQua = MessageBox.Show(
+                    "Cấp lại mật khẩu cho tài khoản '" + tk.Username + "' về mặc định '" + matKhauMacDinh + "'?",
+                    "Xác nhận cấp mật khẩu", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (ketQua != MessageBoxResult.Yes)
+                {
+                    return;
+                }
+
+                tk.Password = matKhauMacDinh;
+                ctx.SaveChanges();
+
+                MessageBox.Show("Đã cấp lại mật khẩu cho '" + tk.Username + "' = " + matKhauMacDinh +
+                    "\nNhân viên nên đăng nhập và đổi lại mật khẩu.", "Hoàn tất", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private bool KiemTraDuLieuNhanVien()
@@ -431,12 +546,10 @@ namespace Doan.ViewModel
                 return false;
             }
 
-            if (!string.Equals(TrangThaiNhap.Trim(), "Dang lam viec", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(TrangThaiNhap.Trim(), "Tam nghi", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(TrangThaiNhap.Trim(), "Đang làm việc", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(TrangThaiNhap.Trim(), "Tạm nghỉ", StringComparison.OrdinalIgnoreCase))
+            string ttChuan = ChuanHoaTrangThai(TrangThaiNhap);
+            if (ttChuan != "Đang làm việc" && ttChuan != "Tạm nghỉ" && ttChuan != "Đã nghỉ việc")
             {
-                MessageBox.Show("Trạng thái chỉ được là Đang làm việc hoặc Tạm nghỉ.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Trạng thái chỉ được là Đang làm việc, Tạm nghỉ hoặc Đã nghỉ việc.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 

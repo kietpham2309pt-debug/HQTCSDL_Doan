@@ -3,9 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Doan"
              xmlns:helper="clr-namespace:Doan.Helper"
-             StartupUri="View/W_DangNhap.xaml">
+             StartupUri="View/MainWindow_User.xaml">
     <Application.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <helper:DuongDanAnhConverter x:Key="AnhConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Palette.Light.xaml"/>
+                <ResourceDictionary Source="Themes/Controls.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <helper:DuongDanAnhConverter x:Key="AnhConverter"/>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

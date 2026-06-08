@@ -30,7 +30,8 @@ namespace Doan.ViewModel
         public MainWindows_VM()
         {
             LenhDieuHuong = new RelayCommand(thamSo => DieuHuong(thamSo?.ToString(), null));
-            DieuHuong("QuanLyXe", null);
+            // Mở màn hình mặc định hợp lệ theo vai trò đang đăng nhập.
+            DieuHuong(QuyenHan.TabMacDinh(PhienDangNhap.Role), null);
         }
 
         public void DieuHuong(string tenManHinh, object duLieu = null)
@@ -47,6 +48,9 @@ namespace Doan.ViewModel
                 case "QuanLyXe":
                     ManHinhHienTai = new UC_DSHangXe();
                     break;
+                case "TatCaXe":
+                    ManHinhHienTai = new UC_DSXe();
+                    break;
                 case "KhachHang":
                     ManHinhHienTai = new UC_KhachHang();
                     break;
@@ -54,10 +58,22 @@ namespace Doan.ViewModel
                     ManHinhHienTai = new UC_NhanVien();
                     break;
                 case "DichVu":
-                    ManHinhHienTai = new UC_DichVu();
+                    ManHinhHienTai = new UC_DichVu("Dịch vụ");
+                    break;
+                case "PhuTung":
+                    ManHinhHienTai = new UC_DichVu("Phụ tùng");
+                    break;
+                case "NhapKho":
+                    ManHinhHienTai = new UC_NhapKho();
+                    break;
+                case "LichSuNhap":
+                    ManHinhHienTai = new UC_LichSuNhap();
                     break;
                 case "ThanhToan":
                     ManHinhHienTai = new UC_ThanhToan();
+                    break;
+                case "TraGop":
+                    ManHinhHienTai = new UC_TheoDoiTraGop();
                     break;
                 case "LichSu":
                 case "DonHang":
@@ -73,8 +89,9 @@ namespace Doan.ViewModel
                     ManHinhHienTai = new UC_CaiDat();
                     break;
                 case "DangXuat":
-                    var cuaSoDangNhap = new W_DangNhap();
-                    cuaSoDangNhap.Show();
+                    // Đăng xuất nhân viên -> quay về cổng khách (trang chủ của app).
+                    var congKhach = new MainWindow_User();
+                    congKhach.Show();
 
                     var cuaSoChinh = Application.Current.Windows
                         .OfType<Window>()

@@ -88,7 +88,6 @@
     <Compile Include="Model\Xe.cs">
       <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel\DangKy_VM.cs" />
     <Compile Include="ViewModel\DangNhap_VM.cs" />
     <Compile Include="ViewModel\DichVu_VM.cs" />
     <Compile Include="ViewModel\HangXe_VM.cs" />
@@ -99,6 +98,9 @@
     <Compile Include="ViewModel\MainWindows_VM.cs" />
     <Compile Include="ViewModel\MatHangGio_VM.cs" />
     <Compile Include="ViewModel\NhanVien_VM.cs" />
+    <Compile Include="ViewModel\NhapKho_VM.cs" />
+    <Compile Include="ViewModel\LichSuNhap_VM.cs" />
+    <Compile Include="ViewModel\TheoDoiTraGop_VM.cs" />
     <Compile Include="ViewModel\ThongKe_VM.cs" />
     <Compile Include="ViewModel\Xe_VM.cs" />
     <Compile Include="ViewModel\MainWindow_User_VM.cs" />
@@ -154,6 +156,15 @@
     <Compile Include="View\UC_NhanVien.xaml.cs">
       <DependentUpon>UC_NhanVien.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\UC_NhapKho.xaml.cs">
+      <DependentUpon>UC_NhapKho.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_LichSuNhap.xaml.cs">
+      <DependentUpon>UC_LichSuNhap.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UC_TheoDoiTraGop.xaml.cs">
+      <DependentUpon>UC_TheoDoiTraGop.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\UC_ThanhToan.xaml.cs">
       <DependentUpon>UC_ThanhToan.xaml</DependentUpon>
     </Compile>
@@ -169,11 +180,14 @@
     <Compile Include="View\UC_ThongKe.xaml.cs">
       <DependentUpon>UC_ThongKe.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\W_DangKy.xaml.cs">
-      <DependentUpon>W_DangKy.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\W_DangNhap.xaml.cs">
       <DependentUpon>W_DangNhap.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\W_QuenMatKhau.xaml.cs">
+      <DependentUpon>W_QuenMatKhau.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\W_ChiTietGiaoDich.xaml.cs">
+      <DependentUpon>W_ChiTietGiaoDich.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\W_SuaHangXe.xaml.cs">
       <DependentUpon>W_SuaHangXe.xaml</DependentUpon>
@@ -190,11 +204,20 @@
     <Compile Include="View\W_ThemXe.xaml.cs">
       <DependentUpon>W_ThemXe.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\W_ThongTinKhachHang.xaml.cs">
+      <DependentUpon>W_ThongTinKhachHang.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\BaseViewModel.cs" />
     <Compile Include="Helper\DuongDanAnhConverter.cs" />
     <Compile Include="Helper\PhienDangNhap.cs" />
+    <Compile Include="Helper\QuyenHan.cs" />
+    <Compile Include="Helper\NhapKhoRepository.cs" />
+    <Compile Include="Helper\TraGopRepository.cs" />
+    <Compile Include="Helper\HoaDonPrinter.cs" />
+    <Compile Include="Helper\ThemeManager.cs" />
+    <Compile Include="Helper\AutoCompleteBehavior.cs" />
     <Compile Include="Helper\RelayCommand.cs" />
     <Compile Include="Model\DichVuPhuTung.cs">
       <DependentUpon>QLCuaHangXeModel.tt</DependentUpon>
@@ -302,7 +325,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\Palette.Light.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Palette.Dark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Controls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\UC_NhanVien.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_NhapKho.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_LichSuNhap.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\UC_TheoDoiTraGop.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -326,11 +373,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\W_DangKy.xaml">
+    <Page Include="View\W_DangNhap.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\W_DangNhap.xaml">
+    <Page Include="View\W_QuenMatKhau.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\W_ChiTietGiaoDich.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\W_ThongTinKhachHang.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

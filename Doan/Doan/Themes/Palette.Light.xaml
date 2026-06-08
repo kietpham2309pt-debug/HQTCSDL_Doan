@@ -1,0 +1,55 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ============================================================
+         EMERALD & GOLD — BẢNG MÀU SÁNG
+         (mọi style trong Controls.xaml tham chiếu các khóa brush này
+          bằng DynamicResource để đổi sáng/tối lúc chạy)
+         ============================================================ -->
+
+    <!-- Nền & bề mặt -->
+    <SolidColorBrush x:Key="BrushBackground" Color="#F8FAF9"/>
+    <SolidColorBrush x:Key="BrushCard"       Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="BrushCardAlt"    Color="#EEF4F1"/>
+    <SolidColorBrush x:Key="BrushHeader"     Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="BrushBorder"     Color="#E3E9E6"/>
+
+    <!-- Chữ -->
+    <SolidColorBrush x:Key="BrushText"       Color="#1A2B28"/>
+    <SolidColorBrush x:Key="BrushTextMuted"  Color="#6B7C77"/>
+
+    <!-- Màu chính (emerald) -->
+    <SolidColorBrush x:Key="BrushPrimary"      Color="#0E7C66"/>
+    <SolidColorBrush x:Key="BrushPrimaryHover" Color="#0B6354"/>
+    <SolidColorBrush x:Key="BrushOnPrimary"    Color="#FFFFFF"/>
+
+    <!-- Màu nhấn (gold) -->
+    <SolidColorBrush x:Key="BrushAccent"      Color="#D4A537"/>
+    <SolidColorBrush x:Key="BrushAccentHover" Color="#B98A23"/>
+    <SolidColorBrush x:Key="BrushOnAccent"    Color="#2A2410"/>
+
+    <!-- Màu trạng thái -->
+    <SolidColorBrush x:Key="BrushSuccess" Color="#1E8E5A"/>
+    <SolidColorBrush x:Key="BrushDanger"  Color="#D64545"/>
+    <SolidColorBrush x:Key="BrushWarning" Color="#E08A1E"/>
+    <SolidColorBrush x:Key="BrushInfo"    Color="#2F7DA8"/>
+
+    <!-- Sidebar -->
+    <SolidColorBrush x:Key="BrushSidebar"       Color="#0E3B30"/>
+    <SolidColorBrush x:Key="BrushSidebarText"   Color="#EAF3EF"/>
+    <SolidColorBrush x:Key="BrushSidebarMuted"  Color="#9CC2B6"/>
+    <SolidColorBrush x:Key="BrushSidebarHover"  Color="#135143"/>
+    <SolidColorBrush x:Key="BrushSidebarActive" Color="#0A2E26"/>
+
+    <!-- Gradient banner / vùng nổi bật -->
+    <LinearGradientBrush x:Key="BrushBanner" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#0E7C66" Offset="0"/>
+        <GradientStop Color="#0A5142" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- Màu đổ bóng (dùng cho DropShadowEffect Color) -->
+    <Color x:Key="ColorShadow">#22324A</Color>
+
+    <!-- Cờ đánh dấu theme hiện tại -->
+    <sys:String xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="TenTheme">Light</sys:String>
+</ResourceDictionary>

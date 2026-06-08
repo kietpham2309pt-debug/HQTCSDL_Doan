@@ -18,7 +18,10 @@ namespace Doan.Model
         public string Password { get; set; }
         public string Role { get; set; }
         public string MaNV { get; set; }
-    
+        public string TrangThai { get; set; }
+        public string CauHoiBaoMat { get; set; }
+        public string CauTraLoiBaoMat { get; set; }
+
         public virtual NhanVien NhanVien { get; set; }
     }
 }

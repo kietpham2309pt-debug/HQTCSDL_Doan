@@ -3,33 +3,33 @@ using Doan.Model;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Doan.ViewModel
 {
+    // Khách vãng lai tra cứu đơn của mình theo số điện thoại.
     public class User_DonHang_VM : BaseViewModel
     {
         private ObservableCollection<HoaDon_HienThi_VM> danhSachDonHang;
         public ObservableCollection<HoaDon_HienThi_VM> DanhSachDonHang
         {
             get { return danhSachDonHang; }
-            set
-            {
-                danhSachDonHang = value;
-                OnPropertyChanged();
-            }
+            set { danhSachDonHang = value; OnPropertyChanged(); }
         }
 
+        private string sdtTraCuu;
+        public string SDTTraCuu
+        {
+            get { return sdtTraCuu; }
+            set { sdtTraCuu = value; OnPropertyChanged(); }
+        }
+
+        private string tenKhachHienThi = "(Nhập số điện thoại để tra cứu đơn)";
         public string TenKhachHienThi
         {
-            get
-            {
-                if (PhienDangNhap.KhachHangHienTai != null)
-                {
-                    return PhienDangNhap.KhachHangHienTai.HoTen ?? string.Empty;
-                }
-                return "(Chưa đăng nhập với hồ sơ khách)";
-            }
+            get { return tenKhachHienThi; }
+            set { tenKhachHienThi = value; OnPropertyChanged(); }
         }
 
         public int TongSoDon
@@ -39,32 +39,55 @@ namespace Doan.ViewModel
 
         public decimal TongTienDaMua
         {
-            get
-            {
-                if (DanhSachDonHang == null) return 0;
-                return DanhSachDonHang.Sum(h => h.ThanhTien ?? 0);
-            }
+            get { return DanhSachDonHang == null ? 0 : DanhSachDonHang.Sum(h => h.ThanhTien ?? 0); }
         }
 
+        public ICommand LenhTraCuu { get; }
         public ICommand LenhTaiLai { get; }
 
         public User_DonHang_VM()
         {
-            LenhTaiLai = new RelayCommand(_ => TaiDanhSach());
-            TaiDanhSach();
+            LenhTraCuu = new RelayCommand(_ => TraCuuTheoSDT());
+            LenhTaiLai = new RelayCommand(_ => TraCuuTheoSDT());
+
+            DanhSachDonHang = new ObservableCollection<HoaDon_HienThi_VM>();
+
+            // Nếu khách vừa đặt hàng trong phiên này thì tự điền & tra cứu luôn.
+            if (PhienDangNhap.KhachHangHienTai != null)
+            {
+                SDTTraCuu = PhienDangNhap.KhachHangHienTai.SDT;
+                TaiTheoMaKH(PhienDangNhap.KhachHangHienTai.MaKH, PhienDangNhap.KhachHangHienTai.HoTen);
+            }
         }
 
-        private void TaiDanhSach()
+        private void TraCuuTheoSDT()
         {
-            if (PhienDangNhap.KhachHangHienTai == null)
+            string sdt = (SDTTraCuu ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(sdt))
             {
-                DanhSachDonHang = new ObservableCollection<HoaDon_HienThi_VM>();
-                OnPropertyChanged(nameof(TongSoDon));
-                OnPropertyChanged(nameof(TongTienDaMua));
+                MessageBox.Show("Vui lòng nhập số điện thoại đã dùng khi đặt hàng.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            string maKH = PhienDangNhap.KhachHangHienTai.MaKH;
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var kh = ctx.KhachHangs.FirstOrDefault(k => k.SDT == sdt);
+                if (kh == null)
+                {
+                    DanhSachDonHang = new ObservableCollection<HoaDon_HienThi_VM>();
+                    TenKhachHienThi = "(Không tìm thấy khách hàng với SĐT này)";
+                    OnPropertyChanged(nameof(TongSoDon));
+                    OnPropertyChanged(nameof(TongTienDaMua));
+                    return;
+                }
+                TaiTheoMaKH(kh.MaKH, kh.HoTen);
+            }
+        }
+
+        private void TaiTheoMaKH(string maKH, string tenKhach)
+        {
+            TenKhachHienThi = tenKhach;
 
             using (var ctx = new QuanLyBanXeMayEntities())
             {

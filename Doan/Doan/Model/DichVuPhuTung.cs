@@ -18,5 +18,6 @@ namespace Doan.Model
         public string Ten { get; set; }
         public Nullable<decimal> Gia { get; set; }
         public Nullable<int> TonKho { get; set; }
+        public string Loai { get; set; }
     }
 }

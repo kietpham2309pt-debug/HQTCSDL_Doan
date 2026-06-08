@@ -37,11 +37,24 @@ namespace Doan.ViewModel
         }
 
         public ICommand LenhDieuHuong { get; }
+        public ICommand LenhDangNhapNhanVien { get; }
 
         public MainWindow_User_VM()
         {
             LenhDieuHuong = new RelayCommand(thamSo => DieuHuong(thamSo?.ToString()));
+            LenhDangNhapNhanVien = new RelayCommand(_ => MoDangNhapNhanVien());
             DieuHuong("TrangChu");
+        }
+
+        // Mở màn hình đăng nhập nội bộ (nhân viên/admin) mà KHÔNG đóng cổng khách.
+        // Nếu đăng nhập thành công, DangNhap_VM sẽ tự mở khu quản trị và đóng cổng khách.
+        private void MoDangNhapNhanVien()
+        {
+            var daMo = Application.Current.Windows.OfType<W_DangNhap>().FirstOrDefault();
+            if (daMo != null) { daMo.Activate(); return; }
+
+            var cuaSoDangNhap = new W_DangNhap();
+            cuaSoDangNhap.Show();
         }
 
         public void DieuHuong(string tenManHinh)
@@ -74,18 +87,9 @@ namespace Doan.ViewModel
                 case "TaiKhoan":
                     ManHinhHienTai = new UC_User_TaiKhoan();
                     break;
+                case "DangNhapNhanVien":
                 case "DangXuat":
-                    var cuaSoDangNhap = new W_DangNhap();
-                    cuaSoDangNhap.Show();
-                    PhienDangNhap.KhachHangHienTai = null;
-                    PhienDangNhap.TenDangNhap = null;
-                    PhienDangNhap.Role = null;
-                    PhienDangNhap.GioHangKhach.Clear();
-
-                    var cuaSoUser = Application.Current.Windows
-                        .OfType<Window>()
-                        .FirstOrDefault(window => window is MainWindow_User);
-                    cuaSoUser?.Close();
+                    MoDangNhapNhanVien();
                     break;
                 default:
                     ManHinhHienTai = new UC_User_TrangChu();

@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:Doan.ViewModel"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
 
     <UserControl.DataContext>
         <vm:User_DonHang_VM/>
@@ -19,58 +19,72 @@
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Tra cứu theo SĐT -->
+        <Border Grid.Row="0" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15" Margin="0,0,0,15"
+                Effect="{StaticResource ShadowEffect}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🔎 Tra cứu đơn theo số điện thoại:" VerticalAlignment="Center"
+                           FontWeight="SemiBold" Foreground="{DynamicResource BrushText}" Margin="0,0,12,0"/>
+                <TextBox Width="220" Height="36" VerticalContentAlignment="Center" Margin="0,0,10,0"
+                         Text="{Binding SDTTraCuu, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Content="Tra cứu" Height="36" Padding="18,0" Style="{StaticResource PrimaryButton}"
+                        Command="{Binding LenhTraCuu}"/>
+            </StackPanel>
+        </Border>
+
         <!-- Tổng quan -->
-        <Grid Grid.Row="0" Margin="0,0,0,15">
+        <Grid Grid.Row="1" Margin="0,0,0,15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="15" Margin="0,0,8,0"
+            <Border Grid.Column="0" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15" Margin="0,0,8,0"
                     Effect="{StaticResource ShadowEffect}">
                 <StackPanel>
-                    <TextBlock Text="👤 Khách hàng" FontSize="12" Foreground="#95A5A6"/>
+                    <TextBlock Text="👤 Khách hàng" FontSize="12" Foreground="{DynamicResource BrushTextMuted}"/>
                     <TextBlock Text="{Binding TenKhachHienThi}" FontSize="16" FontWeight="Bold"
-                               Foreground="#2C3E50" Margin="0,5,0,0"/>
+                               Foreground="{DynamicResource BrushText}" Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
 
-            <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="15" Margin="4,0"
+            <Border Grid.Column="1" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15" Margin="4,0"
                     Effect="{StaticResource ShadowEffect}">
                 <StackPanel>
-                    <TextBlock Text="📋 Tổng số đơn" FontSize="12" Foreground="#95A5A6"/>
+                    <TextBlock Text="📋 Tổng số đơn" FontSize="12" Foreground="{DynamicResource BrushTextMuted}"/>
                     <TextBlock Text="{Binding TongSoDon}" FontSize="22" FontWeight="Bold"
-                               Foreground="#3498DB" Margin="0,5,0,0"/>
+                               Foreground="{DynamicResource BrushPrimary}" Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
 
-            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="15" Margin="8,0,0,0"
+            <Border Grid.Column="2" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15" Margin="8,0,0,0"
                     Effect="{StaticResource ShadowEffect}">
                 <StackPanel>
-                    <TextBlock Text="💰 Tổng tiền đã mua" FontSize="12" Foreground="#95A5A6"/>
+                    <TextBlock Text="💰 Tổng tiền đã mua" FontSize="12" Foreground="{DynamicResource BrushTextMuted}"/>
                     <TextBlock Text="{Binding TongTienDaMua, StringFormat={}{0:N0} đ}"
                                FontSize="20" FontWeight="Bold"
-                               Foreground="#E74C3C" Margin="0,5,0,0"/>
+                               Foreground="{DynamicResource BrushDanger}" Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
         </Grid>
 
         <!-- Bảng đơn hàng -->
-        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="15"
+        <Border Grid.Row="2" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15"
                 Effect="{StaticResource ShadowEffect}">
             <DockPanel>
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
-                    <TextBlock Text="LỊCH SỬ ĐƠN HÀNG" FontSize="16" FontWeight="Bold" Foreground="#2C3E50"/>
+                    <TextBlock Text="LỊCH SỬ ĐƠN HÀNG" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource BrushText}"/>
                     <Button HorizontalAlignment="Right" Content="🔄 Tải lại"
-                            Padding="12,6" Background="#34495E" Foreground="White"
+                            Padding="12,6" Background="{DynamicResource BrushPrimary}" Foreground="White"
                             FontWeight="Bold" BorderThickness="0" Cursor="Hand"
                             Command="{Binding LenhTaiLai}"/>
                 </Grid>
-                <TextBlock DockPanel.Dock="Top" Margin="0,0,0,10" TextWrapping="Wrap" FontSize="12" Foreground="#27AE60"
+                <TextBlock DockPanel.Dock="Top" Margin="0,0,0,10" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource BrushSuccess}"
                            Text="Đơn ở trạng thái 'Đã xác nhận' đã được cửa hàng tiếp nhận — vui lòng đến cơ sở để làm thủ tục nhận xe."/>
 
                 <DataGrid ItemsSource="{Binding DanhSachDonHang}"

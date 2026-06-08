@@ -1,5 +1,6 @@
 using Doan.Helper;
 using Doan.Model;
+using Doan.View;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -32,7 +33,27 @@ namespace Doan.ViewModel
             {
                 hinhThucThanhToanDangChon = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(LaTraGop));
             }
+        }
+
+        public bool LaTraGop
+        {
+            get { return HinhThucThanhToanDangChon == "Trả góp"; }
+        }
+
+        private string traTruocNhap = "0";
+        public string TraTruocNhap
+        {
+            get { return traTruocNhap; }
+            set { traTruocNhap = value; OnPropertyChanged(); }
+        }
+
+        private string soKyNhap = "6";
+        public string SoKyNhap
+        {
+            get { return soKyNhap; }
+            set { soKyNhap = value; OnPropertyChanged(); }
         }
 
         public string TenKhachHienThi
@@ -205,11 +226,18 @@ namespace Doan.ViewModel
                 return;
             }
 
+            // Khách vãng lai chưa có hồ sơ -> yêu cầu nhập đầy đủ thông tin trước khi đặt.
             if (PhienDangNhap.KhachHangHienTai == null)
             {
-                MessageBox.Show("Vui lòng cập nhật thông tin tại trang Tài khoản trước khi đặt hàng.", "Thông báo",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                var form = new W_ThongTinKhachHang();
+                form.Owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)
+                             ?? Application.Current.MainWindow;
+                bool? ketQuaNhap = form.ShowDialog();
+                if (ketQuaNhap != true || PhienDangNhap.KhachHangHienTai == null)
+                {
+                    return;
+                }
+                CapNhatThongTinKhach();
             }
 
             if (!KiemTraTonKho())
@@ -217,13 +245,34 @@ namespace Doan.ViewModel
                 return;
             }
 
+            // Kiểm tra trả góp nếu chọn.
+            decimal traTruoc = 0;
+            int soKy = 1;
+            if (LaTraGop)
+            {
+                decimal.TryParse((TraTruocNhap ?? "0").Replace(".", string.Empty).Replace(",", string.Empty).Trim(), out traTruoc);
+                if (!int.TryParse((SoKyNhap ?? string.Empty).Trim(), out soKy) || soKy < 1 || soKy > 60)
+                {
+                    MessageBox.Show("Số kỳ trả góp phải từ 1 đến 60.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
             DateTime ngayLap = DateTime.Now;
             int soDonDaTao = 0;
+            string maGiaoDich = TaoMaGiaoDich();
+            string maKHGiaoDich = PhienDangNhap.KhachHangHienTai.MaKH;
+            decimal tongTienGiaoDich = GioHang.Where(i => i.ThanhTien > 0).Sum(i => (decimal)i.ThanhTien);
+
+            if (LaTraGop && traTruoc >= tongTienGiaoDich)
+            {
+                MessageBox.Show("Trả trước phải nhỏ hơn tổng tiền.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             try
             {
-                // MaHD là khóa chính nên mỗi mặt hàng phải có một mã riêng,
-                // không được dùng chung một mã cho cả giỏ.
+                // MaHD là khóa chính nên mỗi mặt hàng có mã riêng (cùng 1 MaGiaoDich).
                 int soBatDau = LaySoHoaDonLonNhat();
 
                 using (var ctx = new QuanLyBanXeMayEntities())
@@ -250,7 +299,8 @@ namespace Doan.ViewModel
                             SoLuong = item.SoLuong,
                             ThanhTien = item.ThanhTien,
                             PhuongThucThanhToan = HinhThucThanhToanDangChon,
-                            TrangThai = "Chờ xác nhận"
+                            TrangThai = "Chờ xác nhận",
+                            MaGiaoDich = maGiaoDich
                         };
                         ctx.HoaDons.Add(hd);
 
@@ -284,10 +334,48 @@ namespace Doan.ViewModel
                 return;
             }
 
+            // Trả góp -> tạo phiếu theo dõi trả góp.
+            if (LaTraGop)
+            {
+                try
+                {
+                    TraGopRepository.TaoPhieuTraGop(maGiaoDich, maKHGiaoDich, tongTienGiaoDich, traTruoc, soKy);
+                }
+                catch (Exception exTg)
+                {
+                    MessageBox.Show("Đặt hàng xong nhưng tạo phiếu trả góp lỗi: " + exTg.Message, "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+
             GioHang.Clear();
             OnPropertyChanged(nameof(TongTien));
-            MessageBox.Show("Đặt hàng thành công! Đã tạo " + soDonDaTao + " hóa đơn.", "Thông báo",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Đặt hàng thành công! Mã giao dịch " + maGiaoDich + " (" + soDonDaTao + " mặt hàng)." +
+                (LaTraGop ? "\nĐơn trả góp đã được ghi nhận, vui lòng đến cửa hàng làm thủ tục." : string.Empty),
+                "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private string TaoMaGiaoDich()
+        {
+            int max = 0;
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var all = ctx.HoaDons.Where(h => h.MaGiaoDich != null).Select(h => h.MaGiaoDich).ToList();
+                foreach (string ma in all)
+                {
+                    if (string.IsNullOrWhiteSpace(ma) || !ma.Trim().ToUpper().StartsWith("GD")) continue;
+                    int n;
+                    if (int.TryParse(ma.Trim().ToUpper().Replace("GD", string.Empty), out n) && n > max) max = n;
+                }
+            }
+            return "GD" + (max + 1).ToString("000");
+        }
+
+        private void CapNhatThongTinKhach()
+        {
+            OnPropertyChanged(nameof(TenKhachHienThi));
+            OnPropertyChanged(nameof(SDTKhachHienThi));
+            OnPropertyChanged(nameof(DiaChiKhachHienThi));
         }
 
         private bool KiemTraTonKho()

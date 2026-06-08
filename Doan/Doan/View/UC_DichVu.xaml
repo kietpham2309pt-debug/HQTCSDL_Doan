@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Doan.View.UC_DichVu"
+<UserControl x:Class="Doan.View.UC_DichVu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,10 +7,7 @@
              xmlns:vm="clr-namespace:Doan.ViewModel"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="#F5F5F5">
-    <UserControl.DataContext>
-        <vm:DichVu_VM/>
-    </UserControl.DataContext>
+             Background="{DynamicResource BrushBackground}">
 
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
@@ -18,9 +15,9 @@
             <ColumnDefinition Width="380"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="0,0,10,0" Padding="15">
+        <Border Grid.Column="0" Background="{DynamicResource BrushCard}" CornerRadius="10" Margin="0,0,10,0" Padding="15">
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="QUẢN LÝ DỊCH VỤ &amp; PHỤ TÙNG" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="#2C3E50"/>
+                <TextBlock DockPanel.Dock="Top" Text="{Binding TieuDe}" FontSize="18" FontWeight="Bold" Margin="0,0,0,15" Foreground="{DynamicResource BrushText}"/>
 
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,15">
                     <Grid.ColumnDefinitions>
@@ -29,29 +26,34 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="txtSearchDichVu" Width="250" Height="35" VerticalContentAlignment="Center" 
+                        <TextBox x:Name="txtSearchDichVu" Width="220" Height="35" VerticalContentAlignment="Center"
                              Tag="Tìm tên phụ tùng..." Padding="10,0" Text="{Binding TuKhoaTimKiem, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Content="Tìm kiếm" Width="80" Margin="5,0" Background="#34495E" Foreground="White" BorderThickness="0" Command="{Binding LenhTimKiemDichVu}"/>
+                        <Button Content="Tìm kiếm" Width="80" Margin="5,0" Background="{DynamicResource BrushPrimary}" Foreground="White" BorderThickness="0" Command="{Binding LenhTimKiemDichVu}"/>
+                        <TextBlock Text="Loại:" VerticalAlignment="Center" Margin="10,0,5,0" Foreground="{DynamicResource BrushTextMuted}"
+                                   Visibility="{Binding ChoLocLoai, Converter={StaticResource BoolToVis}}"/>
+                        <ComboBox Width="120" Height="35" ItemsSource="{Binding DanhSachLoaiLoc}" SelectedItem="{Binding LoaiLocDangChon, Mode=TwoWay}" VerticalContentAlignment="Center"
+                                  Visibility="{Binding ChoLocLoai, Converter={StaticResource BoolToVis}}"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Content="➕ THÊM MỚI" Width="100" Height="35" Background="#27AE60" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Command="{Binding LenhMoThemDichVu}"/>
-                        <Button Content="📝 SỬA" Width="80" Height="35" Background="#F1C40F" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Command="{Binding LenhMoSuaDichVu}"/>
-                        <Button Content="🗑️ XÓA" Width="80" Height="35" Background="#E74C3C" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Command="{Binding LenhXoaDichVu}"/>
+                        <Button Content="➕ THÊM MỚI" Width="100" Height="35" Background="{DynamicResource BrushSuccess}" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Command="{Binding LenhMoThemDichVu}"/>
+                        <Button Content="📝 SỬA" Width="80" Height="35" Background="{DynamicResource BrushWarning}" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Command="{Binding LenhMoSuaDichVu}"/>
+                        <Button Content="🗑️ XÓA" Width="80" Height="35" Background="{DynamicResource BrushDanger}" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="5,0" Command="{Binding LenhXoaDichVu}"/>
                     </StackPanel>
                 </Grid>
 
                 <DataGrid x:Name="dgDichVu" AutoGenerateColumns="False" Background="Transparent" IsReadOnly="True" GridLinesVisibility="Horizontal" BorderThickness="0.5" ItemsSource="{Binding DanhSachDichVu}" SelectedItem="{Binding DichVuDangChon, Mode=TwoWay}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã PT" Width="80" Binding="{Binding MaPT}"/>
-                        <DataGridTextColumn Header="Tên Phụ tùng / Dịch vụ" Width="*" Binding="{Binding Ten}"/>
+                        <DataGridTextColumn Header="Mã" Width="70" Binding="{Binding MaPT}"/>
+                        <DataGridTextColumn Header="Loại" Width="80" Binding="{Binding Loai}"/>
+                        <DataGridTextColumn Header="Tên Dịch vụ / Phụ tùng" Width="*" Binding="{Binding Ten}"/>
                         <DataGridTextColumn Header="Tồn kho" Width="80" Binding="{Binding TonKho}"/>
                         <DataGridTextColumn Header="Đơn giá" Width="120" Binding="{Binding Gia, StringFormat={}{0:N0}}"/>
                         <DataGridTemplateColumn Header="Thêm giỏ hàng" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="CHỌN BÁN"
-                                            Background="#3498DB"
+                                            Background="{DynamicResource BrushPrimary}"
                                             Foreground="White"
                                             FontWeight="Bold"
                                             Padding="5,2"
@@ -67,24 +69,24 @@
             </DockPanel>
         </Border>
 
-        <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="15">
+        <Border Grid.Column="1" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15">
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="ĐƠN HÀNG TẠM TÍNH" FontSize="16" FontWeight="Bold" Margin="0,0,0,15" Foreground="#E67E22"/>
+                <TextBlock DockPanel.Dock="Top" Text="ĐƠN HÀNG TẠM TÍNH" FontSize="16" FontWeight="Bold" Margin="0,0,0,15" Foreground="{DynamicResource BrushWarning}"/>
 
-                <Button DockPanel.Dock="Bottom" Content="TỚI MÀN HÌNH THANH TOÁN" Height="55" Background="#E67E22" Foreground="White" FontSize="16" FontWeight="Bold" BorderThickness="0" Margin="0,15,0,0" Command="{Binding LenhThanhToan}"/>
+                <Button DockPanel.Dock="Bottom" Content="TỚI MÀN HÌNH THANH TOÁN" Height="55" Background="{DynamicResource BrushWarning}" Foreground="White" FontSize="16" FontWeight="Bold" BorderThickness="0" Margin="0,15,0,0" Command="{Binding LenhThanhToan}"/>
 
                 <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
-                    <Separator Background="#EEEEEE" Margin="0,5"/>
+                    <Separator Background="{DynamicResource BrushBorder}" Margin="0,5"/>
                     <Grid Margin="0,5">
-                        <TextBlock Text="Tổng tiền tạm tính:" FontSize="14" Foreground="Gray"/>
-                        <TextBlock Text="{Binding TongTienTamTinh, StringFormat={}{0:N0} VNĐ}" HorizontalAlignment="Right" FontSize="18" FontWeight="Bold" Foreground="#E74C3C"/>
+                        <TextBlock Text="Tổng tiền tạm tính:" FontSize="14" Foreground="{DynamicResource BrushTextMuted}"/>
+                        <TextBlock Text="{Binding TongTienTamTinh, StringFormat={}{0:N0} VNĐ}" HorizontalAlignment="Right" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}"/>
                     </Grid>
                 </StackPanel>
 
-                <ListBox x:Name="lstSelectedTemp" ItemsSource="{Binding GioHangTam}" BorderThickness="1" BorderBrush="#F0F0F0" Background="#FAFAFA">
+                <ListBox x:Name="lstSelectedTemp" ItemsSource="{Binding GioHangTam}" BorderThickness="1" BorderBrush="{DynamicResource BrushBorder}" Background="{DynamicResource BrushCardAlt}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="#EEEEEE" BorderThickness="0,0,0,1" Padding="5,10">
+                            <Border BorderBrush="{DynamicResource BrushBorder}" BorderThickness="0,0,0,1" Padding="5,10">
                                 <Grid Width="310">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -93,14 +95,14 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="{Binding TenMatHang}" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding DonGia, StringFormat={}{0:N0} VNĐ}" FontSize="11" Foreground="Gray"/>
+                                        <TextBlock Text="{Binding DonGia, StringFormat={}{0:N0} VNĐ}" FontSize="11" Foreground="{DynamicResource BrushTextMuted}"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
                                         <Button Content="-"
                                                 Width="22"
                                                 Height="22"
-                                                Background="#F5F5F5"
+                                                Background="{DynamicResource BrushBackground}"
                                                 BorderBrush="#DDD"
                                                 Command="{Binding DataContext.LenhGiamSoLuongTrongGio, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"/>
@@ -108,7 +110,7 @@
                                         <Button Content="+"
                                                 Width="22"
                                                 Height="22"
-                                                Background="#F5F5F5"
+                                                Background="{DynamicResource BrushBackground}"
                                                 BorderBrush="#DDD"
                                                 Command="{Binding DataContext.LenhTangSoLuongTrongGio, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}"/>
@@ -116,7 +118,7 @@
 
                                     <Button Grid.Column="2"
                                             Content="❌"
-                                            Foreground="#E74C3C"
+                                            Foreground="{DynamicResource BrushDanger}"
                                             Background="Transparent"
                                             BorderThickness="0"
                                             VerticalAlignment="Center"

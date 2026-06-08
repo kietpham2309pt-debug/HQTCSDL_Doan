@@ -76,6 +76,52 @@ namespace Doan.ViewModel
             }
         }
 
+        // Thống kê chi tiết theo mục (đọc từ các VIEW vw_ThongKeXe/DichVu/PhuTung).
+        private ObservableCollection<ThongKeXe_DTO> thongKeTheoHang;
+        public ObservableCollection<ThongKeXe_DTO> ThongKeTheoHang
+        {
+            get { return thongKeTheoHang; }
+            set { thongKeTheoHang = value; OnPropertyChanged(); }
+        }
+
+        private ObservableCollection<ThongKeDichVu_DTO> thongKeDichVu;
+        public ObservableCollection<ThongKeDichVu_DTO> ThongKeDichVu
+        {
+            get { return thongKeDichVu; }
+            set { thongKeDichVu = value; OnPropertyChanged(); }
+        }
+
+        private ObservableCollection<ThongKePhuTung_DTO> thongKePhuTung;
+        public ObservableCollection<ThongKePhuTung_DTO> ThongKePhuTung
+        {
+            get { return thongKePhuTung; }
+            set { thongKePhuTung = value; OnPropertyChanged(); }
+        }
+
+        private long tongGiaTriTonXe;
+        public long TongGiaTriTonXe
+        {
+            get { return tongGiaTriTonXe; }
+            set { tongGiaTriTonXe = value; OnPropertyChanged(); }
+        }
+
+        // ===== Bộ lọc năm + hãng xe =====
+        public ObservableCollection<string> DanhSachNamLoc { get; } = new ObservableCollection<string>();
+        private string namLoc = "Tất cả";
+        public string NamLoc
+        {
+            get { return namLoc; }
+            set { namLoc = value; OnPropertyChanged(); TaiThongKe(); }
+        }
+
+        public ObservableCollection<string> DanhSachHangLoc { get; } = new ObservableCollection<string>();
+        private string hangLoc = "Tất cả";
+        public string HangLoc
+        {
+            get { return hangLoc; }
+            set { hangLoc = value; OnPropertyChanged(); TaiThongKe(); }
+        }
+
         public ICommand LenhTaiLaiThongKe { get; }
 
         public ThongKe_VM()
@@ -86,18 +132,21 @@ namespace Doan.ViewModel
 
         private void TaiThongKe()
         {
-            List<HoaDon> danhSachHoaDon;
+            List<HoaDon> tatCaHoaDon;
             try
             {
                 using (var ctx = new QuanLyBanXeMayEntities())
                 {
-                    danhSachHoaDon = ctx.HoaDons.ToList();
+                    tatCaHoaDon = ctx.HoaDons.ToList();
                 }
             }
             catch (Exception)
             {
-                danhSachHoaDon = new List<HoaDon>();
+                tatCaHoaDon = new List<HoaDon>();
             }
+
+            DungBoLoc(tatCaHoaDon);
+            List<HoaDon> danhSachHoaDon = LocHoaDon(tatCaHoaDon);
 
             TongDoanhThu = danhSachHoaDon.Sum(item => item.ThanhTien ?? 0m);
             SoHoaDonMoi = danhSachHoaDon
@@ -113,6 +162,109 @@ namespace Doan.ViewModel
 
             TaiDuLieuDoanhThu6Thang(danhSachHoaDon);
             TaiDanhSachTop(danhSachHoaDon);
+            TaiThongKeChiTietTheoMuc();
+        }
+
+        // Thống kê chi tiết từng mục: xe theo hãng, dịch vụ, phụ tùng.
+        private void TaiThongKeChiTietTheoMuc()
+        {
+            try
+            {
+                using (var ctx = new QuanLyBanXeMayEntities())
+                {
+                    var xe = ctx.Database.SqlQuery<ThongKeXe_DTO>(
+                        "SELECT MaHang, TenHang, SoMauXe, TongTon, GiaTriTon, SoXeDangBan, SoXeAn FROM vw_ThongKeXe ORDER BY GiaTriTon DESC").ToList();
+                    if (HangLoc != "Tất cả")
+                    {
+                        xe = xe.Where(x => string.Equals(x.TenHang, HangLoc, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+                    ThongKeTheoHang = new ObservableCollection<ThongKeXe_DTO>(xe);
+                    TongGiaTriTonXe = (long)xe.Sum(x => x.GiaTriTon ?? 0);
+
+                    var dv = ctx.Database.SqlQuery<ThongKeDichVu_DTO>(
+                        "SELECT MaPT, Ten, Gia, SoLuongBan, DoanhThu FROM vw_ThongKeDichVu ORDER BY DoanhThu DESC").ToList();
+                    ThongKeDichVu = new ObservableCollection<ThongKeDichVu_DTO>(dv);
+
+                    var pt = ctx.Database.SqlQuery<ThongKePhuTung_DTO>(
+                        "SELECT MaPT, Ten, Gia, TonKho, SoLuongBan, DoanhThu FROM vw_ThongKePhuTung ORDER BY DoanhThu DESC").ToList();
+                    ThongKePhuTung = new ObservableCollection<ThongKePhuTung_DTO>(pt);
+                }
+            }
+            catch (Exception)
+            {
+                ThongKeTheoHang = new ObservableCollection<ThongKeXe_DTO>();
+                ThongKeDichVu = new ObservableCollection<ThongKeDichVu_DTO>();
+                ThongKePhuTung = new ObservableCollection<ThongKePhuTung_DTO>();
+            }
+        }
+
+        // Dựng danh sách năm + hãng cho bộ lọc (chỉ 1 lần).
+        private void DungBoLoc(List<HoaDon> tatCaHoaDon)
+        {
+            if (DanhSachNamLoc.Count == 0)
+            {
+                DanhSachNamLoc.Add("Tất cả");
+                var nams = tatCaHoaDon.Where(h => h.NgayLap.HasValue)
+                    .Select(h => h.NgayLap.Value.Year).Distinct().OrderByDescending(y => y).ToList();
+                foreach (var n in nams) DanhSachNamLoc.Add(n.ToString());
+                OnPropertyChanged(nameof(NamLoc));
+            }
+
+            if (DanhSachHangLoc.Count == 0)
+            {
+                DanhSachHangLoc.Add("Tất cả");
+                try
+                {
+                    using (var ctx = new QuanLyBanXeMayEntities())
+                    {
+                        ctx.Configuration.LazyLoadingEnabled = false;
+                        foreach (var ten in ctx.HangXes.Select(h => h.TenHang).ToList())
+                        {
+                            if (!string.IsNullOrWhiteSpace(ten)) DanhSachHangLoc.Add(ten);
+                        }
+                    }
+                }
+                catch (Exception) { }
+                OnPropertyChanged(nameof(HangLoc));
+            }
+        }
+
+        // Lọc hóa đơn theo năm + hãng đang chọn.
+        private List<HoaDon> LocHoaDon(List<HoaDon> nguon)
+        {
+            IEnumerable<HoaDon> ds = nguon;
+
+            int nam;
+            if (NamLoc != "Tất cả" && int.TryParse(NamLoc, out nam))
+            {
+                ds = ds.Where(h => h.NgayLap.HasValue && h.NgayLap.Value.Year == nam);
+            }
+
+            if (HangLoc != "Tất cả")
+            {
+                var tenXe = LayTenXeTheoHang(HangLoc);
+                ds = ds.Where(h => tenXe.Contains(h.TenDV_SP ?? string.Empty));
+            }
+
+            return ds.ToList();
+        }
+
+        private HashSet<string> LayTenXeTheoHang(string tenHang)
+        {
+            try
+            {
+                using (var ctx = new QuanLyBanXeMayEntities())
+                {
+                    ctx.Configuration.LazyLoadingEnabled = false;
+                    var ten = ctx.Xes.Where(x => x.HangXe != null && x.HangXe.TenHang == tenHang)
+                        .Select(x => x.TenXe).ToList();
+                    return new HashSet<string>(ten, StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (Exception)
+            {
+                return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            }
         }
 
         private void TaiDuLieuDoanhThu6Thang(List<HoaDon> danhSachHoaDon)
@@ -275,6 +427,39 @@ namespace Doan.ViewModel
     internal class XeBanChay_DTO
     {
         public string TenXe { get; set; }
+        public int? SoLuongBan { get; set; }
+        public decimal? DoanhThu { get; set; }
+    }
+
+    // Đọc từ vw_ThongKeXe (thống kê xe theo hãng).
+    public class ThongKeXe_DTO
+    {
+        public string MaHang { get; set; }
+        public string TenHang { get; set; }
+        public int? SoMauXe { get; set; }
+        public int? TongTon { get; set; }
+        public decimal? GiaTriTon { get; set; }
+        public int? SoXeDangBan { get; set; }
+        public int? SoXeAn { get; set; }
+    }
+
+    // Đọc từ vw_ThongKeDichVu.
+    public class ThongKeDichVu_DTO
+    {
+        public string MaPT { get; set; }
+        public string Ten { get; set; }
+        public decimal? Gia { get; set; }
+        public int? SoLuongBan { get; set; }
+        public decimal? DoanhThu { get; set; }
+    }
+
+    // Đọc từ vw_ThongKePhuTung.
+    public class ThongKePhuTung_DTO
+    {
+        public string MaPT { get; set; }
+        public string Ten { get; set; }
+        public decimal? Gia { get; set; }
+        public int? TonKho { get; set; }
         public int? SoLuongBan { get; set; }
         public decimal? DoanhThu { get; set; }
     }

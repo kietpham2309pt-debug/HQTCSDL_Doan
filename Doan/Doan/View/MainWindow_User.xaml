@@ -13,26 +13,6 @@
         <vm:MainWindow_User_VM/>
     </Window.DataContext>
 
-    <Window.Resources>
-        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="3" Opacity="0.15"/>
-
-        <Style x:Key="MenuButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#ecf0f1"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="20,15"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#34495e"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
@@ -40,7 +20,7 @@
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
-        <Grid Grid.Row="0" Background="White" Effect="{StaticResource ShadowEffect}">
+        <Grid Grid.Row="0" Background="{DynamicResource BrushHeader}" Effect="{StaticResource ShadowEffect}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -52,28 +32,28 @@
                     Text="Cửa Hàng Xe Ô Tô - Trang Khách Hàng"
                     FontSize="18"
                     FontWeight="Bold"
-                    Foreground="#2c3e50"
+                    Foreground="{DynamicResource BrushText}"
                     VerticalAlignment="Center"/>
             </StackPanel>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,30,0" VerticalAlignment="Center">
-                <Rectangle Width="1" Height="30" Fill="#ecf0f1" Margin="0,0,20,0"/>
+                <Button Content="🔒 Đăng nhập nhân viên"
+                        Command="{Binding LenhDangNhapNhanVien}"
+                        Style="{StaticResource GhostButton}"
+                        FontSize="12" Margin="0,0,20,0"/>
+                <Rectangle Width="1" Height="30" Fill="{DynamicResource BrushBorder}" Margin="0,0,20,0"/>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Ellipse Width="40" Height="40" Margin="0,0,12,0">
-                        <Ellipse.Fill>
-                            <SolidColorBrush Color="#3498db"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
+                    <Ellipse Width="40" Height="40" Margin="0,0,12,0" Fill="{DynamicResource BrushPrimary}"/>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock
                             Text="{Binding TenKhachHienThi}"
                             FontSize="13"
                             FontWeight="Bold"
-                            Foreground="#2c3e50"/>
+                            Foreground="{DynamicResource BrushText}"/>
                         <TextBlock
                             Text="Khách hàng"
                             FontSize="11"
-                            Foreground="#95a5a6"/>
+                            Foreground="{DynamicResource BrushTextMuted}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -87,20 +67,24 @@
             </Grid.ColumnDefinitions>
 
             <!-- SIDEBAR -->
-            <Grid Grid.Column="0" Background="#2c3e50">
-                <StackPanel Orientation="Vertical">
-                    <Grid Margin="15,20,15,20" Height="40" Background="#34495e">
+            <Grid Grid.Column="0" Background="{DynamicResource BrushSidebar}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="15,20,15,20" Height="40" Background="{DynamicResource BrushSidebarActive}">
                         <Label
                             Content="MENU KHÁCH HÀNG"
                             FontSize="16"
                             FontWeight="Bold"
-                            Foreground="White"
+                            Foreground="{DynamicResource BrushSidebarText}"
                             VerticalAlignment="Center"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"/>
                     </Grid>
 
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel Orientation="Vertical">
 
                             <Button Style="{StaticResource MenuButtonStyle}"
@@ -148,35 +132,26 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button Style="{StaticResource MenuButtonStyle}"
-                                    Command="{Binding LenhDieuHuong}"
-                                    CommandParameter="TaiKhoan">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="👤" FontSize="18" Margin="0,0,12,0"/>
-                                    <TextBlock Text="Tài khoản" FontSize="14" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Separator Background="#34495e" Margin="15,15,15,15"/>
+                            <Separator Background="{DynamicResource BrushBorder}" Margin="15,15,15,15"/>
 
                             <Button Style="{StaticResource MenuButtonStyle}"
-                                    Command="{Binding LenhDieuHuong}"
-                                    CommandParameter="DangXuat">
+                                    Command="{Binding LenhDangNhapNhanVien}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="🚪" FontSize="18" Margin="0,0,12,0"/>
-                                    <TextBlock Text="Đăng xuất" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Text="🔒" FontSize="18" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Đăng nhập nhân viên" FontSize="14" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
                     </ScrollViewer>
-                </StackPanel>
+                </Grid>
             </Grid>
 
             <!-- MAIN CONTENT -->
             <ContentControl
                 Grid.Column="1"
                 Content="{Binding ManHinhHienTai}"
-                Background="#F5F5F5"/>
+                TextElement.Foreground="{DynamicResource BrushText}"
+                Background="{DynamicResource BrushBackground}"/>
         </Grid>
     </Grid>
 </Window>

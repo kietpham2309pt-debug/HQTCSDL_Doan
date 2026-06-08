@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:Doan.ViewModel"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
 
     <UserControl.DataContext>
         <vm:User_DichVu_VM/>
@@ -17,10 +17,10 @@
     </UserControl.Resources>
 
     <Grid Margin="15">
-        <Border Background="White" CornerRadius="10" Padding="15" Effect="{StaticResource ShadowEffect}">
+        <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15" Effect="{StaticResource ShadowEffect}">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Top" Text="DỊCH VỤ &amp; PHỤ TÙNG"
-                           FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,15"/>
+                           FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushText}" Margin="0,0,0,15"/>
 
                 <Grid DockPanel.Dock="Top" Margin="0,0,0,15">
                     <Grid.ColumnDefinitions>
@@ -31,35 +31,65 @@
                     <TextBox Grid.Column="0" Width="250" Height="32" VerticalContentAlignment="Center"
                              Padding="8,0" Text="{Binding TuKhoaTimKiem, UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Grid.Column="1" Content="🔍 Tìm kiếm" Margin="8,0,0,0"
-                            Padding="14,6" Background="#34495E" Foreground="White"
+                            Padding="14,6" Background="{DynamicResource BrushPrimary}" Foreground="White"
                             BorderThickness="0" Cursor="Hand"
                             Command="{Binding LenhTimKiem}"/>
                 </Grid>
 
-                <DataGrid ItemsSource="{Binding DanhSachDichVu}"
-                          AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                          Background="Transparent" GridLinesVisibility="Horizontal"
-                          BorderThickness="0.5" RowHeight="40" FontSize="13">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã PT/DV" Width="100" Binding="{Binding MaPT}"/>
-                        <DataGridTextColumn Header="Tên" Width="*" Binding="{Binding Ten}"/>
-                        <DataGridTextColumn Header="Tồn kho" Width="90" Binding="{Binding TonKho}"/>
-                        <DataGridTextColumn Header="Đơn giá (VNĐ)" Width="140"
-                                            Binding="{Binding Gia, StringFormat={}{0:N0}}"/>
-                        <DataGridTemplateColumn Header="Thao tác" Width="160">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="🛒 Thêm giỏ"
-                                            Padding="10,4" Margin="3"
-                                            Background="#27AE60" Foreground="White"
-                                            FontWeight="Bold" BorderThickness="0" Cursor="Hand"
-                                            Command="{Binding DataContext.LenhThemVaoGio, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <!-- DỊCH VỤ -->
+                        <Border Background="{DynamicResource BrushCardAlt}" CornerRadius="6" Padding="10,6" Margin="0,0,0,8">
+                            <TextBlock Text="🛠️ DỊCH VỤ" FontSize="15" FontWeight="Bold" Foreground="#0E7C66"/>
+                        </Border>
+                        <DataGrid ItemsSource="{Binding DanhSachDichVu}"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                                  Background="Transparent" GridLinesVisibility="Horizontal"
+                                  BorderThickness="0.5" RowHeight="40" FontSize="13" Margin="0,0,0,20">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Mã DV" Width="90" Binding="{Binding MaPT}"/>
+                                <DataGridTextColumn Header="Tên dịch vụ" Width="*" Binding="{Binding Ten}"/>
+                                <DataGridTextColumn Header="Đơn giá (VNĐ)" Width="150" Binding="{Binding Gia, StringFormat={}{0:N0}}"/>
+                                <DataGridTemplateColumn Header="Thao tác" Width="150">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="🛒 Thêm giỏ" Padding="10,4" Margin="3"
+                                                    Background="{DynamicResource BrushSuccess}" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                                                    Command="{Binding DataContext.LenhThemVaoGio, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- PHỤ TÙNG -->
+                        <Border Background="{DynamicResource BrushCardAlt}" CornerRadius="6" Padding="10,6" Margin="0,0,0,8">
+                            <TextBlock Text="🔧 PHỤ TÙNG" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource BrushWarning}"/>
+                        </Border>
+                        <DataGrid ItemsSource="{Binding DanhSachPhuTung}"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                                  Background="Transparent" GridLinesVisibility="Horizontal"
+                                  BorderThickness="0.5" RowHeight="40" FontSize="13">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Mã PT" Width="90" Binding="{Binding MaPT}"/>
+                                <DataGridTextColumn Header="Tên phụ tùng" Width="*" Binding="{Binding Ten}"/>
+                                <DataGridTextColumn Header="Tồn kho" Width="90" Binding="{Binding TonKho}"/>
+                                <DataGridTextColumn Header="Đơn giá (VNĐ)" Width="150" Binding="{Binding Gia, StringFormat={}{0:N0}}"/>
+                                <DataGridTemplateColumn Header="Thao tác" Width="150">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="🛒 Thêm giỏ" Padding="10,4" Margin="3"
+                                                    Background="{DynamicResource BrushSuccess}" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                                                    Command="{Binding DataContext.LenhThemVaoGio, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </ScrollViewer>
             </DockPanel>
         </Border>
     </Grid>

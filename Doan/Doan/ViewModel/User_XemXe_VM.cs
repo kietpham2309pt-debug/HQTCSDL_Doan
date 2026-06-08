@@ -71,8 +71,12 @@ namespace Doan.ViewModel
             {
                 tuKhoaTimKiem = value;
                 OnPropertyChanged();
+                TaiDanhSachXe(); // lọc trực tiếp khi gõ
             }
         }
+
+        // Gợi ý tên xe khi gõ.
+        public ObservableCollection<string> GoiYTimKiem { get; } = new ObservableCollection<string>();
 
         public ICommand LenhTimKiem { get; }
         public ICommand LenhThemVaoGio { get; }
@@ -86,6 +90,7 @@ namespace Doan.ViewModel
         {
             LenhTimKiem = new RelayCommand(_ => TaiDanhSachXe());
             LenhThemVaoGio = new RelayCommand(_ => ThemVaoGio());
+            TaiGoiY();
             TaiHangLoc();
 
             if (!string.IsNullOrWhiteSpace(maHangLoc))
@@ -95,6 +100,20 @@ namespace Doan.ViewModel
                 {
                     // Gán setter sẽ tự gọi TaiDanhSachXe() với bộ lọc theo hãng.
                     HangLocDangChon = hang;
+                }
+            }
+        }
+
+        private void TaiGoiY()
+        {
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var ten = ctx.Xes.Where(x => x.TrangThaiHienThi == "Đang bán")
+                    .Select(x => x.TenXe).ToList();
+                foreach (var t in ten)
+                {
+                    if (!string.IsNullOrWhiteSpace(t)) GoiYTimKiem.Add(t);
                 }
             }
         }
@@ -121,6 +140,9 @@ namespace Doan.ViewModel
             {
                 ctx.Configuration.LazyLoadingEnabled = false;
                 var query = ctx.Xes.Include("HangXe").AsQueryable();
+
+                // Cổng khách chỉ hiển thị xe đang bán (ẩn các xe để tồn).
+                query = query.Where(x => x.TrangThaiHienThi == "Đang bán");
 
                 if (HangLocDangChon != null && HangLocDangChon.MaHang != "ALL")
                 {

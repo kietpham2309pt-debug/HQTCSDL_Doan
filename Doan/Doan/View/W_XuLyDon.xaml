@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="Xử lý đơn đặt hàng" Height="430" Width="480"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Background="#F5F5F5">
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Background="{DynamicResource BrushBackground}">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,9 +15,9 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="XÁC NHẬN ĐƠN ĐẶT HÀNG" FontSize="16" FontWeight="Bold" Foreground="#27AE60" Margin="0,0,0,12"/>
+        <TextBlock Grid.Row="0" Text="XÁC NHẬN ĐƠN ĐẶT HÀNG" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource BrushSuccess}" Margin="0,0,0,12"/>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="6" Padding="12" Margin="0,0,0,12">
+        <Border Grid.Row="1" Background="{DynamicResource BrushCard}" CornerRadius="6" Padding="12" Margin="0,0,0,12">
             <StackPanel>
                 <TextBlock x:Name="KhachTextBlock" FontWeight="Bold" FontSize="14"/>
                 <TextBlock x:Name="SdtTextBlock" FontSize="12" Foreground="#555"/>
@@ -25,10 +25,10 @@
             </StackPanel>
         </Border>
 
-        <Border Grid.Row="2" Background="White" CornerRadius="6" Padding="12" Margin="0,0,0,12">
+        <Border Grid.Row="2" Background="{DynamicResource BrushCard}" CornerRadius="6" Padding="12" Margin="0,0,0,12">
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="Sản phẩm:" FontSize="11" Foreground="Gray" Margin="0,0,0,5"/>
-                <TextBlock DockPanel.Dock="Bottom" x:Name="TongTienTextBlock" FontSize="14" FontWeight="Bold" Foreground="#E74C3C" Margin="0,8,0,0"/>
+                <TextBlock DockPanel.Dock="Top" Text="Sản phẩm:" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,5"/>
+                <TextBlock DockPanel.Dock="Bottom" x:Name="TongTienTextBlock" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}" Margin="0,8,0,0"/>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <TextBlock x:Name="MatHangTextBlock" FontSize="13" Foreground="#34495E" TextWrapping="Wrap"/>
                 </ScrollViewer>
@@ -36,7 +36,7 @@
         </Border>
 
         <StackPanel Grid.Row="3" Margin="0,0,0,12">
-            <TextBlock Text="Nhân viên phụ trách (đang làm việc):" FontSize="11" Foreground="Gray" Margin="0,0,0,4"/>
+            <TextBlock Text="Nhân viên phụ trách (đang làm việc):" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,4"/>
             <ComboBox x:Name="NhanVienComboBox" DisplayMemberPath="HoTen" Height="32"/>
         </StackPanel>
 
@@ -49,7 +49,7 @@
                     Background="#95A5A6" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
                     Click="Huy_Click"/>
             <Button Grid.Column="1" Content="XÁC NHẬN ĐƠN" Height="42"
-                    Background="#27AE60" Foreground="White" FontWeight="Bold" FontSize="14" BorderThickness="0" Cursor="Hand"
+                    Background="{DynamicResource BrushSuccess}" Foreground="White" FontWeight="Bold" FontSize="14" BorderThickness="0" Cursor="Hand"
                     Click="XacNhan_Click"/>
         </Grid>
     </Grid>

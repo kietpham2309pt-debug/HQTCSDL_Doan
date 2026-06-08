@@ -24,7 +24,8 @@ namespace Doan.Model
         public string HinhAnh { get; set; }
         public string MaHang { get; set; }
         public Nullable<int> SoLuongTon { get; set; }
-    
+        public string TrangThaiHienThi { get; set; }
+
         public virtual HangXe HangXe { get; set; }
     }
 }

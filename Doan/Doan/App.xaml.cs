@@ -20,6 +20,13 @@ namespace Doan
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
         }
 
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            // App chỉ dùng giao diện Sáng (đã bỏ chế độ tối).
+            Doan.Helper.ThemeManager.ApDung(Doan.Helper.ThemeManager.Sang, false);
+        }
+
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             Exception loi = e.Exception;

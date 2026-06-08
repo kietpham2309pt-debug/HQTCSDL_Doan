@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:Doan.ViewModel"
+             xmlns:helper="clr-namespace:Doan.Helper"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
 
     <UserControl.Resources>
         <DropShadowEffect x:Key="ShadowEffect" BlurRadius="8" ShadowDepth="2" Opacity="0.15"/>
@@ -19,7 +20,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Bên trái: danh sách xe -->
-        <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="0,0,10,0" Padding="15"
+        <Border Grid.Column="0" Background="{DynamicResource BrushCard}" CornerRadius="10" Margin="0,0,10,0" Padding="15"
                 Effect="{StaticResource ShadowEffect}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -29,7 +30,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Text="DANH SÁCH XE" FontSize="18" FontWeight="Bold"
-                           Foreground="#2C3E50" Margin="0,0,0,15"/>
+                           Foreground="{DynamicResource BrushText}" Margin="0,0,0,15"/>
 
                 <Grid Grid.Row="1" Margin="0,0,0,15">
                     <Grid.ColumnDefinitions>
@@ -41,7 +42,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0" Text="Hãng xe:" VerticalAlignment="Center" Margin="0,0,8,0"
-                               Foreground="#7F8C8D"/>
+                               Foreground="{DynamicResource BrushTextMuted}"/>
                     <ComboBox Grid.Column="1" Width="180" Height="32"
                               ItemsSource="{Binding DanhSachHangLoc}"
                               SelectedItem="{Binding HangLocDangChon, Mode=TwoWay}"
@@ -50,9 +51,10 @@
 
                     <TextBox Grid.Column="3" Width="200" Height="32" Margin="10,0"
                              VerticalContentAlignment="Center" Padding="8,0"
-                             Text="{Binding TuKhoaTimKiem, UpdateSourceTrigger=PropertyChanged}"/>
+                             Text="{Binding TuKhoaTimKiem, UpdateSourceTrigger=PropertyChanged}"
+                             helper:AutoCompleteBehavior.Suggestions="{Binding GoiYTimKiem}"/>
                     <Button Grid.Column="4" Content="🔍 Tìm" Padding="14,6"
-                            Background="#34495E" Foreground="White" BorderThickness="0"
+                            Background="{DynamicResource BrushPrimary}" Foreground="White" BorderThickness="0"
                             Cursor="Hand" Command="{Binding LenhTimKiem}"/>
                 </Grid>
 
@@ -77,18 +79,18 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Width="160" Height="240" Margin="0,0,15,15"
-                                    Background="White" CornerRadius="10"
+                                    Background="{DynamicResource BrushCard}" CornerRadius="10"
                                     Effect="{StaticResource ShadowEffect}" Cursor="Hand">
                                 <StackPanel>
                                     <Image Source="{Binding HinhAnh, Converter={StaticResource AnhConverter}}" Height="110" Margin="10" Stretch="Uniform"/>
                                     <StackPanel Margin="10,0,10,5">
                                         <TextBlock Text="{Binding TenXe}" FontSize="13" FontWeight="Bold"
-                                                   Foreground="#2C3E50" TextTrimming="CharacterEllipsis"/>
-                                        <TextBlock Text="{Binding LoaiXe}" FontSize="11" Foreground="#7F8C8D" Margin="0,2,0,4"/>
+                                                   Foreground="{DynamicResource BrushText}" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding LoaiXe}" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,2,0,4"/>
                                         <TextBlock Text="{Binding GiaBan, StringFormat={}{0:N0} đ}"
-                                                   FontSize="13" FontWeight="Bold" Foreground="#E74C3C"/>
+                                                   FontSize="13" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}"/>
                                         <TextBlock Text="{Binding SoLuongTon, StringFormat=Còn: {0} chiếc}"
-                                                   FontSize="10" Foreground="#27AE60" Margin="0,3,0,0"/>
+                                                   FontSize="10" Foreground="{DynamicResource BrushSuccess}" Margin="0,3,0,0"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
@@ -99,7 +101,7 @@
         </Border>
 
         <!-- Bên phải: chi tiết xe -->
-        <Border Grid.Column="1" Background="White" CornerRadius="10" Padding="15"
+        <Border Grid.Column="1" Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="15"
                 Effect="{StaticResource ShadowEffect}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -108,38 +110,38 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Text="THÔNG TIN CHI TIẾT" FontSize="16" FontWeight="Bold"
-                           Foreground="#2980B9" Margin="0,0,0,15"/>
+                           Foreground="{DynamicResource BrushPrimary}" Margin="0,0,0,15"/>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <Image Source="{Binding XeDangChon.HinhAnh, Converter={StaticResource AnhConverter}}" Height="180" Stretch="Uniform" Margin="0,0,0,15"/>
 
                         <TextBlock Text="{Binding XeDangChon.TenXe, FallbackValue='Chưa chọn xe'}"
-                                   FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,8"/>
+                                   FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushText}" Margin="0,0,0,8"/>
 
                         <TextBlock Text="{Binding XeDangChon.HangXe.TenHang, StringFormat=Hãng: {0}}"
-                                   FontSize="13" Foreground="#7F8C8D" Margin="0,0,0,5"/>
+                                   FontSize="13" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,5"/>
                         <TextBlock Text="{Binding XeDangChon.LoaiXe, StringFormat=Loại: {0}}"
-                                   FontSize="13" Foreground="#7F8C8D" Margin="0,0,0,5"/>
+                                   FontSize="13" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,5"/>
                         <TextBlock Text="{Binding XeDangChon.MauSac, StringFormat=Màu sắc: {0}}"
-                                   FontSize="13" Foreground="#7F8C8D" Margin="0,0,0,5"/>
+                                   FontSize="13" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,5"/>
                         <TextBlock Text="{Binding XeDangChon.NamSX, StringFormat=Năm SX: {0}}"
-                                   FontSize="13" Foreground="#7F8C8D" Margin="0,0,0,5"/>
+                                   FontSize="13" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,5"/>
                         <TextBlock Text="{Binding XeDangChon.SoLuongTon, StringFormat=Tồn kho: {0} chiếc}"
-                                   FontSize="13" Foreground="#27AE60" Margin="0,0,0,10"/>
+                                   FontSize="13" Foreground="{DynamicResource BrushSuccess}" Margin="0,0,0,10"/>
 
-                        <TextBlock Text="MÔ TẢ" FontSize="12" FontWeight="Bold" Foreground="#95A5A6" Margin="0,5,0,5"/>
+                        <TextBlock Text="MÔ TẢ" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource BrushTextMuted}" Margin="0,5,0,5"/>
                         <TextBlock Text="{Binding XeDangChon.MoTa}" FontSize="13" TextWrapping="Wrap"
                                    Foreground="#34495E" Margin="0,0,0,15"/>
 
                         <Border Background="#FDF2F2" CornerRadius="6" Padding="10" Margin="0,0,0,15">
                             <TextBlock Text="{Binding XeDangChon.GiaBan, StringFormat='Giá: {0:N0} đ'}"
-                                       FontSize="18" FontWeight="Bold" Foreground="#E74C3C"
+                                       FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushDanger}"
                                        HorizontalAlignment="Center"/>
                         </Border>
 
                         <Button Content="🛒 THÊM VÀO GIỎ HÀNG"
-                                Padding="10,12" Background="#27AE60" Foreground="White"
+                                Padding="10,12" Background="{DynamicResource BrushSuccess}" Foreground="White"
                                 FontWeight="Bold" FontSize="14" BorderThickness="0"
                                 Cursor="Hand"
                                 IsEnabled="{Binding CoXeDuocChon}"

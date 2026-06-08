@@ -59,8 +59,12 @@ namespace Doan.ViewModel
             {
                 tuKhoaTimKiem = value;
                 OnPropertyChanged();
+                TaiDanhSachKhachHang(); // lọc trực tiếp khi gõ
             }
         }
+
+        // Gợi ý tìm kiếm (tên / SĐT / mã khách).
+        public ObservableCollection<string> GoiYTimKiem { get; } = new ObservableCollection<string>();
 
         private string maKHNhap;
         public string MaKHNhap
@@ -191,6 +195,17 @@ namespace Doan.ViewModel
             LamMoiNhapKhachHang();
         }
 
+        private void CapNhatGoiY(List<KhachHang> danhSachDayDu)
+        {
+            if (GoiYTimKiem.Count > 0) return; // chỉ dựng 1 lần
+            foreach (var kh in danhSachDayDu)
+            {
+                if (!string.IsNullOrWhiteSpace(kh.HoTen)) GoiYTimKiem.Add(kh.HoTen);
+                if (!string.IsNullOrWhiteSpace(kh.SDT)) GoiYTimKiem.Add(kh.SDT);
+                if (!string.IsNullOrWhiteSpace(kh.MaKH)) GoiYTimKiem.Add(kh.MaKH);
+            }
+        }
+
         private void TaiDanhSachKhachHang()
         {
             List<KhachHang> danhSachLoc;
@@ -199,6 +214,7 @@ namespace Doan.ViewModel
             {
                 ctx.Configuration.LazyLoadingEnabled = false;
                 danhSachLoc = ctx.KhachHangs.ToList();
+                CapNhatGoiY(danhSachLoc);
 
                 // Xếp hạng khách hàng tính bằng FUNCTION fn_XepHangKhachHang của CSDL.
                 var bangXepHang = ctx.Database.SqlQuery<XepHangKH_DTO>(

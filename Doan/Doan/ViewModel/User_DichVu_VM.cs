@@ -21,6 +21,17 @@ namespace Doan.ViewModel
             }
         }
 
+        private ObservableCollection<DichVuPhuTung> danhSachPhuTung;
+        public ObservableCollection<DichVuPhuTung> DanhSachPhuTung
+        {
+            get { return danhSachPhuTung; }
+            set
+            {
+                danhSachPhuTung = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string tuKhoaTimKiem;
         public string TuKhoaTimKiem
         {
@@ -54,8 +65,21 @@ namespace Doan.ViewModel
                     string tk = TuKhoaTimKiem.Trim().ToLower();
                     ds = ds.Where(d => (d.Ten ?? string.Empty).ToLower().Contains(tk)).ToList();
                 }
-                DanhSachDichVu = new ObservableCollection<DichVuPhuTung>(ds);
+
+                // Tách rõ 2 loại để khách dễ nhận biết.
+                DanhSachDichVu = new ObservableCollection<DichVuPhuTung>(ds.Where(d => !LaPhuTungItem(d)));
+                DanhSachPhuTung = new ObservableCollection<DichVuPhuTung>(ds.Where(LaPhuTungItem));
             }
+        }
+
+        private bool LaPhuTungItem(DichVuPhuTung d)
+        {
+            if (d == null) return false;
+            if (!string.IsNullOrWhiteSpace(d.Loai))
+            {
+                return string.Equals(d.Loai.Trim(), "PhuTung", StringComparison.OrdinalIgnoreCase);
+            }
+            return (d.MaPT ?? string.Empty).Trim().ToUpper().StartsWith("PT");
         }
 
         private void ThemVaoGio(DichVuPhuTung dichVu)

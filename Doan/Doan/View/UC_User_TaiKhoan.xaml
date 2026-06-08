@@ -6,7 +6,7 @@
              xmlns:vm="clr-namespace:Doan.ViewModel"
              mc:Ignorable="d"
              d:DesignHeight="700" d:DesignWidth="1100"
-             Background="#F5F5F5">
+             Background="{DynamicResource BrushBackground}">
 
     <UserControl.DataContext>
         <vm:User_TaiKhoan_VM/>
@@ -17,20 +17,20 @@
     </UserControl.Resources>
 
     <Grid Margin="15">
-        <Border Background="White" CornerRadius="10" Padding="25" Effect="{StaticResource ShadowEffect}"
+        <Border Background="{DynamicResource BrushCard}" CornerRadius="10" Padding="25" Effect="{StaticResource ShadowEffect}"
                 MaxWidth="700" HorizontalAlignment="Center" VerticalAlignment="Top">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                         <Ellipse Width="56" Height="56" Fill="#3498DB"/>
                         <StackPanel VerticalAlignment="Center" Margin="15,0,0,0">
-                            <TextBlock Text="THÔNG TIN TÀI KHOẢN" FontSize="18" FontWeight="Bold" Foreground="#2C3E50"/>
+                            <TextBlock Text="THÔNG TIN TÀI KHOẢN" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource BrushText}"/>
                             <TextBlock Text="Cập nhật thông tin liên hệ &amp; địa chỉ giao hàng"
-                                       FontSize="12" Foreground="#7F8C8D"/>
+                                       FontSize="12" Foreground="{DynamicResource BrushTextMuted}"/>
                         </StackPanel>
                     </StackPanel>
 
-                    <Border Background="#FFF8E1" CornerRadius="6" Padding="10" Margin="0,0,0,15">
+                    <Border Background="{DynamicResource BrushCardAlt}" CornerRadius="6" Padding="10" Margin="0,0,0,15">
                         <TextBlock Text="{Binding TrangThai}" FontSize="12" TextWrapping="Wrap" Foreground="#7E5109"/>
                     </Border>
 
@@ -40,12 +40,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="Mã khách hàng" FontSize="11" Foreground="#95A5A6" Margin="0,0,0,4"/>
+                            <TextBlock Text="Mã khách hàng" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,4"/>
                             <TextBox Text="{Binding MaKH, Mode=OneWay}" IsReadOnly="True"
-                                     Height="32" Background="#F0F0F0" VerticalContentAlignment="Center" Padding="6,0"/>
+                                     Height="32" Background="{DynamicResource BrushBorder}" VerticalContentAlignment="Center" Padding="6,0"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="Họ và tên *" FontSize="11" Foreground="#95A5A6" Margin="0,0,0,4"/>
+                            <TextBlock Text="Họ và tên *" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,4"/>
                             <TextBox Text="{Binding HoTen, UpdateSourceTrigger=PropertyChanged}"
                                      Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
                         </StackPanel>
@@ -57,32 +57,32 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="Số điện thoại *" FontSize="11" Foreground="#95A5A6" Margin="0,0,0,4"/>
+                            <TextBlock Text="Số điện thoại *" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,4"/>
                             <TextBox Text="{Binding SDT, UpdateSourceTrigger=PropertyChanged}"
                                      Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <TextBlock Text="CCCD" FontSize="11" Foreground="#95A5A6" Margin="0,0,0,4"/>
+                            <TextBlock Text="CCCD" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,4"/>
                             <TextBox Text="{Binding CCCD, UpdateSourceTrigger=PropertyChanged}"
                                      Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
                         </StackPanel>
                     </Grid>
 
                     <StackPanel Margin="0,0,0,12">
-                        <TextBlock Text="Email" FontSize="11" Foreground="#95A5A6" Margin="0,0,0,4"/>
+                        <TextBlock Text="Email" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
                                  Height="32" VerticalContentAlignment="Center" Padding="6,0"/>
                     </StackPanel>
 
                     <StackPanel Margin="0,0,0,20">
-                        <TextBlock Text="Địa chỉ giao hàng" FontSize="11" Foreground="#95A5A6" Margin="0,0,0,4"/>
+                        <TextBlock Text="Địa chỉ giao hàng" FontSize="11" Foreground="{DynamicResource BrushTextMuted}" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding DiaChi, UpdateSourceTrigger=PropertyChanged}"
                                  Height="60" VerticalContentAlignment="Top" Padding="6,4"
                                  TextWrapping="Wrap" AcceptsReturn="True"/>
                     </StackPanel>
 
                     <Button Content="💾 LƯU THÔNG TIN"
-                            Padding="10,12" Background="#27AE60" Foreground="White"
+                            Padding="10,12" Background="{DynamicResource BrushSuccess}" Foreground="White"
                             FontSize="14" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
                             Command="{Binding LenhLuu}"/>
                 </StackPanel>

@@ -11,50 +11,57 @@ using Cursors = System.Windows.Input.Cursors;
 
 namespace Doan.ViewModel
 {
+    // Đăng nhập chỉ dành cho NHÂN VIÊN / ADMIN. Khách hàng vào thẳng cổng khách,
+    // không cần đăng nhập (xem MainWindow_User).
     public class DangNhap_VM : BaseViewModel
     {
         private string tenDangNhap;
         public string TenDangNhap
         {
             get { return tenDangNhap; }
-            set
-            {
-                tenDangNhap = value;
-                OnPropertyChanged();
-            }
+            set { tenDangNhap = value; OnPropertyChanged(); }
         }
 
-        private bool laKhachHang;
-        public bool LaKhachHang
-        {
-            get { return laKhachHang; }
-            set
-            {
-                laKhachHang = value;
-                OnPropertyChanged();
-            }
-        }
-
+        // Loại tài khoản đang chọn ở màn đăng nhập: false = Nhân viên, true = Quản trị (Admin).
         private bool laAdmin;
         public bool LaAdmin
         {
             get { return laAdmin; }
-            set
-            {
-                laAdmin = value;
-                OnPropertyChanged();
-            }
+            set { laAdmin = value; OnPropertyChanged(); }
         }
 
         public ICommand LenhDangNhap { get; }
-        public ICommand LenhMoDangKy { get; }
+        public ICommand LenhQuenMatKhau { get; }
+        public ICommand LenhChonNhanVien { get; }
+        public ICommand LenhChonAdmin { get; }
 
         public DangNhap_VM()
         {
-            LaKhachHang = true;
-            LaAdmin = false;
             LenhDangNhap = new RelayCommand(thamSo => DangNhap(thamSo as Window));
-            LenhMoDangKy = new RelayCommand(thamSo => MoDangKy(thamSo as Window));
+            LenhQuenMatKhau = new RelayCommand(thamSo => MoQuenMatKhau(thamSo as Window));
+            LenhChonNhanVien = new RelayCommand(_ => ChonLoai(false));
+            LenhChonAdmin = new RelayCommand(_ => ChonLoai(true));
+        }
+
+        // Chọn loại tài khoản. Khi chọn Admin sẽ điền sẵn 'admin' cho tiện;
+        // việc phân quyền thực tế vẫn dựa trên vai trò trong CSDL.
+        private void ChonLoai(bool admin)
+        {
+            LaAdmin = admin;
+            if (admin)
+            {
+                if (string.IsNullOrWhiteSpace(TenDangNhap))
+                {
+                    TenDangNhap = "admin";
+                }
+            }
+            else
+            {
+                if (string.Equals(TenDangNhap, "admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    TenDangNhap = string.Empty;
+                }
+            }
         }
 
         private void DangNhap(Window cuaSoDangNhap)
@@ -78,46 +85,29 @@ namespace Doan.ViewModel
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
-                    if (LaAdmin)
-                    {
-                        if (!XacThucAdmin(ten, matKhau))
-                        {
-                            Mouse.OverrideCursor = null;
-                            MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu admin.", "Thông báo",
-                                MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
-                        }
-
-                        PhienDangNhap.TenDangNhap = ten;
-                        PhienDangNhap.Role = "Admin";
-                        PhienDangNhap.KhachHangHienTai = null;
-                        PhienDangNhap.GioHangKhach.Clear();
-
-                        Mouse.OverrideCursor = null;
-                        var cuaSoChinh = new MainWindow();
-                        cuaSoChinh.Show();
-                        DongCuaSoDangNhap(cuaSoDangNhap);
-                        return;
-                    }
-
-                    KhachHang khachHang;
-                    if (!XacThucKhachHang(ten, matKhau, out khachHang))
+                    string role;
+                    string thongBao;
+                    NhanVien nhanVien;
+                    if (!XacThucNhanVien(ten, matKhau, out role, out thongBao, out nhanVien))
                     {
                         Mouse.OverrideCursor = null;
-                        MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.\nNếu chưa có tài khoản, vui lòng nhấn 'Đăng ký ngay'.",
-                            "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show(thongBao, "Đăng nhập thất bại", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
                     PhienDangNhap.TenDangNhap = ten;
-                    PhienDangNhap.Role = "KhachHang";
-                    PhienDangNhap.KhachHangHienTai = khachHang;
+                    PhienDangNhap.Role = role;
+                    PhienDangNhap.NhanVienHienTai = nhanVien;
+                    PhienDangNhap.KhachHangHienTai = null;
                     PhienDangNhap.GioHangKhach.Clear();
 
                     Mouse.OverrideCursor = null;
-                    var cuaSoUser = new MainWindow_User();
-                    cuaSoUser.Show();
+                    var khuQuanTri = new MainWindow();
+                    khuQuanTri.Show();
+
+                    // Đóng cửa sổ đăng nhập và cổng khách (nếu đang mở).
                     DongCuaSoDangNhap(cuaSoDangNhap);
+                    DongCongKhach();
                 }
                 finally
                 {
@@ -132,6 +122,72 @@ namespace Doan.ViewModel
                     "\nConnection string đang trỏ tới: " + LayConnectionInfo(),
                     "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        // Xác thực tài khoản nhân viên/admin. Trả về vai trò + nhân viên gắn với tài khoản.
+        private bool XacThucNhanVien(string ten, string matKhau, out string role, out string thongBao, out NhanVien nhanVien)
+        {
+            role = null;
+            thongBao = "Sai tên đăng nhập hoặc mật khẩu.";
+            nhanVien = null;
+
+            // Tài khoản admin mặc định (tiện dụng khi chưa có CSDL hoàn chỉnh).
+            if (string.Equals(ten, "admin", StringComparison.OrdinalIgnoreCase) &&
+                (matKhau == "123" || matKhau == "123456"))
+            {
+                role = "Quản lý";
+            }
+
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var tk = ctx.TaiKhoans.FirstOrDefault(t => t.Username == ten);
+
+                if (role == null)
+                {
+                    if (tk == null || tk.Password != matKhau)
+                    {
+                        return false;
+                    }
+
+                    string r = (tk.Role ?? string.Empty).Trim();
+                    bool laKhachHang =
+                        string.Equals(r, "KhachHang", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(r, "Khách hàng", StringComparison.OrdinalIgnoreCase);
+                    if (laKhachHang)
+                    {
+                        thongBao = "Tài khoản này không phải nhân viên.";
+                        return false;
+                    }
+
+                    if (string.Equals((tk.TrangThai ?? string.Empty).Trim(), "Đã khóa", StringComparison.OrdinalIgnoreCase))
+                    {
+                        thongBao = "Tài khoản đã bị khóa. Vui lòng liên hệ quản lý.";
+                        return false;
+                    }
+
+                    if (QuyenHan.CamDangNhap(r))
+                    {
+                        thongBao = "Chức vụ này không sử dụng hệ thống nên không được đăng nhập.";
+                        return false;
+                    }
+
+                    role = string.IsNullOrWhiteSpace(r) ? "Nhân viên" : r;
+                }
+
+                if (tk != null && !string.IsNullOrWhiteSpace(tk.MaNV))
+                {
+                    nhanVien = ctx.NhanViens.FirstOrDefault(nv => nv.MaNV == tk.MaNV);
+                }
+            }
+            return true;
+        }
+
+        private void MoQuenMatKhau(Window cuaSoDangNhap)
+        {
+            var cuaSo = new W_QuenMatKhau();
+            cuaSo.Owner = cuaSoDangNhap;
+            cuaSo.ShowDialog();
         }
 
         private string LayConnectionInfo()
@@ -165,64 +221,6 @@ namespace Doan.ViewModel
             return passwordBox != null ? passwordBox.Password : string.Empty;
         }
 
-        private bool XacThucAdmin(string ten, string matKhau)
-        {
-            if (string.Equals(ten, "admin", StringComparison.OrdinalIgnoreCase) &&
-                (matKhau == "123" || matKhau == "123456"))
-            {
-                return true;
-            }
-
-            using (var ctx = new QuanLyBanXeMayEntities())
-            {
-                ctx.Configuration.LazyLoadingEnabled = false;
-                var tk = ctx.TaiKhoans.FirstOrDefault(t => t.Username == ten);
-                if (tk != null && tk.Password == matKhau)
-                {
-                    string role = (tk.Role ?? string.Empty).Trim();
-                    // Mọi tài khoản nhân viên (Quản lý, Bán hàng, Kỹ thuật, Kế toán...) đều
-                    // được vào khu quản lý. Chỉ loại trừ tài khoản khách hàng.
-                    bool laKhachHang =
-                        string.Equals(role, "KhachHang", StringComparison.OrdinalIgnoreCase) ||
-                        string.Equals(role, "Khách hàng", StringComparison.OrdinalIgnoreCase);
-                    if (!laKhachHang)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        private bool XacThucKhachHang(string ten, string matKhau, out KhachHang khachHang)
-        {
-            khachHang = null;
-
-            using (var ctx = new QuanLyBanXeMayEntities())
-            {
-                ctx.Configuration.LazyLoadingEnabled = false;
-                var tk = ctx.TaiKhoans.FirstOrDefault(t => t.Username == ten);
-                if (tk == null || tk.Password != matKhau)
-                {
-                    return false;
-                }
-
-                string role = (tk.Role ?? string.Empty).Trim();
-                if (!string.Equals(role, "KhachHang", StringComparison.OrdinalIgnoreCase) &&
-                    !string.Equals(role, "Khách hàng", StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-
-                // Chỉ tra cứu hồ sơ khách theo SĐT, KHÔNG tự tạo mới.
-                // Nếu chưa có hồ sơ thì vẫn cho đăng nhập, khách tự tạo hồ sơ
-                // trong tab "Tài khoản" (tránh tạo khách hàng trùng/vô tội vạ).
-                khachHang = ctx.KhachHangs.FirstOrDefault(k => k.SDT == ten);
-
-                return true;
-            }
-        }
-
         private void DongCuaSoDangNhap(Window cuaSoDangNhap)
         {
             if (cuaSoDangNhap == null)
@@ -232,16 +230,10 @@ namespace Doan.ViewModel
             cuaSoDangNhap?.Close();
         }
 
-        private void MoDangKy(Window cuaSoDangNhap)
+        private void DongCongKhach()
         {
-            var cuaSoDangKy = new W_DangKy();
-            cuaSoDangKy.Show();
-
-            if (cuaSoDangNhap == null)
-            {
-                cuaSoDangNhap = Application.Current.Windows.OfType<W_DangNhap>().FirstOrDefault();
-            }
-            cuaSoDangNhap?.Close();
+            var congKhach = Application.Current.Windows.OfType<MainWindow_User>().FirstOrDefault();
+            congKhach?.Close();
         }
 
         private string LayThongDiepLoi(Exception ex)

@@ -25,13 +25,13 @@
             Text="CHỌN HÃNG XE"
             FontSize="24"
             FontWeight="Bold"
-            Foreground="#2c3e50" Margin="0,0,402,0"/>
+            Foreground="{DynamicResource BrushText}" Margin="0,0,402,0"/>
 
             <Button
             Content="➕ Thêm"
             Padding="15,8"
             Width="90"
-            Background="#27ae60"
+            Background="{DynamicResource BrushSuccess}"
             Foreground="White"
             BorderThickness="0"
             Cursor="Hand"
@@ -42,7 +42,7 @@
             Content="🗑 Xóa"
             Padding="15,8"
             Width="90"
-            Background="#e74c3c"
+            Background="{DynamicResource BrushDanger}"
             Foreground="White"
             BorderThickness="0"
             Cursor="Hand"
@@ -53,7 +53,7 @@
             Content="✏️  Sửa"
             Padding="15,8"
             Width="90"
-            Background="#f1c40f"
+            Background="{DynamicResource BrushWarning}"
             Foreground="White"
             BorderThickness="0"
             Cursor="Hand"
@@ -97,7 +97,7 @@
             Width="200" 
             Height="200"
             Margin="20"
-            Background="White"
+            Background="{DynamicResource BrushCard}"
             CornerRadius="10"
             Cursor="Hand">
 
@@ -143,7 +143,7 @@
                     Text="{Binding TenHang}"
                     FontSize="18"
                     FontWeight="Bold"
-                    Foreground="#2c3e50"
+                    Foreground="{DynamicResource BrushText}"
                     TextAlignment="Center"
                     Margin="0,0,0,8"/>
 
@@ -151,7 +151,7 @@
                             <TextBlock 
                     Text="{Binding QuocGia}"
                     FontSize="12"
-                    Foreground="#95a5a6"
+                    Foreground="{DynamicResource BrushTextMuted}"
                     TextAlignment="Center"/>
                         </StackPanel>
                     </Border>

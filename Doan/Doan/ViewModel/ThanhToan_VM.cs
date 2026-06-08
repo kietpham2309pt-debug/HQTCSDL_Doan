@@ -57,6 +57,14 @@ namespace Doan.ViewModel
         // Danh sách nhân viên ĐANG LÀM VIỆC cho dropdown chọn nhanh người lập.
         public ObservableCollection<NhanVien> DanhSachNhanVienLap { get; }
 
+        // Chống gian lận: khi nhân viên đăng nhập thì khóa người lập = chính họ.
+        private bool choChonNhanVienLap = true;
+        public bool ChoChonNhanVienLap
+        {
+            get { return choChonNhanVienLap; }
+            set { choChonNhanVienLap = value; OnPropertyChanged(); }
+        }
+
         private NhanVien nhanVienLapDuocChon;
         public NhanVien NhanVienLapDuocChon
         {
@@ -89,7 +97,28 @@ namespace Doan.ViewModel
             {
                 hinhThucThanhToanDangChon = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(LaTraGop));
             }
+        }
+
+        // Hiện khối nhập trả góp khi chọn hình thức "Trả góp".
+        public bool LaTraGop
+        {
+            get { return HinhThucThanhToanDangChon == "Trả góp"; }
+        }
+
+        private string traTruocNhap = "0";
+        public string TraTruocNhap
+        {
+            get { return traTruocNhap; }
+            set { traTruocNhap = value; OnPropertyChanged(); }
+        }
+
+        private string soKyNhap = "6";
+        public string SoKyNhap
+        {
+            get { return soKyNhap; }
+            set { soKyNhap = value; OnPropertyChanged(); }
         }
 
         public long TongTienHang
@@ -143,18 +172,35 @@ namespace Doan.ViewModel
 
         private void TaiDanhSachNhanVienLap()
         {
+            var nvHienTai = PhienDangNhap.NhanVienHienTai;
+
             using (var ctx = new QuanLyBanXeMayEntities())
             {
                 ctx.Configuration.LazyLoadingEnabled = false;
-                var ds = ctx.NhanViens
-                    .Where(item => item.TrangThai == "Đang làm việc")
-                    .OrderBy(item => item.HoTen)
-                    .ToList();
-
                 DanhSachNhanVienLap.Clear();
-                foreach (var nv in ds)
+
+                if (nvHienTai != null)
                 {
-                    DanhSachNhanVienLap.Add(nv);
+                    // Nhân viên đang đăng nhập -> CHỈ mình họ được đứng tên lập hóa đơn (chống gian lận).
+                    var nv = ctx.NhanViens.FirstOrDefault(n => n.MaNV == nvHienTai.MaNV);
+                    if (nv != null)
+                    {
+                        DanhSachNhanVienLap.Add(nv);
+                    }
+                    ChoChonNhanVienLap = false;
+                }
+                else
+                {
+                    // Tài khoản quản trị mặc định không gắn nhân viên -> cho chọn trong danh sách đang làm việc.
+                    var ds = ctx.NhanViens
+                        .Where(item => item.TrangThai == "Đang làm việc")
+                        .OrderBy(item => item.HoTen)
+                        .ToList();
+                    foreach (var nv in ds)
+                    {
+                        DanhSachNhanVienLap.Add(nv);
+                    }
+                    ChoChonNhanVienLap = true;
                 }
             }
 
@@ -266,10 +312,13 @@ namespace Doan.ViewModel
 
             DateTime ngayLap = NgayLapNhap;
             int soDonDaTao = 0;
+            string maGiaoDich = TaoMaGiaoDich();
+            string maKHGiaoDich = KhachHangDuocChon != null ? KhachHangDuocChon.MaKH : null;
+            decimal tongTienGiaoDich = GioHangHienTai.Where(i => i.ThanhTien > 0).Sum(i => (decimal)i.ThanhTien);
 
             try
             {
-                // MaHD là khóa chính nên mỗi mặt hàng phải mang một mã hóa đơn riêng.
+                // MaHD là khóa chính nên mỗi mặt hàng phải mang một mã hóa đơn riêng (cùng MaGiaoDich).
                 int soBatDau = LaySoHoaDonLonNhat();
 
                 using (var ctx = new QuanLyBanXeMayEntities())
@@ -302,7 +351,8 @@ namespace Doan.ViewModel
                             SoLuong = item.SoLuong,
                             ThanhTien = item.ThanhTien,
                             PhuongThucThanhToan = HinhThucThanhToanDangChon,
-                            TrangThai = "Đã xác nhận"
+                            TrangThai = "Đã xác nhận",
+                            MaGiaoDich = maGiaoDich
                         };
                         ctx.HoaDons.Add(hd);
 
@@ -352,10 +402,29 @@ namespace Doan.ViewModel
                 return;
             }
 
+            // Nếu trả góp -> tạo phiếu theo dõi trả góp cho cả giao dịch.
+            if (LaTraGop)
+            {
+                try
+                {
+                    decimal traTruoc;
+                    decimal.TryParse((TraTruocNhap ?? "0").Replace(".", string.Empty).Replace(",", string.Empty).Trim(), out traTruoc);
+                    int soKy;
+                    if (!int.TryParse((SoKyNhap ?? "1").Trim(), out soKy) || soKy < 1) soKy = 1;
+                    TraGopRepository.TaoPhieuTraGop(maGiaoDich, maKHGiaoDich, tongTienGiaoDich, traTruoc, soKy);
+                }
+                catch (Exception exTg)
+                {
+                    MessageBox.Show("Đã lập hóa đơn nhưng tạo phiếu trả góp lỗi: " + exTg.Message, "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+
             GioHangHienTai.Clear();
             CapNhatTienThanhToan();
 
-            MessageBox.Show("Thanh toán thành công. Đã tạo " + soDonDaTao + " hóa đơn.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Thanh toán thành công (giao dịch " + maGiaoDich + ", " + soDonDaTao + " mặt hàng)." +
+                (LaTraGop ? "\nĐã tạo phiếu trả góp." : string.Empty),
+                "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             LamMoiThongTinHoaDon(false);
         }
 
@@ -411,6 +480,28 @@ namespace Doan.ViewModel
                 return false;
             }
 
+            if (LaTraGop)
+            {
+                decimal traTruoc;
+                if (!decimal.TryParse((TraTruocNhap ?? "0").Replace(".", string.Empty).Replace(",", string.Empty).Trim(), out traTruoc) || traTruoc < 0)
+                {
+                    MessageBox.Show("Số tiền trả trước không hợp lệ.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return false;
+                }
+                decimal tong = GioHangHienTai.Where(i => i.ThanhTien > 0).Sum(i => (decimal)i.ThanhTien);
+                if (traTruoc >= tong)
+                {
+                    MessageBox.Show("Trả trước phải nhỏ hơn tổng tiền (nếu trả đủ thì chọn hình thức khác).", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return false;
+                }
+                int soKy;
+                if (!int.TryParse((SoKyNhap ?? string.Empty).Trim(), out soKy) || soKy < 1 || soKy > 60)
+                {
+                    MessageBox.Show("Số kỳ trả góp phải từ 1 đến 60.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -459,6 +550,23 @@ namespace Doan.ViewModel
             }
 
             return true;
+        }
+
+        private string TaoMaGiaoDich()
+        {
+            int max = 0;
+            using (var ctx = new QuanLyBanXeMayEntities())
+            {
+                ctx.Configuration.LazyLoadingEnabled = false;
+                var all = ctx.HoaDons.Where(h => h.MaGiaoDich != null).Select(h => h.MaGiaoDich).ToList();
+                foreach (string ma in all)
+                {
+                    if (string.IsNullOrWhiteSpace(ma) || !ma.Trim().ToUpper().StartsWith("GD")) continue;
+                    int n;
+                    if (int.TryParse(ma.Trim().ToUpper().Replace("GD", string.Empty), out n) && n > max) max = n;
+                }
+            }
+            return "GD" + (max + 1).ToString("000");
         }
 
         private int LaySoHoaDonLonNhat()

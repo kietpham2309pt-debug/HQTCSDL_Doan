@@ -13,6 +13,7 @@
           <Property Name="Ten" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Gia" Type="decimal" Precision="18" Scale="2" />
           <Property Name="TonKho" Type="int" />
+          <Property Name="Loai" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="HangXe">
           <Key>
@@ -36,6 +37,7 @@
           <Property Name="ThanhTien" Type="decimal" Precision="18" Scale="2" />
           <Property Name="PhuongThucThanhToan" Type="nvarchar" MaxLength="50" />
           <Property Name="TrangThai" Type="nvarchar" MaxLength="50" />
+          <Property Name="MaGiaoDich" Type="varchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="KhachHang">
           <Key>
@@ -70,6 +72,9 @@
           <Property Name="Password" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Role" Type="nvarchar" MaxLength="50" />
           <Property Name="MaNV" Type="varchar" MaxLength="20" />
+          <Property Name="TrangThai" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="CauHoiBaoMat" Type="nvarchar" MaxLength="200" />
+          <Property Name="CauTraLoiBaoMat" Type="nvarchar" MaxLength="200" />
         </EntityType>
         <EntityType Name="Xe">
           <Key>
@@ -85,6 +90,7 @@
           <Property Name="HinhAnh" Type="nvarchar" MaxLength="500" />
           <Property Name="MaHang" Type="varchar" MaxLength="20" />
           <Property Name="SoLuongTon" Type="int" />
+          <Property Name="TrangThaiHienThi" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <Association Name="FK_HoaDon_KhachHang">
           <End Role="KhachHang" Type="Self.KhachHang" Multiplicity="0..1" />
@@ -171,6 +177,7 @@
           <Property Name="Ten" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Gia" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="TonKho" Type="Int32" />
+          <Property Name="Loai" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityType Name="HangXe">
           <Key>
@@ -195,6 +202,7 @@
           <Property Name="ThanhTien" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="PhuongThucThanhToan" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="TrangThai" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="MaGiaoDich" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="KhachHang" Relationship="Self.FK_HoaDon_KhachHang" FromRole="HoaDon" ToRole="KhachHang" />
           <NavigationProperty Name="NhanVien" Relationship="Self.FK_HoaDon_NhanVien" FromRole="HoaDon" ToRole="NhanVien" />
         </EntityType>
@@ -234,6 +242,9 @@
           <Property Name="Password" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="MaNV" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="TrangThai" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CauHoiBaoMat" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="CauTraLoiBaoMat" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="NhanVien" Relationship="Self.FK_TaiKhoan_NhanVien" FromRole="TaiKhoan" ToRole="NhanVien" />
         </EntityType>
         <EntityType Name="Xe">
@@ -251,6 +262,7 @@
           <Property Name="MaHang" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="HangXe" Relationship="Self.FK_Xe_HangXe" FromRole="Xe" ToRole="HangXe" />
           <Property Name="SoLuongTon" Type="Int32" />
+          <Property Name="TrangThaiHienThi" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <Association Name="FK_Xe_HangXe">
           <End Role="HangXe" Type="Self.HangXe" Multiplicity="0..1" />
@@ -338,6 +350,7 @@
                 <ScalarProperty Name="Ten" ColumnName="Ten" />
                 <ScalarProperty Name="Gia" ColumnName="Gia" />
                 <ScalarProperty Name="TonKho" ColumnName="TonKho" />
+                <ScalarProperty Name="Loai" ColumnName="Loai" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -363,6 +376,7 @@
                 <ScalarProperty Name="ThanhTien" ColumnName="ThanhTien" />
                 <ScalarProperty Name="PhuongThucThanhToan" ColumnName="PhuongThucThanhToan" />
                 <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="MaGiaoDich" ColumnName="MaGiaoDich" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -400,6 +414,9 @@
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="Role" ColumnName="Role" />
                 <ScalarProperty Name="MaNV" ColumnName="MaNV" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="CauHoiBaoMat" ColumnName="CauHoiBaoMat" />
+                <ScalarProperty Name="CauTraLoiBaoMat" ColumnName="CauTraLoiBaoMat" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -416,6 +433,7 @@
                 <ScalarProperty Name="MoTa" ColumnName="MoTa" />
                 <ScalarProperty Name="HinhAnh" ColumnName="HinhAnh" />
                 <ScalarProperty Name="MaHang" ColumnName="MaHang" />
+                <ScalarProperty Name="TrangThaiHienThi" ColumnName="TrangThaiHienThi" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

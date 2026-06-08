@@ -5,13 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Doan.ViewModel;
 
 namespace Doan.View
 {
@@ -20,9 +14,13 @@ namespace Doan.View
     /// </summary>
     public partial class UC_DichVu : UserControl
     {
-        public UC_DichVu()
+        public UC_DichVu() : this(null) { }
+
+        // loai: "Dịch vụ" / "Phụ tùng" để mở đúng mục; null = tất cả.
+        public UC_DichVu(string loai)
         {
             InitializeComponent();
+            DataContext = new DichVu_VM(loai);
         }
     }
 }

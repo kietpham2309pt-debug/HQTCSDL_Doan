@@ -33,7 +33,7 @@ namespace Doan.View
                 PasswordTextBox.Text = PasswordBox.Password;
                 PasswordTextBox.Visibility = Visibility.Visible;
                 PasswordBox.Visibility = Visibility.Collapsed;
-                TogglePasswordButton.Content = "🙈";
+                TogglePasswordButton.Content = "Ẩn";
                 dangHienMatKhau = true;
                 return;
             }
@@ -41,7 +41,7 @@ namespace Doan.View
             PasswordBox.Password = PasswordTextBox.Text;
             PasswordBox.Visibility = Visibility.Visible;
             PasswordTextBox.Visibility = Visibility.Collapsed;
-            TogglePasswordButton.Content = "👁";
+            TogglePasswordButton.Content = "Hiện";
             dangHienMatKhau = false;
         }
     }
